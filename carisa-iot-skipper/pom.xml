@@ -9,6 +9,7 @@
 	</parent>
 	<artifactId>carisa-iot-skipper</artifactId>
 	<name>Carisa IOT Skipper</name>
+	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>
@@ -18,11 +19,18 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-skipper-autoconfigure</artifactId>
+			<version>${spring-cloud-skipper-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-skipper-server-core</artifactId>
+			<version>${spring-cloud-skipper-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-skipper-platform-kubernetes</artifactId>
+			<version>${spring-cloud-skipper-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
