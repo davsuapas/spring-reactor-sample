@@ -2,13 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.carisa.iot</groupId>
-	<artifactId>carisa-iot-parent</artifactId>
+	<groupId>org.elipcero.carisa</groupId>
+	<artifactId>carisa-parent</artifactId>
 	<version>0.0.1-BUILD-SNAPSHOT</version>
-	<name>Carisa IOT framework</name>
+	<name>Carisa</name>
+	<description>Real time analysis framework</description>
 	<packaging>pom</packaging>
 	<organization>
-        	<name>Carisa software.</name>
+        	<name>Elipcero software.</name>
 	</organization>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -18,13 +19,13 @@
 	</parent>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>10</java.version>
 		<spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
 		<spring-cloud-skipper-version>2.0.0.RC1</spring-cloud-skipper-version>
 	</properties>
 
 	<modules>
-		<module>carisa-iot-skipper</module>
+		<module>carisa-skipper</module>
 	</modules>
 
 	<dependencyManagement>
