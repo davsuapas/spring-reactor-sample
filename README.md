@@ -1,2 +1,2 @@
 # incubator-carisa
-IOT platform
+Real time analysis platform
