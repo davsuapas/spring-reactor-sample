@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.elipcero.carisa.skipper;
 
 import org.springframework.boot.SpringApplication;
@@ -48,4 +49,3 @@ public class CarisaSkipperApplication {
 		SpringApplication.run(CarisaSkipperApplication.class, args);
 	}
 }
-

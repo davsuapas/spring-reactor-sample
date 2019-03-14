@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.elipcero.carisa.skipper.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * This contain all the information to create kubernete deployer
+ * This contain all the information to create kubernetes deployer
  *
  * @author David Suárez
  *
  */
 @Getter
-public class DeployerKuberneteRequest {
-    private String namespace;
+@AllArgsConstructor
+public class KubernetesDeployerRequest {
+    private String name;
+    private String namespaces;
 }
