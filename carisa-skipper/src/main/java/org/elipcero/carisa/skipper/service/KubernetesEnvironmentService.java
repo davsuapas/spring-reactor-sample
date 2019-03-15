@@ -16,18 +16,23 @@
 
 package org.elipcero.carisa.skipper.service;
 
+import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
 import org.springframework.cloud.skipper.domain.Deployer;
 
 /**
- * Populates deployer in hot (through rest service)
+ * Create kubernete namespace
  *
  * @author David Suárez
  */
-public interface DeployerService {
+public class KubernetesEnvironmentService implements EnvironmentService {
 
-    /**
-     * Save deployer into repository and create the platform environment
-     * @param deployer the deployer
-     */
-    Deployer deploy(Deployer deployer);
+    @Override
+    public String getType() {
+        return KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES;
+    }
+
+    @Override
+    public void create(Deployer deployer) {
+        // Create namespace in kubernetes. If it exists remove namespace and create again
+    }
 }

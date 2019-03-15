@@ -53,7 +53,7 @@ public final class PlatformController {
      * @param kubernetesDeployerRequest properties for kubernetes platform
      * @return deployer resource
      */
-    @RequestMapping("/kubernetes/deploy")
+    @RequestMapping("/kubernetes/deployers")
     @ResponseStatus(HttpStatus.CREATED)
     public Resource<Deployer> deploy(@RequestBody KubernetesDeployerRequest kubernetesDeployerRequest) {
 

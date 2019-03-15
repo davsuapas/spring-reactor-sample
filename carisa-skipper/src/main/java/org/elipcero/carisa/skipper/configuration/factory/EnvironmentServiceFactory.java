@@ -14,20 +14,15 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.service;
+package org.elipcero.carisa.skipper.configuration.factory;
 
-import org.springframework.cloud.skipper.domain.Deployer;
+import org.elipcero.carisa.skipper.service.EnvironmentService;
 
 /**
- * Populates deployer in hot (through rest service)
+ * Description
  *
  * @author David Suárez
  */
-public interface DeployerService {
-
-    /**
-     * Save deployer into repository and create the platform environment
-     * @param deployer the deployer
-     */
-    Deployer deploy(Deployer deployer);
+public interface EnvironmentServiceFactory {
+    EnvironmentService Get(String type);
 }

@@ -28,15 +28,13 @@ import org.springframework.cloud.skipper.domain.Deployer;
  */
 public final class ConvertToDomain {
 
-    public static final String PLATFORM_TYPE_KUBERNETES = "kubernetes";
-
     public static Deployer from(final KubernetesDeployerRequest kubernetesDeployerRequest) {
         KubernetesDeployerProperties properties = new KubernetesDeployerProperties();
         properties.setNamespace(kubernetesDeployerRequest.getNamespaces());
 
         return new Deployer(
                 kubernetesDeployerRequest.getName(),
-                PLATFORM_TYPE_KUBERNETES,
+                KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES,
                 new KubernetesAppDeployer(
                         properties,
                         /*Client is not necessary. Just need KubernetesAppDeployer to save into repository*/

@@ -88,7 +88,7 @@ public class PlatformControllerTest {
         KubernetesDeployerRequest request = new KubernetesDeployerRequest(deployName, namespace);
 
         MvcResult resultDeployer = this.mockMvc.perform(
-                post("/api/platforms/kubernetes/deploy")
+                post("/api/platforms/kubernetes/deployers")
                         .content(this.objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

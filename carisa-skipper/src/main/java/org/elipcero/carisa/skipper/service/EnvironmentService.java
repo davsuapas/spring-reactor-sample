@@ -19,15 +19,22 @@ package org.elipcero.carisa.skipper.service;
 import org.springframework.cloud.skipper.domain.Deployer;
 
 /**
- * Populates deployer in hot (through rest service)
+ * Environment service interface
  *
  * @author David Suárez
  */
-public interface DeployerService {
+public interface EnvironmentService {
 
     /**
-     * Save deployer into repository and create the platform environment
-     * @param deployer the deployer
+     * Getting platform type
+     *
+     * @return platform type
      */
-    Deployer deploy(Deployer deployer);
+    String getType();
+
+    /**
+     * Create the environment for each platform
+     * @param deployer properties
+     */
+    void create(Deployer deployer);
 }
