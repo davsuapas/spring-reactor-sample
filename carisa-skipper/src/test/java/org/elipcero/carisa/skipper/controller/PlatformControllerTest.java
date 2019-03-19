@@ -18,6 +18,8 @@ package org.elipcero.carisa.skipper.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
 import org.junit.After;
 import org.junit.Test;
@@ -37,6 +39,7 @@ import org.springframework.cloud.deployer.spi.local.LocalDeployerAutoConfigurati
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.server.EnableSkipperServer;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
+import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.hal.Jackson2HalModule;
@@ -44,6 +47,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import javax.annotation.PreDestroy;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -116,5 +121,21 @@ public class PlatformControllerTest {
             SessionAutoConfiguration.class})
     @EnableSkipperServer
     static class TestConfig {
+
+        private KubernetesServer server;
+
+        @Bean
+        public KubernetesClient mockKubernetesClient() {
+            this.server = new KubernetesServer(true, true);
+            server.before();
+            return this.server.getClient();
+        }
+
+        @PreDestroy
+        void destroyKubernetesServer() {
+            if (this.server != null) {
+                this.server.after();
+            }
+        }
     }
 }

@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.skipper.converter.ConvertToDomain;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
 import org.elipcero.carisa.skipper.service.DeployerService;
+import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
@@ -57,7 +58,12 @@ public final class PlatformController {
     @ResponseStatus(HttpStatus.CREATED)
     public Resource<Deployer> deploy(@RequestBody KubernetesDeployerRequest kubernetesDeployerRequest) {
 
-        Deployer deployer = this.deployerService.deploy(ConvertToDomain.from(kubernetesDeployerRequest));
+
+        KubernetesDeployerProperties properties = ConvertToDomain.from(kubernetesDeployerRequest);
+        Deployer deployer = this.deployerService.deploy(
+                ConvertToDomain.from(kubernetesDeployerRequest, properties),
+                /*Deployer has the properties but is protected therefore i can't access and i need it*/
+                properties);
 
         return new Resource<>(deployer,
                 this.repoLink.linkToSingleResource(DeployerRepository.class, deployer.getId()).withSelfRel());

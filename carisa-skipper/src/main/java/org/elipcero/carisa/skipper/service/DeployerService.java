@@ -27,7 +27,9 @@ public interface DeployerService {
 
     /**
      * Save deployer into repository and create the platform environment
+     * Deployer has the properties but is protected therefore i can't access
      * @param deployer the deployer
+     * @param properties properties
      */
-    Deployer deploy(Deployer deployer);
+    Deployer deploy(Deployer deployer, final Object properties);
 }

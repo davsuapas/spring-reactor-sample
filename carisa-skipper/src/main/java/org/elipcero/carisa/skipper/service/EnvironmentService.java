@@ -16,8 +16,6 @@
 
 package org.elipcero.carisa.skipper.service;
 
-import org.springframework.cloud.skipper.domain.Deployer;
-
 /**
  * Environment service interface
  *
@@ -34,7 +32,7 @@ public interface EnvironmentService {
 
     /**
      * Create the environment for each platform
-     * @param deployer properties
+     * @param properties properties
      */
-    void create(Deployer deployer);
+    void create(Object properties);
 }

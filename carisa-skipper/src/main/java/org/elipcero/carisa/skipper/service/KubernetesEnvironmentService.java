@@ -16,23 +16,45 @@
 
 package org.elipcero.carisa.skipper.service;
 
+import io.fabric8.kubernetes.api.model.NamespaceBuilder;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
-import org.springframework.cloud.skipper.domain.Deployer;
+import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 
 /**
  * Create kubernete namespace
  *
  * @author David Suárez
  */
+@Slf4j
+@RequiredArgsConstructor
 public class KubernetesEnvironmentService implements EnvironmentService {
+
+    @NonNull
+    private final KubernetesClient client;
 
     @Override
     public String getType() {
         return KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES;
     }
 
+    /**
+     * Create namespace in kubernetes. If it exists replace
+     *
+     * @param propertiesDeployer properties
+     */
     @Override
-    public void create(Deployer deployer) {
-        // Create namespace in kubernetes. If it exists remove namespace and create again
+    public void create(Object propertiesDeployer) {
+        KubernetesDeployerProperties properties = (KubernetesDeployerProperties)propertiesDeployer;
+
+        client.namespaces().createOrReplace(
+                new NamespaceBuilder().withNewMetadata()
+                    .withName(properties.getNamespace())
+                    .endMetadata().build());
+
+        this.log.info("Kubernetes namespace '{}' created or replaced ", properties.getNamespace());
     }
 }

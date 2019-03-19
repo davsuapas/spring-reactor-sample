@@ -37,8 +37,8 @@ public final class DefaultDeployerService implements DeployerService {
     private final EnvironmentServiceFactory environmentServiceFactory;
 
     @Override
-    public Deployer deploy(final Deployer deployer) {
-        this.environmentServiceFactory.Get(deployer.getType()).create(deployer);
+    public Deployer deploy(final Deployer deployer, final Object properties) {
+        this.environmentServiceFactory.Get(deployer.getType()).create(properties);
 
         Deployer result = this.deployerRepository.save(deployer);
         this.log.info("Deployer '{}' saved for platform: '{}'", deployer.getName(), deployer.getType());

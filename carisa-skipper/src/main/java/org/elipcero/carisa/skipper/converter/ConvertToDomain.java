@@ -28,9 +28,14 @@ import org.springframework.cloud.skipper.domain.Deployer;
  */
 public final class ConvertToDomain {
 
-    public static Deployer from(final KubernetesDeployerRequest kubernetesDeployerRequest) {
+    public static KubernetesDeployerProperties from(final KubernetesDeployerRequest kubernetesDeployerRequest) {
         KubernetesDeployerProperties properties = new KubernetesDeployerProperties();
         properties.setNamespace(kubernetesDeployerRequest.getNamespaces());
+        return properties;
+    }
+
+    public static Deployer from(
+            final KubernetesDeployerRequest kubernetesDeployerRequest, KubernetesDeployerProperties properties) {
 
         return new Deployer(
                 kubernetesDeployerRequest.getName(),

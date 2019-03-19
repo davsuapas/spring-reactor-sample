@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.skipper.configuration;
 
+import io.fabric8.kubernetes.client.KubernetesClient;
 import org.elipcero.carisa.skipper.configuration.factory.DefaultEnvironmentServiceFactory;
 import org.elipcero.carisa.skipper.configuration.factory.EnvironmentServiceFactory;
 import org.elipcero.carisa.skipper.service.DefaultDeployerService;
@@ -27,7 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Environment configuration
+ * Custom Skipper configuration
  *
  * @author David Suárez
  */
@@ -37,10 +38,13 @@ public class CarisaSkipperConfiguration {
     @Autowired
     private DeployerRepository deployerRepository;
 
+    @Autowired
+    private KubernetesClient kubernetesClient;
+
     @Bean
     public EnvironmentServiceFactory environmentServiceFactory() {
         return new DefaultEnvironmentServiceFactory()
-                .Register(new KubernetesEnvironmentService());
+                .Register(new KubernetesEnvironmentService(kubernetesClient));
     }
 
     @Bean

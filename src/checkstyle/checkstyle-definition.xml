@@ -89,11 +89,10 @@
         <module name="MethodParamPad"/>
         <module name="NoWhitespaceBefore"/>
         <module name="NoWhitespaceAfter">
-            <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS, ARRAY_DECLARATOR"/>
+            <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS, ARRAY_DECLARATOR, TYPECAST"/>
         </module>
         <module name="ParenPad"/>
         <module name="TypecastParenPad"/>
-        <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
     </module>
 </module>
