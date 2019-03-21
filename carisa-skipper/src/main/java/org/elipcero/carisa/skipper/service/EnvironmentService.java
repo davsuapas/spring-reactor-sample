@@ -16,6 +16,8 @@
 
 package org.elipcero.carisa.skipper.service;
 
+import io.fabric8.kubernetes.client.KubernetesClient;
+
 /**
  * Environment service interface
  *
@@ -33,6 +35,7 @@ public interface EnvironmentService {
     /**
      * Create the environment for each platform
      * @param properties properties
+     * @param client kubernetes client
      */
-    void create(Object properties);
+    void create(Object properties, KubernetesClient client);
 }

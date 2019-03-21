@@ -14,15 +14,20 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.configuration.factory;
+package org.elipcero.carisa.skipper.factory;
 
-import org.elipcero.carisa.skipper.service.EnvironmentService;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import org.springframework.cloud.deployer.spi.kubernetes.KubernetesClientFactory;
+import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 
 /**
- * Description
+ * Kubernetes client factory. Support mocks
  *
  * @author David Suárez
  */
-public interface EnvironmentServiceFactory {
-    EnvironmentService Get(String type);
+public class DefaultKubernetesClientFactory implements KubernetesClientFactoryInterface {
+
+    public KubernetesClient Create(final KubernetesDeployerProperties properties) {
+        return KubernetesClientFactory.getKubernetesClient(properties);
+    }
 }

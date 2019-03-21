@@ -14,36 +14,40 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.converter;
+package org.elipcero.carisa.skipper.factory;
 
+import io.fabric8.kubernetes.client.KubernetesClient;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesAppDeployer;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 import org.springframework.cloud.skipper.domain.Deployer;
 
 /**
- * Convert request to class domain
+ * Build kubernentes deployer
  *
  * @author David Suárez
  */
-public final class ConvertToDomain {
+@RequiredArgsConstructor
+public class KubernetesAppDeployerFactory {
 
-    public static KubernetesDeployerProperties from(final KubernetesDeployerRequest kubernetesDeployerRequest) {
+    @NonNull
+    private final KubernetesDeployerRequest kubernetesDeployerRequest;
+
+    public KubernetesDeployerProperties createProperties() {
         KubernetesDeployerProperties properties = new KubernetesDeployerProperties();
-        properties.setNamespace(kubernetesDeployerRequest.getNamespaces());
+        properties.setNamespace(this.kubernetesDeployerRequest.getNamespaces());
         return properties;
     }
 
-    public static Deployer from(
-            final KubernetesDeployerRequest kubernetesDeployerRequest, KubernetesDeployerProperties properties) {
+    public Deployer CreateDeployer(
+            final KubernetesDeployerProperties properties, final KubernetesClient kubernetesClient) {
 
         return new Deployer(
-                kubernetesDeployerRequest.getName(),
+                this.kubernetesDeployerRequest.getName(),
                 KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES,
-                new KubernetesAppDeployer(
-                        properties,
-                        /*Client is not necessary. Just need KubernetesAppDeployer to save into repository*/
-                        null)
+                new KubernetesAppDeployer(properties, kubernetesClient)
         );
     }
 }

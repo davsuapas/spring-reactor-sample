@@ -16,10 +16,11 @@
 
 package org.elipcero.carisa.skipper.service;
 
+import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elipcero.carisa.skipper.configuration.factory.EnvironmentServiceFactory;
+import org.elipcero.carisa.skipper.factory.EnvironmentServiceFactory;
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
 
@@ -36,9 +37,8 @@ public final class DefaultDeployerService implements DeployerService {
     @NonNull
     private final EnvironmentServiceFactory environmentServiceFactory;
 
-    @Override
-    public Deployer deploy(final Deployer deployer, final Object properties) {
-        this.environmentServiceFactory.Get(deployer.getType()).create(properties);
+    public Deployer deploy(final KubernetesClient client, final Deployer deployer, final Object properties) {
+        this.environmentServiceFactory.Get(deployer.getType()).create(properties, client);
 
         Deployer result = this.deployerRepository.save(deployer);
         this.log.info("Deployer '{}' saved for platform: '{}'", deployer.getName(), deployer.getType());

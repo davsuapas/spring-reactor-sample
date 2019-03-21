@@ -18,9 +18,10 @@ package org.elipcero.carisa.skipper.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import org.elipcero.carisa.skipper.controller.mock.MockKubernetesClientFactory;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
+import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -124,11 +126,15 @@ public class PlatformControllerTest {
 
         private KubernetesServer server;
 
-        @Bean
-        public KubernetesClient mockKubernetesClient() {
+        @PostConstruct
+        void createKubernetesServer() {
             this.server = new KubernetesServer(true, true);
-            server.before();
-            return this.server.getClient();
+            this.server.before();
+        }
+
+        @Bean
+        public KubernetesClientFactoryInterface kubernetesClientFactory() {
+            return new MockKubernetesClientFactory(this.server.getClient());
         }
 
         @PreDestroy

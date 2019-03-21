@@ -16,10 +16,12 @@
 
 package org.elipcero.carisa.skipper.controller;
 
+import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.elipcero.carisa.skipper.converter.ConvertToDomain;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
+import org.elipcero.carisa.skipper.factory.KubernetesAppDeployerFactory;
+import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
 import org.elipcero.carisa.skipper.service.DeployerService;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 import org.springframework.cloud.skipper.domain.Deployer;
@@ -48,6 +50,9 @@ public final class PlatformController {
     @NonNull
     private final DeployerService deployerService;
 
+    @NonNull
+    private final KubernetesClientFactoryInterface kubernetesClientFactory;
+
     /**
      * Create kubernetes environment
      *
@@ -58,14 +63,17 @@ public final class PlatformController {
     @ResponseStatus(HttpStatus.CREATED)
     public Resource<Deployer> deploy(@RequestBody KubernetesDeployerRequest kubernetesDeployerRequest) {
 
+        KubernetesAppDeployerFactory factoryDeployer = new KubernetesAppDeployerFactory(kubernetesDeployerRequest);
+        KubernetesDeployerProperties properties = factoryDeployer.createProperties();
+        KubernetesClient kubernetesClient = kubernetesClientFactory.Create(properties);
 
-        KubernetesDeployerProperties properties = ConvertToDomain.from(kubernetesDeployerRequest);
+        // Deployer has kubernetes client and properties but is protected therefore i can't access and i need it
         Deployer deployer = this.deployerService.deploy(
-                ConvertToDomain.from(kubernetesDeployerRequest, properties),
-                /*Deployer has the properties but is protected therefore i can't access and i need it*/
+                kubernetesClient,
+                factoryDeployer.CreateDeployer(properties, kubernetesClient),
                 properties);
 
-        return new Resource<>(deployer,
+        return new Resource<Deployer>(deployer,
                 this.repoLink.linkToSingleResource(DeployerRepository.class, deployer.getId()).withSelfRel());
     }
 }

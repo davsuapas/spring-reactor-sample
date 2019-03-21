@@ -14,24 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.service;
+package org.elipcero.carisa.skipper.factory;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.springframework.cloud.skipper.domain.Deployer;
+import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 
 /**
- * Populates deployer in hot (through rest service)
+ * Kubernetes client factory
  *
  * @author David Suárez
  */
-public interface DeployerService {
-
-    /**
-     * Save deployer into repository and create the platform environment
-     * Deployer has the properties and kubernetes client but is protected therefore i can't access
-     * @param client kubernetes client
-     * @param deployer the deployer
-     * @param properties properties
-     */
-    Deployer deploy(final KubernetesClient client, final Deployer deployer, final Object properties);
+public interface KubernetesClientFactoryInterface {
+    KubernetesClient Create(KubernetesDeployerProperties properties);
 }

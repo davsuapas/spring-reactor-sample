@@ -16,9 +16,10 @@
 
 package org.elipcero.carisa.skipper.configuration;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-import org.elipcero.carisa.skipper.configuration.factory.DefaultEnvironmentServiceFactory;
-import org.elipcero.carisa.skipper.configuration.factory.EnvironmentServiceFactory;
+import org.elipcero.carisa.skipper.factory.DefaultEnvironmentServiceFactory;
+import org.elipcero.carisa.skipper.factory.DefaultKubernetesClientFactory;
+import org.elipcero.carisa.skipper.factory.EnvironmentServiceFactory;
+import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
 import org.elipcero.carisa.skipper.service.DefaultDeployerService;
 import org.elipcero.carisa.skipper.service.DeployerService;
 import org.elipcero.carisa.skipper.service.KubernetesEnvironmentService;
@@ -38,13 +39,15 @@ public class CarisaSkipperConfiguration {
     @Autowired
     private DeployerRepository deployerRepository;
 
-    @Autowired
-    private KubernetesClient kubernetesClient;
+    @Bean
+    public KubernetesClientFactoryInterface kubernetesClientFactory() {
+        return new DefaultKubernetesClientFactory();
+    }
 
     @Bean
     public EnvironmentServiceFactory environmentServiceFactory() {
         return new DefaultEnvironmentServiceFactory()
-                .Register(new KubernetesEnvironmentService(kubernetesClient));
+                .Register(new KubernetesEnvironmentService());
     }
 
     @Bean

@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.configuration.factory;
+package org.elipcero.carisa.skipper.factory;
 
 import org.elipcero.carisa.skipper.service.EnvironmentService;
 
@@ -28,14 +28,13 @@ import java.util.Map;
  */
 public final class DefaultEnvironmentServiceFactory implements EnvironmentServiceFactory {
 
-    private final Map<String, EnvironmentService> environmentServices = new HashMap<>();
+    private final Map<String, EnvironmentService> environmentServices = new HashMap<String, EnvironmentService>();
 
     public EnvironmentServiceFactory Register(EnvironmentService environmentService) {
         this.environmentServices.put(environmentService.getType(), environmentService);
         return this;
     }
 
-    @Override
     public EnvironmentService Get(String type) {
         EnvironmentService environmentService = this.environmentServices.get(type);
         if (environmentService == null) {
