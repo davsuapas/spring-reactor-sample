@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @author David Suárez
  */
-public final class DefaultEnvironmentServiceFactory implements EnvironmentServiceFactory {
+public class DefaultEnvironmentServiceFactory implements EnvironmentServiceFactory {
 
     private final Map<String, EnvironmentService> environmentServices = new HashMap<String, EnvironmentService>();
 

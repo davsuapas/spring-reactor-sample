@@ -38,6 +38,7 @@ import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeployerA
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesAutoConfiguration;
 import org.springframework.cloud.deployer.spi.local.LocalDeployerAutoConfiguration;
 import org.springframework.cloud.skipper.domain.Deployer;
+import org.springframework.cloud.skipper.domain.Platform;
 import org.springframework.cloud.skipper.server.EnableSkipperServer;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +52,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -80,6 +83,12 @@ public class PlatformControllerTest {
 
     @Autowired
     private DeployerRepository deployerRepository;
+
+    @Autowired
+    private List<Platform> platforms;
+
+    @Autowired
+    private KubernetesClientFactoryInterface kubernetesClientFactory;
 
     @After
     public void cleanup() {
@@ -110,6 +119,16 @@ public class PlatformControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(deployName)));
+
+        assertThat(this.platforms.stream()
+                .filter(p -> p.getName().equalsIgnoreCase(KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES))
+                .findFirst()
+                .get().getDeployers().isEmpty()).isFalse();
+
+        assertThat(kubernetesClientFactory
+                .Create(null)
+                .namespaces()
+                .withName(namespace).get()).isNotNull();
     }
 
     @TestConfiguration

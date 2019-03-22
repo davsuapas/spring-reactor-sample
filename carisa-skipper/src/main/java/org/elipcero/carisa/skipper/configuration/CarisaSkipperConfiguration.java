@@ -24,9 +24,12 @@ import org.elipcero.carisa.skipper.service.DefaultDeployerService;
 import org.elipcero.carisa.skipper.service.DeployerService;
 import org.elipcero.carisa.skipper.service.KubernetesEnvironmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.skipper.domain.Platform;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * Custom Skipper configuration
@@ -38,6 +41,9 @@ public class CarisaSkipperConfiguration {
 
     @Autowired
     private DeployerRepository deployerRepository;
+
+    @Autowired
+    private List<Platform> platforms;
 
     @Bean
     public KubernetesClientFactoryInterface kubernetesClientFactory() {
@@ -52,6 +58,6 @@ public class CarisaSkipperConfiguration {
 
     @Bean
     public DeployerService deployerService() {
-        return new DefaultDeployerService(this.deployerRepository, this.environmentServiceFactory());
+        return new DefaultDeployerService(this.deployerRepository, this.environmentServiceFactory(), this.platforms);
     }
 }
