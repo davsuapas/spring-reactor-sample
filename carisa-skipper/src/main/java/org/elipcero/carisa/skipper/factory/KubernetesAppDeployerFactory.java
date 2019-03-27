@@ -16,38 +16,42 @@
 
 package org.elipcero.carisa.skipper.factory;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
+import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
+import org.elipcero.carisa.skipper.domain.Platform;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesAppDeployer;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 import org.springframework.cloud.skipper.domain.Deployer;
 
 /**
- * Build kubernentes deployer
+ * Build kubernentes platform factory
  *
  * @author David Suárez
  */
 @RequiredArgsConstructor
-public class KubernetesAppDeployerFactory {
+public class KubernetesAppDeployerFactory implements DeployerFactory {
 
     @NonNull
-    private final KubernetesDeployerRequest kubernetesDeployerRequest;
+    private final KubernetesClientFactoryInterface kubernetesClientFactory;
 
-    public KubernetesDeployerProperties createProperties() {
-        KubernetesDeployerProperties properties = new KubernetesDeployerProperties();
-        properties.setNamespace(this.kubernetesDeployerRequest.getNamespaces());
-        return properties;
-    }
+    @Override
+    public Deployer createDeployer(final Platform platform) {
 
-    public Deployer CreateDeployer(
-            final KubernetesDeployerProperties properties, final KubernetesClient kubernetesClient) {
+        KubernetesDeployerProperties properties = (KubernetesDeployerProperties)this.createProperties(platform);
 
         return new Deployer(
-                this.kubernetesDeployerRequest.getName(),
-                KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES,
-                new KubernetesAppDeployer(properties, kubernetesClient)
+                platform.getName(),
+                KubernetesPlatform.PLATFORM_TYPE_KUBERNETES,
+                new KubernetesAppDeployer(
+                        properties, this.kubernetesClientFactory.create(properties))
         );
+    }
+
+    @Override
+    public Object createProperties(final Platform platform) {
+        KubernetesDeployerProperties properties = new KubernetesDeployerProperties();
+        properties.setNamespace(((KubernetesPlatform)platform).getNamespace());
+        return  properties;
     }
 }

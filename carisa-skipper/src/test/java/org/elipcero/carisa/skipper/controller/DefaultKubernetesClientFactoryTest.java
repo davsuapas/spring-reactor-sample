@@ -14,21 +14,25 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.factory;
+package org.elipcero.carisa.skipper.controller;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-import org.springframework.cloud.deployer.spi.kubernetes.KubernetesClientFactory;
+import org.elipcero.carisa.skipper.factory.DefaultKubernetesClientFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Kubernetes client factory. Support mocks
- *
  * @author David Suárez
  */
-public class DefaultKubernetesClientFactory implements KubernetesClientFactoryInterface {
+@RunWith(SpringRunner.class)
+public class DefaultKubernetesClientFactoryTest {
 
-    @Override
-    public KubernetesClient create(final KubernetesDeployerProperties properties) {
-        return KubernetesClientFactory.getKubernetesClient(properties);
+    @Test
+    public void create_kubernetes_factory_should_return_kubernetes_client() {
+        assertThat(new DefaultKubernetesClientFactory()
+                    .create(new KubernetesDeployerProperties())).isNotNull();
     }
 }

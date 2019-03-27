@@ -16,20 +16,21 @@
 
 package org.elipcero.carisa.skipper.controller;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
-import org.elipcero.carisa.skipper.factory.KubernetesAppDeployerFactory;
-import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
+import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
 import org.elipcero.carisa.skipper.service.DeployerService;
-import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST controller for platform operations
@@ -47,11 +48,8 @@ public final class PlatformController {
     @NonNull
     private final DeployerService deployerService;
 
-    @NonNull
-    private final KubernetesClientFactoryInterface kubernetesClientFactory;
-
     /**
-     * Create kubernetes environment
+     * create kubernetes environment
      *
      * @param kubernetesDeployerRequest properties for kubernetes platform
      * @return deployer resource
@@ -60,17 +58,15 @@ public final class PlatformController {
     @ResponseStatus(HttpStatus.CREATED)
     public Resource<Deployer> deploy(@RequestBody KubernetesDeployerRequest kubernetesDeployerRequest) {
 
-        KubernetesAppDeployerFactory factoryDeployer = new KubernetesAppDeployerFactory(kubernetesDeployerRequest);
-        KubernetesDeployerProperties properties = factoryDeployer.createProperties();
-        KubernetesClient kubernetesClient = kubernetesClientFactory.Create(properties);
+        Deployer deployer = deployerService.deploy(
+                KubernetesPlatform.PLATFORM_TYPE_KUBERNETES,
+                KubernetesPlatform
+                    .builder()
+                        .name(kubernetesDeployerRequest.getName())
+                        .namespace(kubernetesDeployerRequest.getNamespace())
+                    .build());
 
-        // Deployer has kubernetes client and properties but is protected therefore i can't access and i need it
-        Deployer deployer = this.deployerService.deploy(
-                kubernetesClient,
-                factoryDeployer.CreateDeployer(properties, kubernetesClient),
-                properties);
-
-        return new Resource<Deployer>(deployer,
+        return new Resource<>(deployer,
                 this.repoLink.linkToSingleResource(DeployerRepository.class, deployer.getId()).withSelfRel());
     }
 }

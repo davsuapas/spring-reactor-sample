@@ -18,38 +18,51 @@ package org.elipcero.carisa.skipper.service;
 
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
+import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
+import org.elipcero.carisa.skipper.domain.Platform;
+import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
+import org.elipcero.carisa.skipper.repository.KubernetesPlaformRepository;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 
 /**
- * Create kubernetes namespace
+ * create kubernetes namespace
  *
  * @author David Suárez
  */
 @Slf4j
+@RequiredArgsConstructor
 public class KubernetesEnvironmentService implements EnvironmentService {
 
-    public String getType() {
-        return KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES;
-    }
+    @NonNull
+    private final KubernetesPlaformRepository kubernetesPlaformRepository;
+
+    @NonNull
+    private final KubernetesClientFactoryInterface kubernetesClientFactory;
 
     /**
      * Create namespace in kubernetes. If it exists replace
+     * Save the platform into db
      *
-     * @param propertiesDeployer properties
-     * @param client kubernetes client
+     * @param platform The platform information
+     * @param properties platform properties
      */
-    public void create(Object propertiesDeployer, KubernetesClient client) {
+    @Override
+    public void create(Platform platform, Object properties) {
+
+        KubernetesDeployerProperties kubernetesProperties = (KubernetesDeployerProperties)properties;
+        KubernetesClient client = this.kubernetesClientFactory.create(kubernetesProperties);
+
+        this.kubernetesPlaformRepository.save((KubernetesPlatform)platform);
+        this.log.debug("Kubernetes platform saved {}", platform.getName());
+
         this.log.debug("Kubernetes client configuration {}", client.getConfiguration().toString());
-
-        KubernetesDeployerProperties properties = (KubernetesDeployerProperties)propertiesDeployer;
-
         client.namespaces().createOrReplace(
             new NamespaceBuilder().withNewMetadata()
-                .withName(properties.getNamespace())
+                .withName(kubernetesProperties.getNamespace())
                 .endMetadata().build());
-
-        this.log.info("Kubernetes namespace '{}' created or replaced ", properties.getNamespace());
+        this.log.info("Kubernetes namespace '{}' created or replaced ", kubernetesProperties.getNamespace());
     }
 }

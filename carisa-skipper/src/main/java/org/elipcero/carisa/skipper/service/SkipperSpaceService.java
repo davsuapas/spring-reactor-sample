@@ -14,16 +14,21 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.factory;
+package org.elipcero.carisa.skipper.service;
 
-import org.elipcero.carisa.skipper.service.EnvironmentService;
+import org.springframework.cloud.skipper.domain.Deployer;
 
 /**
- * Environment factory
+ * Skipper service. Build space for skipper
  *
  * @author David Suárez
  */
-public interface EnvironmentServiceFactory {
-    EnvironmentService getEnvironmentService(String type);
-    DeployerFactory getDeployerFactory(String type);
+public interface SkipperSpaceService {
+
+    /**
+     * Save deployer into skipper spaces. Skipper works with this information
+     * @param deployer deployer
+     * @return deployer
+     */
+    Deployer save(Deployer deployer);
 }

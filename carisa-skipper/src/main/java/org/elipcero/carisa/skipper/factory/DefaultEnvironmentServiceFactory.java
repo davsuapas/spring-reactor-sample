@@ -28,21 +28,40 @@ import java.util.Map;
  */
 public class DefaultEnvironmentServiceFactory implements EnvironmentServiceFactory {
 
-    private final Map<String, EnvironmentService> environmentServices = new HashMap<String, EnvironmentService>();
+    private final Map<String, EnvironmentService> environmentServices = new HashMap<>();
+    private final Map<String, DeployerFactory> deployerFactories = new HashMap<>();
 
-    public EnvironmentServiceFactory Register(EnvironmentService environmentService) {
-        this.environmentServices.put(environmentService.getType(), environmentService);
+    public DefaultEnvironmentServiceFactory registerEnvironment(String type, EnvironmentService environmentService) {
+        this.environmentServices.put(type, environmentService);
         return this;
     }
 
-    public EnvironmentService Get(String type) {
+    public DefaultEnvironmentServiceFactory registerDeployer(String type, DeployerFactory deployerFactory) {
+        this.deployerFactories.put(type, deployerFactory);
+        return this;
+    }
+
+    @Override
+    public EnvironmentService getEnvironmentService(String type) {
         EnvironmentService environmentService = this.environmentServices.get(type);
         if (environmentService == null) {
             throw new IllegalArgumentException(
-                    String.format("The platform: {} is not implemented", type));
+                    String.format("Getting environment service. The platform: {} is not implemented", type));
         }
         else {
             return environmentService;
+        }
+    }
+
+    @Override
+    public DeployerFactory getDeployerFactory(String type) {
+        DeployerFactory deployerFactory = this.deployerFactories.get(type);
+        if (deployerFactory == null) {
+            throw new IllegalArgumentException(
+                    String.format("Getting deployer factory. The platform: {} is not implemented", type));
+        }
+        else {
+            return deployerFactory;
         }
     }
 }

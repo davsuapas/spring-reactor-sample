@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.skipper.service;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
+import org.elipcero.carisa.skipper.domain.Platform;
 import org.springframework.cloud.skipper.domain.Deployer;
 
 /**
@@ -28,10 +28,9 @@ public interface DeployerService {
 
     /**
      * Save deployer into repository and create the platform environment
-     * Deployer has the properties and kubernetes client but is protected therefore i can't access
-     * @param client kubernetes client
-     * @param deployer the deployer
-     * @param properties properties
+     * The platform is saved into db for recovering when service start
+     * @param type platform type
+     * @param platform the platform
      */
-    Deployer deploy(final KubernetesClient client, final Deployer deployer, final Object properties);
+    Deployer deploy(String type, final Platform platform);
 }

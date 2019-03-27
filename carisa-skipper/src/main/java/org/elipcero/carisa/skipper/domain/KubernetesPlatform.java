@@ -14,16 +14,33 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.factory;
+package org.elipcero.carisa.skipper.domain;
 
-import org.elipcero.carisa.skipper.service.EnvironmentService;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
- * Environment factory
+ * This contain kubernenetes information
  *
  * @author David Suárez
  */
-public interface EnvironmentServiceFactory {
-    EnvironmentService getEnvironmentService(String type);
-    DeployerFactory getDeployerFactory(String type);
+@Getter
+@NoArgsConstructor
+@Entity
+@Table(name = "carisa_skipper_platform")
+public class KubernetesPlatform extends Platform {
+
+    public static final String PLATFORM_TYPE_KUBERNETES = "kubernetes";
+
+    private String namespace;
+
+    @Builder
+    public KubernetesPlatform(String name, String namespace) {
+        super(name);
+        this.namespace = namespace;
+    }
 }

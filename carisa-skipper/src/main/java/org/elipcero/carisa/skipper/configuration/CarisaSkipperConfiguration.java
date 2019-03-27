@@ -16,27 +16,38 @@
 
 package org.elipcero.carisa.skipper.configuration;
 
+import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
 import org.elipcero.carisa.skipper.factory.DefaultEnvironmentServiceFactory;
 import org.elipcero.carisa.skipper.factory.DefaultKubernetesClientFactory;
 import org.elipcero.carisa.skipper.factory.EnvironmentServiceFactory;
+import org.elipcero.carisa.skipper.factory.KubernetesAppDeployerFactory;
 import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
+import org.elipcero.carisa.skipper.repository.KubernetesPlaformRepository;
 import org.elipcero.carisa.skipper.service.DefaultDeployerService;
+import org.elipcero.carisa.skipper.service.DefaultSkipperSpaceService;
 import org.elipcero.carisa.skipper.service.DeployerService;
 import org.elipcero.carisa.skipper.service.KubernetesEnvironmentService;
+import org.elipcero.carisa.skipper.service.SkipperSpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.skipper.domain.Platform;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.List;
 
 /**
- * Custom Skipper configuration
+ * Configuration
  *
  * @author David Suárez
  */
 @Configuration
+@EntityScan(basePackages = "org.elipcero.carisa.skipper.domain")
+@EnableJpaRepositories(basePackages = "org.elipcero.carisa.skipper.repository")
+@EnableTransactionManagement
 public class CarisaSkipperConfiguration {
 
     @Autowired
@@ -44,6 +55,9 @@ public class CarisaSkipperConfiguration {
 
     @Autowired
     private List<Platform> platforms;
+
+    @Autowired
+    private KubernetesPlaformRepository kubernetesPlaformRepository;
 
     @Bean
     public KubernetesClientFactoryInterface kubernetesClientFactory() {
@@ -53,11 +67,21 @@ public class CarisaSkipperConfiguration {
     @Bean
     public EnvironmentServiceFactory environmentServiceFactory() {
         return new DefaultEnvironmentServiceFactory()
-                .Register(new KubernetesEnvironmentService());
+                .registerEnvironment(KubernetesPlatform.PLATFORM_TYPE_KUBERNETES,
+                        new KubernetesEnvironmentService(kubernetesPlaformRepository,
+                                kubernetesClientFactory()))
+                .registerDeployer(KubernetesPlatform.PLATFORM_TYPE_KUBERNETES,
+                        new KubernetesAppDeployerFactory(kubernetesClientFactory()));
+    }
+
+    @Bean
+    public SkipperSpaceService skipperSpaceService() {
+        return new DefaultSkipperSpaceService(this.deployerRepository, this.platforms);
     }
 
     @Bean
     public DeployerService deployerService() {
-        return new DefaultDeployerService(this.deployerRepository, this.environmentServiceFactory(), this.platforms);
+        return new DefaultDeployerService(
+                this.environmentServiceFactory(), this.skipperSpaceService());
     }
 }

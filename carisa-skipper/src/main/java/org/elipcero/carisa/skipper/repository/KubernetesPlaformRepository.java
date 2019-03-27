@@ -14,16 +14,18 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.factory;
+package org.elipcero.carisa.skipper.repository;
 
-import org.elipcero.carisa.skipper.service.EnvironmentService;
+import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
- * Environment factory
+ * Platform repository. we use this repository for recovering the platform information
+ * when it is restarted the service and recreate skipper services
  *
  * @author David Suárez
  */
-public interface EnvironmentServiceFactory {
-    EnvironmentService getEnvironmentService(String type);
-    DeployerFactory getDeployerFactory(String type);
+@RepositoryRestResource(exported = false)
+public interface KubernetesPlaformRepository extends CrudRepository<KubernetesPlatform, String> {
 }

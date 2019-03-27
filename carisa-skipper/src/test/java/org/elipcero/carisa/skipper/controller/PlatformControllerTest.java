@@ -21,7 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import org.elipcero.carisa.skipper.controller.mock.MockKubernetesClientFactory;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
+import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
 import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
+import org.elipcero.carisa.skipper.repository.KubernetesPlaformRepository;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +54,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,6 +86,9 @@ public class PlatformControllerTest {
 
     @Autowired
     private DeployerRepository deployerRepository;
+
+    @Autowired
+    private KubernetesPlaformRepository kubernetesPlaformRepository;
 
     @Autowired
     private List<Platform> platforms;
@@ -121,14 +127,22 @@ public class PlatformControllerTest {
                 .andExpect(jsonPath("$.name", is(deployName)));
 
         assertThat(this.platforms.stream()
-                .filter(p -> p.getName().equalsIgnoreCase(KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES))
+                .filter(p -> p.getName().equalsIgnoreCase(KubernetesPlatform.PLATFORM_TYPE_KUBERNETES))
                 .findFirst()
                 .get().getDeployers().isEmpty()).isFalse();
 
+        assertThat(this.kubernetesPlaformRepository
+                .findById(getId(deployerDeploy.getLink(Link.REL_SELF).getHref()))
+                    .isPresent()).isTrue();
+
         assertThat(kubernetesClientFactory
-                .Create(null)
+                .create(null)
                 .namespaces()
                 .withName(namespace).get()).isNotNull();
+    }
+
+    private static String getId(String hRef) {
+        return Arrays.stream(hRef.split("/")).reduce((first, second) -> second).get();
     }
 
     @TestConfiguration

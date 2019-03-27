@@ -31,7 +31,7 @@ public class MockKubernetesClientFactory implements KubernetesClientFactoryInter
     @NonNull
     private final KubernetesClient client;
 
-    public KubernetesClient Create(final KubernetesDeployerProperties properties) {
+    public KubernetesClient create(final KubernetesDeployerProperties properties) {
         return client;
     }
 }

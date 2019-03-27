@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: master_platform
+      author: David Suárez
+      changes:
+        - createTable:
+            tableName: carisa_skipper_platform
+            columns:
+              - column:
+                  name: id
+                  type: char(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: version
+                  type: long
+                  constraints:
+                    nullable: false
+              - column:
+                  name: namespace
+                  type: varchar(100)
+                  constraints:
+                    nullable: false

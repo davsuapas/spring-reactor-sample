@@ -16,18 +16,14 @@
 
 package org.elipcero.carisa.skipper.service;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
+import org.elipcero.carisa.skipper.domain.Platform;
+import org.elipcero.carisa.skipper.factory.DeployerFactory;
 import org.elipcero.carisa.skipper.factory.EnvironmentServiceFactory;
 import org.springframework.cloud.skipper.domain.Deployer;
-import org.springframework.cloud.skipper.domain.Platform;
-import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
-
-import java.util.Arrays;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author David Suárez
@@ -37,34 +33,23 @@ import java.util.List;
 public class DefaultDeployerService implements DeployerService {
 
     @NonNull
-    private final DeployerRepository deployerRepository;
-
-    @NonNull
     private final EnvironmentServiceFactory environmentServiceFactory;
 
     @NonNull
-    private final List<Platform> platforms;
+    private final SkipperSpaceService skipperSpaceService;
 
-    public Deployer deploy(final KubernetesClient client, final Deployer deployer, final Object properties) {
-        this.environmentServiceFactory.Get(deployer.getType()).create(properties, client);
-        AddDeployerToPlatform(deployer);
-        Deployer result = Save(deployer);
+    @Override
+    @Transactional
+    public Deployer deploy(String type, final Platform platform) {
 
-        return result;
-    }
+        EnvironmentService environmentService = this.environmentServiceFactory.getEnvironmentService(type);
+        DeployerFactory deployerFactory = this.environmentServiceFactory.getDeployerFactory(type);
 
-    private void AddDeployerToPlatform(Deployer deployer) {
-        Platform platform = this.platforms.stream()
-                .filter(p -> p.getName().equalsIgnoreCase(KubernetesDeployerRequest.PLATFORM_TYPE_KUBERNETES))
-                .findFirst()
-                .get();
+        Deployer deployerSaved = this.skipperSpaceService.save(deployerFactory.createDeployer(platform));
+        platform.setId(deployerSaved.getId());
 
-        platform.setDeployers(Arrays.asList(deployer));
-    }
+        environmentService.create(platform, deployerFactory.createProperties(platform));
 
-    private Deployer Save(Deployer deployer) {
-        Deployer result = this.deployerRepository.save(deployer);
-        this.log.info("Deployer '{}' saved for platform: '{}'", deployer.getName(), deployer.getType());
-        return result;
+        return deployerSaved;
     }
 }

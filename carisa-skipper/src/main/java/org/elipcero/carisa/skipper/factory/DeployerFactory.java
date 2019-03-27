@@ -16,14 +16,15 @@
 
 package org.elipcero.carisa.skipper.factory;
 
-import org.elipcero.carisa.skipper.service.EnvironmentService;
+import org.elipcero.carisa.skipper.domain.Platform;
+import org.springframework.cloud.skipper.domain.Deployer;
 
 /**
- * Environment factory
+ * Deployer factory interface
  *
  * @author David Suárez
  */
-public interface EnvironmentServiceFactory {
-    EnvironmentService getEnvironmentService(String type);
-    DeployerFactory getDeployerFactory(String type);
+public interface DeployerFactory {
+    Deployer createDeployer(Platform platform);
+    Object createProperties(final Platform platform);
 }

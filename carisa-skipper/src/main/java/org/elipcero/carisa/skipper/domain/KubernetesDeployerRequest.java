@@ -29,8 +29,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class KubernetesDeployerRequest {
 
-    public static final String PLATFORM_TYPE_KUBERNETES = "kubernetes";
-
     private String name;
-    private String namespaces;
+    private String namespace;
 }

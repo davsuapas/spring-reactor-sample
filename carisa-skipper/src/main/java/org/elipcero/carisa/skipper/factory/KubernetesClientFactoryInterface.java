@@ -25,5 +25,5 @@ import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerPrope
  * @author David Suárez
  */
 public interface KubernetesClientFactoryInterface {
-    KubernetesClient Create(KubernetesDeployerProperties properties);
+    KubernetesClient create(KubernetesDeployerProperties properties);
 }

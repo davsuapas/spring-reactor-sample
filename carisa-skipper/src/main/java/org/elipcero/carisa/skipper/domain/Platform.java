@@ -14,16 +14,40 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.factory;
+package org.elipcero.carisa.skipper.domain;
 
-import org.elipcero.carisa.skipper.service.EnvironmentService;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
 
 /**
- * Environment factory
+ * This contain general platform information
  *
  * @author David Suárez
  */
-public interface EnvironmentServiceFactory {
-    EnvironmentService getEnvironmentService(String type);
-    DeployerFactory getDeployerFactory(String type);
+@NoArgsConstructor
+@Getter
+@Setter
+@MappedSuperclass
+public abstract class Platform {
+
+    public Platform(String name) {
+        this.name = name;
+    }
+
+    @Id
+    @Getter(AccessLevel.NONE)
+    private String id;
+
+    @Setter(AccessLevel.NONE)
+    private String name;
+
+    @Version
+    @Setter(AccessLevel.NONE)
+    private Long version;
 }
