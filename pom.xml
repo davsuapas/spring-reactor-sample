@@ -24,6 +24,8 @@
 		<spring-cloud-skipper-version>2.0.0.RC1</spring-cloud-skipper-version>
         <checkstyle.config.location>src/checkstyle/checkstyle-definition.xml</checkstyle.config.location>
 		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
+        <dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>
+		<docker.image.prefix>elipceroopensource</docker.image.prefix>
 	</properties>
 
 	<modules>
