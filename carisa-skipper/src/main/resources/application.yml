@@ -11,10 +11,11 @@ server:
   port: 7577
 spring:
   datasource:
-    url: jdbc:mysql://localhost/carisa-skipper
-    driverClassName: com.mysql.jdbc.Driver
-    username: root
-    password: root
+    initialize: true
+    url: 'jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE'
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
   data:
     rest:
       base-path: /api
