@@ -14,25 +14,33 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.controller;
+package org.elipcero.carisa.skipper.domain;
 
-import org.elipcero.carisa.skipper.factory.DefaultKubernetesClientFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
+ * This contain kubernenetes information
+ *
  * @author David Suárez
  */
-@RunWith(JUnit4.class)
-public class DefaultKubernetesClientFactoryTest {
+@Getter
+@NoArgsConstructor
+@Entity
+@Table(name = "carisa_skipper_deployer")
+public class KubernetesDeployer extends Deployer {
 
-    @Test
-    public void create_kubernetes_factory_should_return_kubernetes_client() {
-        assertThat(new DefaultKubernetesClientFactory()
-                    .create(new KubernetesDeployerProperties())).isNotNull();
+    public static final String PLATFORM_TYPE_KUBERNETES = "Kubernetes";
+
+    private String namespace;
+
+    @Builder
+    public KubernetesDeployer(String id, String name, String namespace) {
+        super(id, name);
+        this.namespace = namespace;
     }
 }

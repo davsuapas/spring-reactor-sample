@@ -18,17 +18,17 @@ package org.elipcero.carisa.skipper.service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.elipcero.carisa.skipper.domain.Platform;
+import org.elipcero.carisa.skipper.domain.Deployer;
 import org.elipcero.carisa.skipper.factory.DeployerFactory;
 import org.elipcero.carisa.skipper.factory.EnvironmentServiceFactory;
-import org.springframework.cloud.skipper.domain.Deployer;
+import org.springframework.data.util.Pair;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author David Suárez
  */
-@Slf4j
 @RequiredArgsConstructor
 public class DefaultDeployerService implements DeployerService {
 
@@ -40,16 +40,31 @@ public class DefaultDeployerService implements DeployerService {
 
     @Override
     @Transactional
-    public Deployer deploy(String type, final Platform platform) {
+    public org.springframework.cloud.skipper.domain.Deployer deploy(String type, final Deployer deployer) {
 
         EnvironmentService environmentService = this.environmentServiceFactory.getEnvironmentService(type);
         DeployerFactory deployerFactory = this.environmentServiceFactory.getDeployerFactory(type);
 
-        Deployer deployerSaved = this.skipperSpaceService.save(deployerFactory.createDeployer(platform));
-        platform.setId(deployerSaved.getId());
+        org.springframework.cloud.skipper.domain.Deployer deployerSaved =
+                this.skipperSpaceService.save(deployerFactory.createDeployer(deployer));
 
-        environmentService.create(platform, deployerFactory.createProperties(platform));
+        deployer.setId(deployerSaved.getId());
+
+        environmentService.create(deployer, deployerFactory.createProperties(deployer));
 
         return deployerSaved;
+    }
+
+    public void recreate(final List<org.springframework.cloud.skipper.domain.Platform> platforms) {
+        platforms.stream()
+                .filter(platform -> environmentServiceFactory.isImplementedEnvironment(platform.getName()))
+                .map(platform -> Pair.of(
+                        platform.getName(),
+                        environmentServiceFactory.getEnvironmentService(platform.getName()).readDeployers()))
+                .forEach(tuple -> {
+                    DeployerFactory deployerFactory = environmentServiceFactory.getDeployerFactory(tuple.getFirst());
+                    tuple.getSecond()
+                            .forEach(deployer -> skipperSpaceService.save(deployerFactory.createDeployer(deployer)));
+                });
     }
 }

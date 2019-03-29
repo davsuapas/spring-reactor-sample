@@ -14,33 +14,18 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.domain;
+package org.elipcero.carisa.skipper.repository;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.elipcero.carisa.skipper.domain.KubernetesDeployer;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
- * This contain kubernenetes information
+ * Deployer repository. we use this repository for recovering the platform information
+ * when it is restarted the service and recreate skipper services
  *
  * @author David Suárez
  */
-@Getter
-@NoArgsConstructor
-@Entity
-@Table(name = "carisa_skipper_platform")
-public class KubernetesPlatform extends Platform {
-
-    public static final String PLATFORM_TYPE_KUBERNETES = "kubernetes";
-
-    private String namespace;
-
-    @Builder
-    public KubernetesPlatform(String name, String namespace) {
-        super(name);
-        this.namespace = namespace;
-    }
+@RepositoryRestResource(exported = false)
+public interface KubernetesDeployerRepository extends CrudRepository<KubernetesDeployer, String> {
 }

@@ -18,42 +18,30 @@ package org.elipcero.carisa.skipper.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import org.elipcero.carisa.skipper.controller.mock.MockKubernetesClientFactory;
+import org.elipcero.carisa.skipper.BaseConfiguration;
+import org.elipcero.carisa.skipper.domain.KubernetesDeployer;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
-import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
 import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
-import org.elipcero.carisa.skipper.repository.KubernetesPlaformRepository;
+import org.elipcero.carisa.skipper.repository.KubernetesDeployerRepository;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeployerAutoConfiguration;
-import org.springframework.cloud.deployer.spi.kubernetes.KubernetesAutoConfiguration;
-import org.springframework.cloud.deployer.spi.local.LocalDeployerAutoConfiguration;
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.domain.Platform;
-import org.springframework.cloud.skipper.server.EnableSkipperServer;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.hal.Jackson2HalModule;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,17 +57,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author David Suárez
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = PlatformControllerTest.TestConfig.class,
+@SpringBootTest(classes = BaseConfiguration.class,
         properties = "spring.main.allow-bean-definition-overriding=true")
+@ComponentScan(basePackages = "org.elipcero.carisa.skipper.controller")
 @AutoConfigureMockMvc
-public class PlatformControllerTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+public class DeployerControllerTest {
 
-    public PlatformControllerTest() {
+    public DeployerControllerTest() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new Jackson2HalModule());
     }
 
-    private final ObjectMapper objectMapper;
+    protected final ObjectMapper objectMapper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -88,7 +78,7 @@ public class PlatformControllerTest {
     private DeployerRepository deployerRepository;
 
     @Autowired
-    private KubernetesPlaformRepository kubernetesPlaformRepository;
+    private KubernetesDeployerRepository kubernetesDeployerRepository;
 
     @Autowired
     private List<Platform> platforms;
@@ -127,11 +117,11 @@ public class PlatformControllerTest {
                 .andExpect(jsonPath("$.name", is(deployName)));
 
         assertThat(this.platforms.stream()
-                .filter(p -> p.getName().equalsIgnoreCase(KubernetesPlatform.PLATFORM_TYPE_KUBERNETES))
+                .filter(p -> p.getName().equals(KubernetesDeployer.PLATFORM_TYPE_KUBERNETES))
                 .findFirst()
                 .get().getDeployers().isEmpty()).isFalse();
 
-        assertThat(this.kubernetesPlaformRepository
+        assertThat(this.kubernetesDeployerRepository
                 .findById(getId(deployerDeploy.getLink(Link.REL_SELF).getHref()))
                     .isPresent()).isTrue();
 
@@ -143,38 +133,5 @@ public class PlatformControllerTest {
 
     private static String getId(String hRef) {
         return Arrays.stream(hRef.split("/")).reduce((first, second) -> second).get();
-    }
-
-    @TestConfiguration
-    @EnableAutoConfiguration(exclude = {
-            CloudFoundryDeployerAutoConfiguration.class,
-            KubernetesAutoConfiguration.class,
-            LocalDeployerAutoConfiguration.class,
-            ManagementWebSecurityAutoConfiguration.class,
-            SecurityAutoConfiguration.class,
-            UserDetailsServiceAutoConfiguration.class,
-            SessionAutoConfiguration.class})
-    @EnableSkipperServer
-    static class TestConfig {
-
-        private KubernetesServer server;
-
-        @PostConstruct
-        void createKubernetesServer() {
-            this.server = new KubernetesServer(true, true);
-            this.server.before();
-        }
-
-        @Bean
-        public KubernetesClientFactoryInterface kubernetesClientFactory() {
-            return new MockKubernetesClientFactory(this.server.getClient());
-        }
-
-        @PreDestroy
-        void destroyKubernetesServer() {
-            if (this.server != null) {
-                this.server.after();
-            }
-        }
     }
 }

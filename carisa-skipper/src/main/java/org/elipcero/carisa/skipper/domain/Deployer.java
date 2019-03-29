@@ -34,9 +34,10 @@ import javax.persistence.Version;
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class Platform {
+public abstract class Deployer {
 
-    public Platform(String name) {
+    public Deployer(String id, String name) {
+        this.id = id;
         this.name = name;
     }
 

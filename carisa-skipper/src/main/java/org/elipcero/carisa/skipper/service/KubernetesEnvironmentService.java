@@ -21,10 +21,10 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
-import org.elipcero.carisa.skipper.domain.Platform;
+import org.elipcero.carisa.skipper.domain.Deployer;
+import org.elipcero.carisa.skipper.domain.KubernetesDeployer;
 import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
-import org.elipcero.carisa.skipper.repository.KubernetesPlaformRepository;
+import org.elipcero.carisa.skipper.repository.KubernetesDeployerRepository;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 
 /**
@@ -37,26 +37,26 @@ import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerPrope
 public class KubernetesEnvironmentService implements EnvironmentService {
 
     @NonNull
-    private final KubernetesPlaformRepository kubernetesPlaformRepository;
+    private final KubernetesDeployerRepository kubernetesDeployerRepository;
 
     @NonNull
     private final KubernetesClientFactoryInterface kubernetesClientFactory;
 
     /**
      * Create namespace in kubernetes. If it exists replace
-     * Save the platform into db
+     * Save the deployer into db
      *
-     * @param platform The platform information
+     * @param deployer The platform information
      * @param properties platform properties
      */
     @Override
-    public void create(Platform platform, Object properties) {
+    public void create(Deployer deployer, Object properties) {
 
         KubernetesDeployerProperties kubernetesProperties = (KubernetesDeployerProperties)properties;
         KubernetesClient client = this.kubernetesClientFactory.create(kubernetesProperties);
 
-        this.kubernetesPlaformRepository.save((KubernetesPlatform)platform);
-        this.log.debug("Kubernetes platform saved {}", platform.getName());
+        this.kubernetesDeployerRepository.save((KubernetesDeployer)deployer);
+        this.log.debug("Kubernetes platform saved {}", deployer.getName());
 
         this.log.debug("Kubernetes client configuration {}", client.getConfiguration().toString());
         client.namespaces().createOrReplace(
@@ -64,5 +64,10 @@ public class KubernetesEnvironmentService implements EnvironmentService {
                 .withName(kubernetesProperties.getNamespace())
                 .endMetadata().build());
         this.log.info("Kubernetes namespace '{}' created or replaced ", kubernetesProperties.getNamespace());
+    }
+
+    @Override
+    public Iterable<? extends Deployer> readDeployers() {
+        return this.kubernetesDeployerRepository.findAll();
     }
 }

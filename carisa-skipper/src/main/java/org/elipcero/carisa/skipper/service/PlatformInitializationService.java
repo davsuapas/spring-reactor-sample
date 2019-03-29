@@ -14,24 +14,36 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.controller.mock;
+package org.elipcero.carisa.skipper.service;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
-import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cloud.skipper.domain.Platform;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
+ * Load the platform from repository and inject into skipper system
+ *
  * @author David Suárez
  */
+@Component
 @RequiredArgsConstructor
-public class MockKubernetesClientFactory implements KubernetesClientFactoryInterface {
+public class PlatformInitializationService {
 
     @NonNull
-    private final KubernetesClient client;
+    private final List<Platform> platforms;
 
-    public KubernetesClient create(final KubernetesDeployerProperties properties) {
-        return client;
+    @NonNull
+    private final DeployerService deployerService;
+
+    @EventListener
+    @Transactional
+    public void initialize(final ApplicationReadyEvent event) {
+        this.deployerService.recreate(this.platforms);
     }
 }

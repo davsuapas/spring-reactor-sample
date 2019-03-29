@@ -17,7 +17,9 @@
 package org.elipcero.carisa.skipper.factory;
 
 import org.elipcero.carisa.skipper.service.EnvironmentService;
+import org.elipcero.carisa.skipper.service.KubernetesEnvironmentService;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,40 +30,41 @@ import java.util.Map;
  */
 public class DefaultEnvironmentServiceFactory implements EnvironmentServiceFactory {
 
-    private final Map<String, EnvironmentService> environmentServices = new HashMap<>();
-    private final Map<String, DeployerFactory> deployerFactories = new HashMap<>();
+    private final Map<String, Object[]> environmentServices = new HashMap<>();
 
-    public DefaultEnvironmentServiceFactory registerEnvironment(String type, EnvironmentService environmentService) {
-        this.environmentServices.put(type, environmentService);
+    public DefaultEnvironmentServiceFactory registerEnvironment(String type, Object[] environmentServices) {
+        this.environmentServices.put(type, environmentServices);
         return this;
     }
 
-    public DefaultEnvironmentServiceFactory registerDeployer(String type, DeployerFactory deployerFactory) {
-        this.deployerFactories.put(type, deployerFactory);
-        return this;
+    @Override
+    public boolean isImplementedEnvironment(String type) {
+        return environmentServices.containsKey(type);
     }
 
     @Override
     public EnvironmentService getEnvironmentService(String type) {
-        EnvironmentService environmentService = this.environmentServices.get(type);
-        if (environmentService == null) {
-            throw new IllegalArgumentException(
-                    String.format("Getting environment service. The platform: {} is not implemented", type));
-        }
-        else {
-            return environmentService;
-        }
+        return this.getEnvironment(type, KubernetesEnvironmentService.class);
     }
 
     @Override
     public DeployerFactory getDeployerFactory(String type) {
-        DeployerFactory deployerFactory = this.deployerFactories.get(type);
-        if (deployerFactory == null) {
+        return this.getEnvironment(type, KubernetesAppDeployerFactory.class);
+    }
+
+    private <T> T getEnvironment(String platformType, Class<T> serviceType) {
+
+        Object[] environmentServices = this.environmentServices.get(platformType);
+        if (environmentServices == null) {
             throw new IllegalArgumentException(
-                    String.format("Getting deployer factory. The platform: {} is not implemented", type));
+                    String.format("Getting '%s' service. The platform: '%s' is not implemented",
+                            serviceType.getName(), platformType));
         }
         else {
-            return deployerFactory;
+            return (T)Arrays.stream(environmentServices)
+                    .filter(e -> serviceType.isAssignableFrom(e.getClass()))
+                    .findFirst()
+                    .get();
         }
     }
 }

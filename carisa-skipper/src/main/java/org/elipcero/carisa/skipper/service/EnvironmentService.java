@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.skipper.service;
 
-import org.elipcero.carisa.skipper.domain.Platform;
+import org.elipcero.carisa.skipper.domain.Deployer;
 
 /**
  * Environment service interface
@@ -26,9 +26,15 @@ import org.elipcero.carisa.skipper.domain.Platform;
 public interface EnvironmentService {
 
     /**
-     * create the environment for each platform
+     * Create the environment for each platform
      * @param platform the platform information
      * @param properties platform properties
      */
-    void create(Platform platform, Object properties);
+    void create(Deployer platform, Object properties);
+
+    /**
+     * Read deployers for a platform
+     * @return
+     */
+    Iterable<? extends Deployer> readDeployers();
 }

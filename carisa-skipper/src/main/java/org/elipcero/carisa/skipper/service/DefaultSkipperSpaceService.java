@@ -19,7 +19,7 @@ package org.elipcero.carisa.skipper.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
+import org.elipcero.carisa.skipper.domain.KubernetesDeployer;
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.domain.Platform;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
@@ -48,7 +48,7 @@ public class DefaultSkipperSpaceService implements SkipperSpaceService {
 
     private void AddDeployerToPlatform(Deployer deployer) {
         Platform platform = this.platforms.stream()
-                .filter(p -> p.getName().equalsIgnoreCase(KubernetesPlatform.PLATFORM_TYPE_KUBERNETES))
+                .filter(p -> p.getName().equals(KubernetesDeployer.PLATFORM_TYPE_KUBERNETES))
                 .findFirst()
                 .get();
 

@@ -14,18 +14,24 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.skipper.repository;
+package org.elipcero.carisa.skipper.mock;
 
-import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
+import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 
 /**
- * Platform repository. we use this repository for recovering the platform information
- * when it is restarted the service and recreate skipper services
- *
  * @author David Suárez
  */
-@RepositoryRestResource(exported = false)
-public interface KubernetesPlaformRepository extends CrudRepository<KubernetesPlatform, String> {
+@RequiredArgsConstructor
+public class MockKubernetesClientFactory implements KubernetesClientFactoryInterface {
+
+    @NonNull
+    private final KubernetesClient client;
+
+    public KubernetesClient create(final KubernetesDeployerProperties properties) {
+        return client;
+    }
 }

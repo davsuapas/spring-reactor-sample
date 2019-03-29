@@ -18,11 +18,10 @@ package org.elipcero.carisa.skipper.factory;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
-import org.elipcero.carisa.skipper.domain.Platform;
+import org.elipcero.carisa.skipper.domain.Deployer;
+import org.elipcero.carisa.skipper.domain.KubernetesDeployer;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesAppDeployer;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
-import org.springframework.cloud.skipper.domain.Deployer;
 
 /**
  * Build kubernentes platform factory
@@ -36,22 +35,22 @@ public class KubernetesAppDeployerFactory implements DeployerFactory {
     private final KubernetesClientFactoryInterface kubernetesClientFactory;
 
     @Override
-    public Deployer createDeployer(final Platform platform) {
+    public org.springframework.cloud.skipper.domain.Deployer createDeployer(final Deployer platform) {
 
         KubernetesDeployerProperties properties = (KubernetesDeployerProperties)this.createProperties(platform);
 
-        return new Deployer(
+        return new org.springframework.cloud.skipper.domain.Deployer(
                 platform.getName(),
-                KubernetesPlatform.PLATFORM_TYPE_KUBERNETES,
+                KubernetesDeployer.PLATFORM_TYPE_KUBERNETES,
                 new KubernetesAppDeployer(
                         properties, this.kubernetesClientFactory.create(properties))
         );
     }
 
     @Override
-    public Object createProperties(final Platform platform) {
+    public Object createProperties(final Deployer platform) {
         KubernetesDeployerProperties properties = new KubernetesDeployerProperties();
-        properties.setNamespace(((KubernetesPlatform)platform).getNamespace());
+        properties.setNamespace(((KubernetesDeployer)platform).getNamespace());
         return  properties;
     }
 }

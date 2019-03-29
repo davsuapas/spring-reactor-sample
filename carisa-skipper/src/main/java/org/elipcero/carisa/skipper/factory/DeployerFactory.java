@@ -16,8 +16,7 @@
 
 package org.elipcero.carisa.skipper.factory;
 
-import org.elipcero.carisa.skipper.domain.Platform;
-import org.springframework.cloud.skipper.domain.Deployer;
+import org.elipcero.carisa.skipper.domain.Deployer;
 
 /**
  * Deployer factory interface
@@ -25,6 +24,6 @@ import org.springframework.cloud.skipper.domain.Deployer;
  * @author David Suárez
  */
 public interface DeployerFactory {
-    Deployer createDeployer(Platform platform);
-    Object createProperties(final Platform platform);
+    org.springframework.cloud.skipper.domain.Deployer createDeployer(Deployer deployer);
+    Object createProperties(final Deployer deployer);
 }

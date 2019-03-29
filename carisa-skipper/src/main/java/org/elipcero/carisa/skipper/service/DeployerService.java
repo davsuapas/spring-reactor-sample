@@ -16,8 +16,9 @@
 
 package org.elipcero.carisa.skipper.service;
 
-import org.elipcero.carisa.skipper.domain.Platform;
-import org.springframework.cloud.skipper.domain.Deployer;
+import org.elipcero.carisa.skipper.domain.Deployer;
+
+import java.util.List;
 
 /**
  * Populates deployer in hot (through rest service)
@@ -30,7 +31,14 @@ public interface DeployerService {
      * Save deployer into repository and create the platform environment
      * The platform is saved into db for recovering when service start
      * @param type platform type
-     * @param platform the platform
+     * @param deployer the deployer
      */
-    Deployer deploy(String type, final Platform platform);
+    org.springframework.cloud.skipper.domain.Deployer deploy(String type, final Deployer deployer);
+
+    /**
+     * Load the platforms saved in db and recreate the skipper platform with the
+     * deployers
+     * @param platforms the skipper platforms
+     */
+    void recreate(final List<org.springframework.cloud.skipper.domain.Platform> platforms);
 }

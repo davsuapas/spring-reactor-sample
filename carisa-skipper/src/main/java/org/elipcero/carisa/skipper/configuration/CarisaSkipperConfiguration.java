@@ -16,13 +16,13 @@
 
 package org.elipcero.carisa.skipper.configuration;
 
-import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
+import org.elipcero.carisa.skipper.domain.KubernetesDeployer;
 import org.elipcero.carisa.skipper.factory.DefaultEnvironmentServiceFactory;
 import org.elipcero.carisa.skipper.factory.DefaultKubernetesClientFactory;
 import org.elipcero.carisa.skipper.factory.EnvironmentServiceFactory;
 import org.elipcero.carisa.skipper.factory.KubernetesAppDeployerFactory;
 import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
-import org.elipcero.carisa.skipper.repository.KubernetesPlaformRepository;
+import org.elipcero.carisa.skipper.repository.KubernetesDeployerRepository;
 import org.elipcero.carisa.skipper.service.DefaultDeployerService;
 import org.elipcero.carisa.skipper.service.DefaultSkipperSpaceService;
 import org.elipcero.carisa.skipper.service.DeployerService;
@@ -57,7 +57,7 @@ public class CarisaSkipperConfiguration {
     private List<Platform> platforms;
 
     @Autowired
-    private KubernetesPlaformRepository kubernetesPlaformRepository;
+    private KubernetesDeployerRepository kubernetesDeployerRepository;
 
     @Bean
     public KubernetesClientFactoryInterface kubernetesClientFactory() {
@@ -67,11 +67,12 @@ public class CarisaSkipperConfiguration {
     @Bean
     public EnvironmentServiceFactory environmentServiceFactory() {
         return new DefaultEnvironmentServiceFactory()
-                .registerEnvironment(KubernetesPlatform.PLATFORM_TYPE_KUBERNETES,
-                        new KubernetesEnvironmentService(kubernetesPlaformRepository,
-                                kubernetesClientFactory()))
-                .registerDeployer(KubernetesPlatform.PLATFORM_TYPE_KUBERNETES,
-                        new KubernetesAppDeployerFactory(kubernetesClientFactory()));
+                .registerEnvironment(KubernetesDeployer.PLATFORM_TYPE_KUBERNETES,
+                        new Object[] {
+                            new KubernetesEnvironmentService(kubernetesDeployerRepository, kubernetesClientFactory()),
+                            new KubernetesAppDeployerFactory(kubernetesClientFactory())
+                        }
+                );
     }
 
     @Bean

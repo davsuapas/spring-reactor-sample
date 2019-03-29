@@ -24,6 +24,7 @@ import org.elipcero.carisa.skipper.service.EnvironmentService;
  * @author David Suárez
  */
 public interface EnvironmentServiceFactory {
+    boolean isImplementedEnvironment(String type);
     EnvironmentService getEnvironmentService(String type);
     DeployerFactory getDeployerFactory(String type);
 }

@@ -18,8 +18,8 @@ package org.elipcero.carisa.skipper.controller;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.elipcero.carisa.skipper.domain.KubernetesDeployer;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
-import org.elipcero.carisa.skipper.domain.KubernetesPlatform;
 import org.elipcero.carisa.skipper.service.DeployerService;
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
@@ -49,7 +49,7 @@ public final class PlatformController {
     private final DeployerService deployerService;
 
     /**
-     * create kubernetes environment
+     * Create kubernetes environment
      *
      * @param kubernetesDeployerRequest properties for kubernetes platform
      * @return deployer resource
@@ -59,8 +59,8 @@ public final class PlatformController {
     public Resource<Deployer> deploy(@RequestBody KubernetesDeployerRequest kubernetesDeployerRequest) {
 
         Deployer deployer = deployerService.deploy(
-                KubernetesPlatform.PLATFORM_TYPE_KUBERNETES,
-                KubernetesPlatform
+                KubernetesDeployer.PLATFORM_TYPE_KUBERNETES,
+                KubernetesDeployer
                     .builder()
                         .name(kubernetesDeployerRequest.getName())
                         .namespace(kubernetesDeployerRequest.getNamespace())
