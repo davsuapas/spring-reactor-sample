@@ -4,7 +4,7 @@ databaseChangeLog:
       author: David Suárez
       changes:
         - createTable:
-            tableName: carisa_skipper_platform
+            tableName: carisa_skipper_deployer
             columns:
               - column:
                   name: id
@@ -13,12 +13,17 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: version
-                  type: long
+                  name: name
+                  type: varchar(50)
                   constraints:
                     nullable: false
               - column:
                   name: namespace
                   type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: long
                   constraints:
                     nullable: false
