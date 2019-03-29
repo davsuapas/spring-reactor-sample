@@ -47,6 +47,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -114,7 +115,8 @@ public class DeployerControllerTest {
         this.mockMvc.perform(get(deployerDeploy.getLink(Link.REL_SELF).getHref()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(deployName)));
+                .andExpect(jsonPath("$.name", is(deployName)))
+                .andExpect(jsonPath("$.description", notNullValue()));
 
         assertThat(this.platforms.stream()
                 .filter(p -> p.getName().equals(KubernetesDeployer.PLATFORM_TYPE_KUBERNETES))

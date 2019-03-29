@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.skipper.factory;
 
+import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.skipper.domain.Deployer;
@@ -39,12 +40,19 @@ public class KubernetesAppDeployerFactory implements DeployerFactory {
 
         KubernetesDeployerProperties properties = (KubernetesDeployerProperties)this.createProperties(platform);
 
-        return new org.springframework.cloud.skipper.domain.Deployer(
-                platform.getName(),
-                KubernetesDeployer.PLATFORM_TYPE_KUBERNETES,
-                new KubernetesAppDeployer(
-                        properties, this.kubernetesClientFactory.create(properties))
-        );
+        KubernetesClient kubernetesClient = this.kubernetesClientFactory.create(properties);
+
+        org.springframework.cloud.skipper.domain.Deployer deployer =
+                new org.springframework.cloud.skipper.domain.Deployer(
+                    platform.getName(),
+                    KubernetesDeployer.PLATFORM_TYPE_KUBERNETES,
+                    new KubernetesAppDeployer(properties, kubernetesClient));
+        deployer.setDescription(
+                String.format("master url = [%s], namespace = [%s], api version = [%s]",
+                kubernetesClient.getMasterUrl(), kubernetesClient.getNamespace(),
+                kubernetesClient.getApiVersion()));
+
+        return deployer;
     }
 
     @Override
