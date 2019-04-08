@@ -27,6 +27,8 @@ import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
 import org.elipcero.carisa.skipper.repository.KubernetesDeployerRepository;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesDeployerProperties;
 
+import java.util.Optional;
+
 /**
  * create kubernetes namespace
  *
@@ -55,7 +57,14 @@ public class KubernetesEnvironmentService implements EnvironmentService {
         KubernetesDeployerProperties kubernetesProperties = (KubernetesDeployerProperties)properties;
         KubernetesClient client = this.kubernetesClientFactory.create(kubernetesProperties);
 
-        this.kubernetesDeployerRepository.save((KubernetesDeployer)deployer);
+        Optional<KubernetesDeployer> repoDeployer = this.kubernetesDeployerRepository.findById(deployer.getId());
+        if (repoDeployer.isPresent()) {
+            repoDeployer.get().setNamespace(kubernetesProperties.getNamespace());
+            this.kubernetesDeployerRepository.save(repoDeployer.get());
+        }
+        else {
+            this.kubernetesDeployerRepository.save((KubernetesDeployer)deployer);
+        }
         this.log.debug("Kubernetes platform saved {}", deployer.getName());
 
         this.log.debug("Kubernetes client configuration {}", client.getConfiguration().toString());

@@ -28,7 +28,7 @@ public interface SkipperSpaceService {
     /**
      * Save deployer into skipper spaces. Skipper works with this information
      * @param deployer deployer
-     * @return deployer
+     * @return deployer saved
      */
     Deployer save(Deployer deployer);
 }

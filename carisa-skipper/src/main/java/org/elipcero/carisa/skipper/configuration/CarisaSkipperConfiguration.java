@@ -35,7 +35,6 @@ import org.springframework.cloud.skipper.server.repository.map.DeployerRepositor
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.List;
 
@@ -47,7 +46,6 @@ import java.util.List;
 @Configuration
 @EntityScan(basePackages = "org.elipcero.carisa.skipper.domain")
 @EnableJpaRepositories(basePackages = "org.elipcero.carisa.skipper.repository")
-@EnableTransactionManagement
 public class CarisaSkipperConfiguration {
 
     @Autowired

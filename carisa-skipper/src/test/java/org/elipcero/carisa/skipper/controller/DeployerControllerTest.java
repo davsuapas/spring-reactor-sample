@@ -23,7 +23,6 @@ import org.elipcero.carisa.skipper.domain.KubernetesDeployer;
 import org.elipcero.carisa.skipper.domain.KubernetesDeployerRequest;
 import org.elipcero.carisa.skipper.factory.KubernetesClientFactoryInterface;
 import org.elipcero.carisa.skipper.repository.KubernetesDeployerRepository;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = "spring.main.allow-bean-definition-overriding=true")
 @ComponentScan(basePackages = "org.elipcero.carisa.skipper.controller")
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class DeployerControllerTest {
 
     public DeployerControllerTest() {
@@ -87,30 +86,13 @@ public class DeployerControllerTest {
     @Autowired
     private KubernetesClientFactoryInterface kubernetesClientFactory;
 
-    @After
-    public void cleanup() {
-        this.deployerRepository.deleteAll();
-    }
-
     @Test
-    public void deploy_kubernetes_should_return_ok() throws Exception {
+    public void deploy_new_kubernetes_deployer_should_return_created() throws Exception {
 
         String deployName = "deployName";
         String namespace = "namespace";
 
-        KubernetesDeployerRequest request = new KubernetesDeployerRequest(deployName, namespace);
-
-        MvcResult resultDeployer = this.mockMvc.perform(
-                post("/api/platforms/kubernetes/deployers")
-                        .content(this.objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        Resource<Deployer> deployerDeploy = this.objectMapper
-                .readValue(resultDeployer.getResponse().getContentAsString(),
-                        new TypeReference<Resource<Deployer>>() { });
+        Resource<Deployer> deployerDeploy = postDeployer(deployName, namespace);
 
         this.mockMvc.perform(get(deployerDeploy.getLink(Link.REL_SELF).getHref()))
                 .andDo(print())
@@ -121,16 +103,68 @@ public class DeployerControllerTest {
         assertThat(this.platforms.stream()
                 .filter(p -> p.getName().equals(KubernetesDeployer.PLATFORM_TYPE_KUBERNETES))
                 .findFirst()
-                .get().getDeployers().isEmpty()).isFalse();
+                .get().getDeployers().isEmpty())
+                .as("Ckeck platform deployers")
+                .isFalse();
 
         assertThat(this.kubernetesDeployerRepository
-                .findById(getId(deployerDeploy.getLink(Link.REL_SELF).getHref()))
-                    .isPresent()).isTrue();
+                .findById(getId(deployerDeploy.getLink(Link.REL_SELF).getHref())).isPresent())
+                .as("Ckeck deployers repository")
+                .isTrue();
 
         assertThat(kubernetesClientFactory
                 .create(null)
                 .namespaces()
-                .withName(namespace).get()).isNotNull();
+                .withName(namespace).get())
+                .as("Ckeck kubernetes client factory")
+                .isNotNull();
+    }
+
+    @Test
+    public void deploy_existing_kubernetes_deployer_should_update_and_return_created() throws Exception {
+
+        String deployName = "deployName";
+        String namespace = "namespace";
+
+        postDeployer(deployName, namespace);
+
+        namespace = "namespace1";
+        Resource<Deployer> deployerDeploy = postDeployer(deployName, namespace);
+
+        assertThat(this.platforms.stream()
+                .filter(p -> p.getName().equals(KubernetesDeployer.PLATFORM_TYPE_KUBERNETES))
+                .findFirst()
+                .get().getDeployers().size())
+                .as("Ckeck platform deployers")
+                .isEqualTo(1);
+
+        assertThat(this.kubernetesDeployerRepository
+                .findById(getId(deployerDeploy.getLink(Link.REL_SELF).getHref()))
+                .get().getNamespace())
+                .as("Ckeck deployers repository namespace")
+                .isEqualTo(namespace);
+
+        assertThat(this.kubernetesDeployerRepository.count())
+                .as("Ckeck deployers repository")
+                .isEqualTo(1);
+
+        assertThat(deployerRepository.count()).isEqualTo(2); // default local must be keep in mind
+    }
+
+    private Resource<Deployer> postDeployer(String deployName, String namespace) throws Exception {
+        KubernetesDeployerRequest request = new KubernetesDeployerRequest(deployName, namespace);
+
+        MvcResult resultDeployer =  this.mockMvc.perform(
+                put("/api/platforms/kubernetes/deployers")
+                        .content(this.objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        return this.objectMapper
+                .readValue(resultDeployer.getResponse().getContentAsString(),
+                        new TypeReference<Resource<Deployer>>() { });
     }
 
     private static String getId(String hRef) {

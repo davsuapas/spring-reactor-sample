@@ -19,6 +19,7 @@ package org.elipcero.carisa.skipper.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -29,6 +30,7 @@ import javax.persistence.Table;
  * @author David Suárez
  */
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "carisa_skipper_deployer")

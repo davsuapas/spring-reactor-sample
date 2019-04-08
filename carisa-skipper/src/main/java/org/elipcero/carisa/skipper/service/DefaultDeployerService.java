@@ -22,7 +22,6 @@ import org.elipcero.carisa.skipper.domain.Deployer;
 import org.elipcero.carisa.skipper.factory.DeployerFactory;
 import org.elipcero.carisa.skipper.factory.EnvironmentServiceFactory;
 import org.springframework.data.util.Pair;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,7 +38,6 @@ public class DefaultDeployerService implements DeployerService {
     private final SkipperSpaceService skipperSpaceService;
 
     @Override
-    @Transactional
     public org.springframework.cloud.skipper.domain.Deployer deploy(String type, final Deployer deployer) {
 
         EnvironmentService environmentService = this.environmentServiceFactory.getEnvironmentService(type);
@@ -47,7 +45,6 @@ public class DefaultDeployerService implements DeployerService {
 
         org.springframework.cloud.skipper.domain.Deployer deployerSaved =
                 this.skipperSpaceService.save(deployerFactory.createDeployer(deployer));
-
         deployer.setId(deployerSaved.getId());
 
         environmentService.create(deployer, deployerFactory.createProperties(deployer));

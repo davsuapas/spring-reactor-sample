@@ -32,6 +32,7 @@ public interface DeployerService {
      * The platform is saved into db for recovering when service start
      * @param type platform type
      * @param deployer the deployer
+     * @return skipper deployer
      */
     org.springframework.cloud.skipper.domain.Deployer deploy(String type, final Deployer deployer);
 

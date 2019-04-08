@@ -22,7 +22,6 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cloud.skipper.domain.Platform;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,7 +41,6 @@ public class PlatformInitializationService {
     private final DeployerService deployerService;
 
     @EventListener
-    @Transactional
     public void initialize(final ApplicationReadyEvent event) {
         this.deployerService.recreate(this.platforms);
     }

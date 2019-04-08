@@ -24,7 +24,6 @@ import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.domain.Platform;
 import org.springframework.cloud.skipper.server.repository.map.DeployerRepository;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,20 +41,26 @@ public class DefaultSkipperSpaceService implements SkipperSpaceService {
 
     @Override
     public Deployer save(Deployer deployer) {
-        this.AddDeployerToPlatform(deployer);
-        return this.saveDeployer(deployer);
+        return this.addOrReplaceToPlatform(this.saveDeployer(deployer));
     }
 
-    private void AddDeployerToPlatform(Deployer deployer) {
+    private Deployer addOrReplaceToPlatform(Deployer deployer) {
         Platform platform = this.platforms.stream()
                 .filter(p -> p.getName().equals(KubernetesDeployer.PLATFORM_TYPE_KUBERNETES))
                 .findFirst()
                 .get();
 
-        platform.setDeployers(Arrays.asList(deployer));
+        platform.getDeployers().removeIf(d -> d.getId().equals(deployer.getId()));
+        platform.getDeployers().add(deployer);
+        return deployer;
     }
 
     private Deployer saveDeployer(Deployer deployer) {
+        Deployer deployerPersisted = this.deployerRepository.findByName(deployer.getName());
+        if (deployerPersisted != null) {
+            deployer.setId(deployerPersisted.getId());
+            this.deployerRepository.delete(deployerPersisted);
+        }
         Deployer result = this.deployerRepository.save(deployer);
         this.log.info("Deployer '{}' saved for platform: '{}'", deployer.getName(), deployer.getType());
         return result;

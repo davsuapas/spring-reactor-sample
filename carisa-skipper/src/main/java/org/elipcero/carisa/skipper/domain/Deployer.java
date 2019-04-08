@@ -42,7 +42,6 @@ public abstract class Deployer {
     }
 
     @Id
-    @Getter(AccessLevel.NONE)
     private String id;
 
     @Setter(AccessLevel.NONE)

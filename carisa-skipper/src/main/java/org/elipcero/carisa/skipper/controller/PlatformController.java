@@ -26,7 +26,7 @@ import org.springframework.cloud.skipper.server.repository.map.DeployerRepositor
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -54,7 +54,7 @@ public final class PlatformController {
      * @param kubernetesDeployerRequest properties for kubernetes platform
      * @return deployer resource
      */
-    @PostMapping("/kubernetes/deployers")
+    @PutMapping("/kubernetes/deployers")
     @ResponseStatus(HttpStatus.CREATED)
     public Resource<Deployer> deploy(@RequestBody KubernetesDeployerRequest kubernetesDeployerRequest) {
 
