@@ -19,10 +19,12 @@ package org.elipcero.carisa.administration.repository;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
+import java.util.UUID;
+
 /**
  * Repository for instance
  *
  * @author David Suárez
  */
-public interface InstanceRepository extends ReactiveCrudRepository<Instance, String> {
+public interface InstanceRepository extends ReactiveCrudRepository<Instance, UUID> {
 }

@@ -16,10 +16,26 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import org.elipcero.carisa.administration.repository.InstanceRepository;
+import org.elipcero.carisa.administration.service.DefaultInstanceService;
+import org.elipcero.carisa.administration.service.InstanceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 /**
  * General configuration
  *
  * @author David Suárez
  */
+@Configuration
 public class CarisaAdministrationConfiguration {
+
+    @Autowired
+    private InstanceRepository instanceRepository;
+
+    @Bean
+    public InstanceService instanceService() {
+        return new DefaultInstanceService(instanceRepository);
+    }
 }

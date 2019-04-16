@@ -16,29 +16,17 @@
 
 package org.elipcero.carisa.administration.domain;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.cassandra.core.mapping.Table;
-
-import java.util.UUID;
 
 /**
- * Instance information. Instance represents a set of spaces. Each space can have
- * several dashboard.
- * Each instance is independently of another instance in all system
+ * Instance for updating
  *
  * @author David Suárez
  */
-@Table("carisa_instance")
-@Builder
+@AllArgsConstructor
 @Getter
-@Setter
-public class Instance {
+public class UpdateInstanceRequest {
 
-    @Id
-    private UUID id;
-
-    private String name;
+    public final String name;
 }
