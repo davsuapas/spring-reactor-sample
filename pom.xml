@@ -29,6 +29,7 @@
 	</properties>
 
 	<modules>
+		<module>carisa-core</module>
 		<module>carisa-skipper</module>
 		<module>carisa-administration</module>
 	</modules>
@@ -48,10 +49,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
