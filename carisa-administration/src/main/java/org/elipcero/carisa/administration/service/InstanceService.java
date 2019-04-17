@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.UpdateInstanceRequest;
+import org.elipcero.carisa.core.data.DomainDataState;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -32,14 +33,14 @@ public interface InstanceService {
     /**
      * Get instance by id
      * @param id
-     * @return
+     * @return instance found
      */
     Mono<Instance> get(UUID id);
 
     /**
      * Create the instance
      * @param instance instance for create
-     * @return
+     * @return instance created
      */
     Mono<Instance> create(Instance instance);
 
@@ -48,7 +49,7 @@ public interface InstanceService {
      * otherwise is created
      * @param id
      * @param updateInstance instance for updating or creating
-     * @return
+     * @return instance created or updated
      */
-    Mono<Instance> updateOrCreate(UUID id, UpdateInstanceRequest updateInstance);
+    Mono<DomainDataState<Instance>> updateOrCreate(UUID id, UpdateInstanceRequest updateInstance);
 }

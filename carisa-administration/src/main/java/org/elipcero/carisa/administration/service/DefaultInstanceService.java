@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.UpdateInstanceRequest;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
+import org.elipcero.carisa.core.data.DomainDataState;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -37,27 +38,44 @@ public class DefaultInstanceService implements InstanceService {
     private final InstanceRepository instanceRepository;
 
     @Override
-    public Mono<Instance> get(UUID id) {
+    public Mono<Instance> get(final UUID id) {
         return this.instanceRepository.findById(id);
     }
 
     @Override
-    public Mono<Instance> create(Instance instance) {
+    public Mono<Instance> create(final Instance instance) {
         return this.instanceRepository.save(instance);
     }
 
     @Override
-    public Mono<Instance> updateOrCreate(UUID id, UpdateInstanceRequest updateInstance) {
+    public Mono<DomainDataState<Instance>> updateOrCreate(final UUID id, final UpdateInstanceRequest updateInstance) {
         return this.instanceRepository
                 .findById(id)
                 .flatMap(instance -> {
                     instance.setName(updateInstance.getName());
-                    return this.instanceRepository.save(instance);
+                    return this.instanceRepository.save(instance)
+                            .flatMap(instanceUpdated ->
+                                    Mono.just(DomainDataState.<Instance>
+                                        builder()
+                                            .domainState(DomainDataState.State.updated)
+                                            .entity(instanceUpdated)
+                                        .build()));
+
                 })
                 .switchIfEmpty(
                     this.create(
-                        Instance.builder()
-                             .name(updateInstance.getName())
-                    .build()));
+                            Instance
+                                .builder()
+                                    .id(id)
+                                    .name(updateInstance.getName())
+                                .build()
+                            )
+                            .flatMap(instanceCreated ->
+                                Mono.just(DomainDataState.<Instance>
+                                    builder()
+                                        .domainState(DomainDataState.State.created)
+                                        .entity(instanceCreated)
+                                    .build()))
+                );
     }
 }
