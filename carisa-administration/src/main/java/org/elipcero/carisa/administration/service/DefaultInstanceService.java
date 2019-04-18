@@ -50,32 +50,13 @@ public class DefaultInstanceService implements InstanceService {
     @Override
     public Mono<DomainDataState<Instance>> updateOrCreate(final UUID id, final UpdateInstanceRequest updateInstance) {
         return this.instanceRepository
-                .findById(id)
-                .flatMap(instance -> {
-                    instance.setName(updateInstance.getName());
-                    return this.instanceRepository.save(instance)
-                            .flatMap(instanceUpdated ->
-                                    Mono.just(DomainDataState.<Instance>
-                                        builder()
-                                            .domainState(DomainDataState.State.updated)
-                                            .entity(instanceUpdated)
-                                        .build()));
-
-                })
-                .switchIfEmpty(
-                    this.create(
-                            Instance
-                                .builder()
-                                    .id(id)
-                                    .name(updateInstance.getName())
-                                .build()
-                            )
-                            .flatMap(instanceCreated ->
-                                Mono.just(DomainDataState.<Instance>
-                                    builder()
-                                        .domainState(DomainDataState.State.created)
-                                        .entity(instanceCreated)
-                                    .build()))
+                .updateOrCreate(id,
+                    instanceForUpdating -> instanceForUpdating.setName(updateInstance.getName()),
+                    Instance
+                        .builder()
+                            .id(id)
+                            .name(updateInstance.getName())
+                        .build()
                 );
     }
 }
