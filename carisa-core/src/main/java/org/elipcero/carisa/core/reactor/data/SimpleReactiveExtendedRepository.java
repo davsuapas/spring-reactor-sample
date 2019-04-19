@@ -57,22 +57,22 @@ public class SimpleReactiveExtendedRepository<T, ID extends Serializable>
                 .flatMap(entity -> {
                     updateChange.accept(entity);
                     return this.save(entity)
-                            .flatMap(instanceUpdated ->
-                                    Mono.just(DomainDataState.<T>
+                            .map(instanceUpdated ->
+                                    DomainDataState.<T>
                                          builder()
                                             .domainState(DomainDataState.State.updated)
                                             .entity(instanceUpdated)
-                                         .build()));
+                                         .build());
 
                 })
                 .switchIfEmpty(
                         this.save(entityForCreating)
-                                .flatMap(instanceCreated ->
-                                        Mono.just(DomainDataState.<T>
-                                                builder()
+                                .map(instanceCreated ->
+                                        DomainDataState.<T>
+                                            builder()
                                                 .domainState(DomainDataState.State.created)
                                                 .entity(instanceCreated)
-                                                .build()))
+                                            .build())
                 );
     }
 }
