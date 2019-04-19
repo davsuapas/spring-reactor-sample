@@ -14,9 +14,9 @@
  *   limitations under the License.
  */
 
-package org.elipcero.carisa.core.reactor.data;
+package org.elipcero.carisa.core.reactive.data;
 
-import org.elipcero.carisa.core.data.DomainDataState;
+import org.elipcero.carisa.core.data.EntityDataState;
 import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
 import org.springframework.data.cassandra.repository.query.CassandraEntityInformation;
 import org.springframework.data.cassandra.repository.support.SimpleReactiveCassandraRepository;
@@ -48,19 +48,19 @@ public class SimpleReactiveExtendedRepository<T, ID extends Serializable>
      * @param id id for finding
      * @param updateChange predicate for updating entity
      * @param entityForCreating entity if is inserted
-     * @return Mono<DomainDataState<T>>
+     * @return Mono<EntityDataState<T>>
      */
     @Override
-    public Mono<DomainDataState<T>> updateOrCreate(final ID id, Consumer<T> updateChange, T entityForCreating) {
+    public Mono<EntityDataState<T>> updateOrCreate(final ID id, Consumer<T> updateChange, T entityForCreating) {
         return this
                 .findById(id)
                 .flatMap(entity -> {
                     updateChange.accept(entity);
                     return this.save(entity)
                             .map(instanceUpdated ->
-                                    DomainDataState.<T>
+                                    EntityDataState.<T>
                                          builder()
-                                            .domainState(DomainDataState.State.updated)
+                                            .domainState(EntityDataState.State.updated)
                                             .entity(instanceUpdated)
                                          .build());
 
@@ -68,9 +68,9 @@ public class SimpleReactiveExtendedRepository<T, ID extends Serializable>
                 .switchIfEmpty(
                         this.save(entityForCreating)
                                 .map(instanceCreated ->
-                                        DomainDataState.<T>
+                                        EntityDataState.<T>
                                             builder()
-                                                .domainState(DomainDataState.State.created)
+                                                .domainState(EntityDataState.State.created)
                                                 .entity(instanceCreated)
                                             .build())
                 );

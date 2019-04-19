@@ -14,9 +14,9 @@
  *   limitations under the License.
  */
 
-package org.elipcero.carisa.core.reactor.data;
+package org.elipcero.carisa.core.reactive.data;
 
-import org.elipcero.carisa.core.data.DomainDataState;
+import org.elipcero.carisa.core.data.EntityDataState;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
@@ -32,5 +32,5 @@ import java.util.function.Consumer;
 @NoRepositoryBean
 public interface ReactiveExtendedCrudRepository<T, ID extends Serializable> extends ReactiveCrudRepository<T, ID> {
 
-    Mono<DomainDataState<T>> updateOrCreate(final ID id, Consumer<T> updateChange, T entityForCreating);
+    Mono<EntityDataState<T>> updateOrCreate(final ID id, Consumer<T> updateChange, T entityForCreating);
 }

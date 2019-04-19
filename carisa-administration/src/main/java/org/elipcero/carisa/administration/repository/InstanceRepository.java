@@ -17,7 +17,7 @@
 package org.elipcero.carisa.administration.repository;
 
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.core.reactor.data.ReactiveExtendedCrudRepository;
+import org.elipcero.carisa.core.reactive.data.ReactiveExtendedCrudRepository;
 
 import java.util.UUID;
 

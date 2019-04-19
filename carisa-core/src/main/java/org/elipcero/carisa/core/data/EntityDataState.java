@@ -27,7 +27,7 @@ import lombok.Getter;
  */
 @Builder
 @Getter
-public class DomainDataState<T> {
+public class EntityDataState<T> {
 
     public final T entity;
 

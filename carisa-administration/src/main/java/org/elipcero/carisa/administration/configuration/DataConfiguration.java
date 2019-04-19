@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.configuration;
 
-import org.elipcero.carisa.core.reactor.data.SimpleReactiveExtendedRepository;
+import org.elipcero.carisa.core.reactive.data.SimpleReactiveExtendedRepository;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
