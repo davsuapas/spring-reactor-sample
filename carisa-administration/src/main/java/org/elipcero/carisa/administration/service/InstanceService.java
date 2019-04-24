@@ -35,7 +35,7 @@ public interface InstanceService {
      * @param id
      * @return instance found
      */
-    Mono<Instance> get(UUID id);
+    Mono<Instance> getById(UUID id);
 
     /**
      * Create the instance

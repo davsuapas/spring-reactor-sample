@@ -38,7 +38,7 @@ public class DefaultInstanceService implements InstanceService {
     private final InstanceRepository instanceRepository;
 
     @Override
-    public Mono<Instance> get(final UUID id) {
+    public Mono<Instance> getById(final UUID id) {
         return this.instanceRepository.findById(id);
     }
 
