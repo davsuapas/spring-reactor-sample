@@ -85,7 +85,7 @@ public class PlatformInitializationServiceTest {
         assertThat(((KubernetesAppDeployer)deployer.getAppDeployer())).isNotNull();
     }
 
-    @Configuration
+   @Configuration
    static class TestConfig {
 
         @Bean

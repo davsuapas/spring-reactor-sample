@@ -54,6 +54,12 @@
 			<artifactId>spring-restdocs-webtestclient</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.cassandraunit</groupId>
+			<artifactId>cassandra-unit-spring</artifactId>
+			<version>${cassandra-unit-spring-version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

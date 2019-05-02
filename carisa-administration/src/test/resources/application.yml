@@ -1,0 +1,4 @@
+spring:
+  data:
+    cassandra:
+      port: 9142
