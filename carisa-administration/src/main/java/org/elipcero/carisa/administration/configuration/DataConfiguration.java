@@ -28,9 +28,11 @@ import org.springframework.data.cassandra.repository.config.EnableCassandraRepos
 @EnableCassandraRepositories(repositoryBaseClass = SimpleReactiveExtendedRepository.class)
 public class DataConfiguration extends AbstractCassandraConfiguration {
 
+    public static final String CONST_KEY_SPACE_NAME = "carisa_administration";
+
     @Override
     protected String getKeyspaceName() {
-        return "carisa_administration";
+        return CONST_KEY_SPACE_NAME;
     }
 
     public String[] getEntityBasePackages() {

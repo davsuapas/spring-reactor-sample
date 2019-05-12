@@ -45,8 +45,12 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.elipcero.carisa</groupId>
+				<artifactId>carisa-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 		</dependencies>
-
 	</dependencyManagement>
 
 	<build>
@@ -105,7 +109,6 @@
 						</dependency>
 					</dependencies>
 				</plugin>
-
 			</plugins>
 		</pluginManagement>
 	</build>

@@ -16,8 +16,25 @@
 
 package org.elipcero.carisa.administration.controller;
 
+import org.cassandraunit.spring.CassandraDataSet;
+import org.elipcero.carisa.administration.configuration.DataConfiguration;
+import org.junit.Test;
+
 /**
  * @author David Suárez
  */
+@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME, value = "cassandra/instance-controller.cql")
 public class InstanceControllerTest extends AbstractControllerTest {
+
+    @Test
+    public void find_Instance_should_return_ok_and_instance_entity() {
+
+        this.testClient
+                .get()
+                .uri("api/instance/5b6962dd-3f90-4c93-8f61-eabfa4a803e2")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.name").isEqualTo("test instance name");
+    }
 }
