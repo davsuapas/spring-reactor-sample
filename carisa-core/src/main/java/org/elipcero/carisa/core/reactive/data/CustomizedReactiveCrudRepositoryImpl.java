@@ -30,11 +30,11 @@ import java.util.function.Consumer;
  *
  * @author David Suárez
  */
-public class SimpleReactiveExtendedRepository<T, ID extends Serializable>
+public class CustomizedReactiveCrudRepositoryImpl<T, ID extends Serializable>
         extends SimpleReactiveCassandraRepository<T, ID>
-        implements ReactiveExtendedCrudRepository<T, ID> {
+        implements CustomizedReactiveCrudRepository<T, ID> {
 
-    public SimpleReactiveExtendedRepository(
+    public CustomizedReactiveCrudRepositoryImpl(
             CassandraEntityInformation<T, ID> entityInformation,
             ReactiveCassandraOperations operations) {
 
@@ -51,7 +51,7 @@ public class SimpleReactiveExtendedRepository<T, ID extends Serializable>
      * @return Mono<EntityDataState<T>>
      */
     @Override
-    public Mono<EntityDataState<T>> updateOrCreate(final ID id, Consumer<T> updateChange, T entityForCreating) {
+    public Mono<EntityDataState<T>> updateCreate(final ID id, Consumer<T> updateChange, T entityForCreating) {
         return this
                 .findById(id)
                 .flatMap(entity -> {

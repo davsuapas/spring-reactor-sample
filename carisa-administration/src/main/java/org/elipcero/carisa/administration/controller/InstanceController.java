@@ -23,7 +23,9 @@ import org.elipcero.carisa.administration.service.InstanceService;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -33,7 +35,8 @@ import java.util.UUID;
  * @author David Suárez
  */
 @RequiredArgsConstructor
-@RequestMapping("api/instance")
+@RestController
+@RequestMapping("/api/instance")
 public class InstanceController {
 
     @NonNull
@@ -43,8 +46,8 @@ public class InstanceController {
     private final InstanceModelAssembler instanceModelAssembler;
 
     @GetMapping("/{id}")
-    public Publisher<EntityModel<Instance>> getById(UUID id) {
-        return this.instanceService.getById(id)
+    public Publisher<EntityModel<Instance>> getById(@PathVariable("id") String id) {
+        return this.instanceService.getById(UUID.fromString(id))
                 .flatMap(instance -> this.instanceModelAssembler.toModel(instance, null));
     }
 }

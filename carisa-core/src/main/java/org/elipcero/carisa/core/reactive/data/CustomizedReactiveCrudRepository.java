@@ -30,7 +30,8 @@ import java.util.function.Consumer;
  * @author David Suárez
  */
 @NoRepositoryBean
-public interface ReactiveExtendedCrudRepository<T, ID extends Serializable> extends ReactiveCrudRepository<T, ID> {
+public interface CustomizedReactiveCrudRepository<T, ID extends Serializable>
+        extends ReactiveCrudRepository<T, ID> {
 
-    Mono<EntityDataState<T>> updateOrCreate(final ID id, Consumer<T> updateChange, T entityForCreating);
+    Mono<EntityDataState<T>> updateCreate(final ID id, Consumer<T> updateChange, T entityForCreating);
 }

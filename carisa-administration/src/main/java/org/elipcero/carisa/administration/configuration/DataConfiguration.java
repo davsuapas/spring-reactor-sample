@@ -16,17 +16,28 @@
 
 package org.elipcero.carisa.administration.configuration;
 
-import org.elipcero.carisa.core.reactive.data.SimpleReactiveExtendedRepository;
-import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
-import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepositoryImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.cassandra.config.AbstractReactiveCassandraConfiguration;
+import org.springframework.data.cassandra.repository.config.EnableReactiveCassandraRepositories;
 
 /**
  * Data configuration
  *
  * @author David Suárez
  */
-@EnableCassandraRepositories(repositoryBaseClass = SimpleReactiveExtendedRepository.class)
-public class DataConfiguration extends AbstractCassandraConfiguration {
+@EnableReactiveCassandraRepositories(
+        basePackages = "org.elipcero.carisa.administration.repository",
+        repositoryBaseClass = CustomizedReactiveCrudRepositoryImpl.class)
+@EnableConfigurationProperties(CassandraProperties.class)
+@Configuration
+public class DataConfiguration extends AbstractReactiveCassandraConfiguration {
+
+    @Autowired
+    private CassandraProperties cassandraProperties;
 
     public static final String CONST_KEY_SPACE_NAME = "carisa_administration";
 
@@ -35,7 +46,19 @@ public class DataConfiguration extends AbstractCassandraConfiguration {
         return CONST_KEY_SPACE_NAME;
     }
 
+    @Override
     public String[] getEntityBasePackages() {
         return new String[] { "org.elipcero.carisa.administration.domain" };
     }
+
+    @Override
+    protected boolean getMetricsEnabled() {
+        return false;
+    }
+
+    @Override
+    protected int getPort() {
+        return this.cassandraProperties.getPort();
+    }
+
 }

@@ -19,6 +19,7 @@ package org.elipcero.carisa.administration.controller;
 import org.cassandraunit.spring.CassandraDataSet;
 import org.elipcero.carisa.administration.configuration.DataConfiguration;
 import org.junit.Test;
+import org.springframework.hateoas.MediaTypes;
 
 /**
  * @author David Suárez
@@ -31,10 +32,12 @@ public class InstanceControllerTest extends AbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("api/instance/5b6962dd-3f90-4c93-8f61-eabfa4a803e2")
+                .uri("/api/instance/5b6962dd-3f90-4c93-8f61-eabfa4a803e2")
+                .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$.name").isEqualTo("test instance name");
+                    .jsonPath("$.name").isEqualTo("test instance name")
+                    .jsonPath("$._links.self.href").hasJsonPath();
     }
 }

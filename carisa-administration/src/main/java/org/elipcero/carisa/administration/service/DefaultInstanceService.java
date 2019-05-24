@@ -50,7 +50,7 @@ public class DefaultInstanceService implements InstanceService {
     @Override
     public Mono<EntityDataState<Instance>> updateOrCreate(final UUID id, final UpdateInstanceRequest updateInstance) {
         return this.instanceRepository
-                .updateOrCreate(id,
+                .updateCreate(id,
                     instanceForUpdating -> instanceForUpdating.setName(updateInstance.getName()),
                     Instance
                         .builder()

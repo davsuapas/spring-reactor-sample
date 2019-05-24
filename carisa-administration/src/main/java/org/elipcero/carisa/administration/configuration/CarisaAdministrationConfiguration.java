@@ -22,12 +22,14 @@ import org.elipcero.carisa.administration.service.InstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 
 /**
  * General configuration
  *
  * @author David Suárez
  */
+@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 @Configuration
 public class CarisaAdministrationConfiguration {
 

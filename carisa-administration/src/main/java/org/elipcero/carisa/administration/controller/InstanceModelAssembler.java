@@ -17,14 +17,15 @@
 package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Instance;
-import org.springframework.hateoas.EntityModel;
+import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.reactive.SimpleReactiveRepresentationModelAssembler;
+import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
  * Resources assembler for instance
@@ -32,15 +33,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @author David Suárez
  */
 @Component
-public class InstanceModelAssembler implements SimpleReactiveRepresentationModelAssembler<Instance> {
+public class InstanceModelAssembler implements BasicReactiveRepresentationModelAssembler<Instance> {
 
     @Override
-    public EntityModel<Instance> addLinks(EntityModel<Instance> resource, ServerWebExchange exchange) {
-        Link self = linkTo(
+    public Flux<Link> addLinks(Instance entity, ServerWebExchange exchange) {
+        WebFluxLinkBuilder.WebFluxLink self = linkTo(
                 methodOn(InstanceController.class)
-                        .getById(resource.getContent().getId())).withSelfRel();
-
-        resource.add(self);
-        return resource;
+                        .getById(entity.getId().toString())).withSelfRel();
+        return Flux.concat(self.toMono());
     }
 }
