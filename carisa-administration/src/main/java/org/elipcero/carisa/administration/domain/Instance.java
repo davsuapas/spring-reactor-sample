@@ -34,11 +34,17 @@ import java.util.UUID;
 @Table("carisa_instance")
 @Builder
 @Getter
-@Setter
 public class Instance {
 
     @Id
     private UUID id;
 
+    @Setter
     private String name;
+
+    public void tryInitId() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+    }
 }

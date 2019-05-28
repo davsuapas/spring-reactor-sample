@@ -44,6 +44,7 @@ public class DefaultInstanceService implements InstanceService {
 
     @Override
     public Mono<Instance> create(final Instance instance) {
+        instance.tryInitId();
         return this.instanceRepository.save(instance);
     }
 

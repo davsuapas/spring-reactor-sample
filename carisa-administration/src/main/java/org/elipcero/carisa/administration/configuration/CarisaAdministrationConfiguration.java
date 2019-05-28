@@ -29,7 +29,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
  *
  * @author David Suárez
  */
-@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
+@EnableHypermediaSupport(type = { EnableHypermediaSupport.HypermediaType.HAL})
 @Configuration
 public class CarisaAdministrationConfiguration {
 
