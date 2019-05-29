@@ -16,15 +16,13 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.service.InstanceService;
-import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,16 +38,23 @@ import java.util.UUID;
  *
  * @author David Suárez
  */
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/instance")
 public class InstanceController {
 
-    @NonNull
     private final InstanceService instanceService;
 
-    @NonNull
     private final InstanceModelAssembler instanceModelAssembler;
+
+    private final CrudHypermediaController<Instance> crudHypermediaController;
+
+    public InstanceController(InstanceService instanceService, InstanceModelAssembler instanceModelAssembler) {
+        Assert.notNull(instanceService, "The instanceService can not be null");
+        Assert.notNull(instanceModelAssembler, "The instanceModelAssembler can not be null");
+        this.instanceService = instanceService;
+        this.instanceModelAssembler = instanceModelAssembler;
+        this.crudHypermediaController = new CrudHypermediaController(this.instanceModelAssembler);
+    }
 
     @GetMapping("/{id}")
     public Publisher<EntityModel<Instance>> getById(final @PathVariable("id") String id) {
@@ -59,27 +64,14 @@ public class InstanceController {
 
     @PostMapping
     public Publisher<ResponseEntity<EntityModel<Instance>>> create(final @RequestBody Instance instance) {
-        return this.instanceService.create(instance)
-                .flatMap(instanceCreated -> this.instanceModelAssembler.toModel(instanceCreated, null))
-                .map(resourceCreated ->
-                        ResponseEntity
-                                .created(resourceCreated.getLink(IanaLinkRelations.SELF).get().toUri())
-                                .body(resourceCreated));
+        return this.crudHypermediaController.create(this.instanceService.create(instance));
     }
 
     @PutMapping("/{id}")
     public Publisher<ResponseEntity<EntityModel<Instance>>> updateOrCreate(
             final @PathVariable("id") String id, final @RequestBody Instance instance) {
 
-        return this.instanceService.updateOrCreate(UUID.fromString(id), instance)
-                .flatMap(entityDataState ->
-                        this.instanceModelAssembler.toModel(entityDataState.getEntity(), null)
-                        .map(resource -> {
-                            ResponseEntity.BodyBuilder builder =
-                                entityDataState.getDomainState() == EntityDataState.State.created ?
-                                    ResponseEntity.created(resource.getLink(IanaLinkRelations.SELF).get().toUri()) :
-                                    ResponseEntity.ok();
-                            return builder.body(resource);
-                        }));
+        return this.crudHypermediaController
+                .updateOrCreate(this.instanceService.updateOrCreate(UUID.fromString(id), instance));
     }
 }
