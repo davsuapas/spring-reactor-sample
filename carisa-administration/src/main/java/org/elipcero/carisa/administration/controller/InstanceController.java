@@ -20,6 +20,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.service.InstanceService;
+import org.elipcero.carisa.core.data.EntityDataState;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -27,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,5 +65,21 @@ public class InstanceController {
                         ResponseEntity
                                 .created(resourceCreated.getLink(IanaLinkRelations.SELF).get().toUri())
                                 .body(resourceCreated));
+    }
+
+    @PutMapping("/{id}")
+    public Publisher<ResponseEntity<EntityModel<Instance>>> updateOrCreate(
+            final @PathVariable("id") String id, final @RequestBody Instance instance) {
+
+        return this.instanceService.updateOrCreate(UUID.fromString(id), instance)
+                .flatMap(entityDataState ->
+                        this.instanceModelAssembler.toModel(entityDataState.getEntity(), null)
+                        .map(resource -> {
+                            ResponseEntity.BodyBuilder builder =
+                                entityDataState.getDomainState() == EntityDataState.State.created ?
+                                    ResponseEntity.created(resource.getLink(IanaLinkRelations.SELF).get().toUri()) :
+                                    ResponseEntity.ok();
+                            return builder.body(resource);
+                        }));
     }
 }

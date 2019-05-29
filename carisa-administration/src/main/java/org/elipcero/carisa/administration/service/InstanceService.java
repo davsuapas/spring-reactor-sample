@@ -17,7 +17,6 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.administration.domain.UpdateInstanceRequest;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Mono;
 
@@ -51,5 +50,5 @@ public interface InstanceService {
      * @param updateInstance instance for updating or creating
      * @return instance created or updated
      */
-    Mono<EntityDataState<Instance>> updateOrCreate(UUID id, UpdateInstanceRequest updateInstance);
+    Mono<EntityDataState<Instance>> updateOrCreate(UUID id, Instance updateInstance);
 }

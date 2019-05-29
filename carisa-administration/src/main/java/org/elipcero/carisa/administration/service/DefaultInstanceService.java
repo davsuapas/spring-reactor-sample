@@ -19,7 +19,6 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.administration.domain.UpdateInstanceRequest;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Mono;
@@ -49,14 +48,14 @@ public class DefaultInstanceService implements InstanceService {
     }
 
     @Override
-    public Mono<EntityDataState<Instance>> updateOrCreate(final UUID id, final UpdateInstanceRequest updateInstance) {
+    public Mono<EntityDataState<Instance>> updateOrCreate(final UUID id, final Instance instance) {
         return this.instanceRepository
                 .updateCreate(id,
-                    instanceForUpdating -> instanceForUpdating.setName(updateInstance.getName()),
+                    instanceForUpdating -> instanceForUpdating.setName(instance.getName()),
                     Instance
                         .builder()
                             .id(id)
-                            .name(updateInstance.getName())
+                            .name(instance.getName())
                         .build()
                 );
     }

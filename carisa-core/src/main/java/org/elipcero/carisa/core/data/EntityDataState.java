@@ -29,12 +29,12 @@ import lombok.Getter;
 @Getter
 public class EntityDataState<T> {
 
-    public final T entity;
+    private final T entity;
 
     public enum State {
         created,
         updated
     }
 
-    public final State domainState;
+    private final State domainState;
 }
