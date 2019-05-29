@@ -33,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BasicReactiveRepresentationModelAssemblerTest {
 
     public static final String HREF = "href";
-    public static final String ENTITY = "Hello";
+    public static final String ENTITY = "Hola";
 
     @Test
-    public void assembler_Entity_ToModel_Should_Return_EntityModel_With_Link() {
+    public void assembler_entity_toModel_should_return_entityModel_with_link() {
 
         Test1BasicReactiveRepresentationModelAssembler assembler = new Test1BasicReactiveRepresentationModelAssembler();
 
@@ -48,11 +48,10 @@ public class BasicReactiveRepresentationModelAssemblerTest {
                         return true;
                     })
                 .verifyComplete();
-
     }
 
     @Test
-    public void assembler_Entity_ToModel_Should_Return_EntityModel_NoLink() {
+    public void assembler_entity_toModel_should_return_entityModel_noLink() {
 
         Test2BasicReactiveRepresentationModelAssembler assembler = new Test2BasicReactiveRepresentationModelAssembler();
 
@@ -64,11 +63,10 @@ public class BasicReactiveRepresentationModelAssemblerTest {
                     return true;
                 })
                 .verifyComplete();
-
     }
 
     @Test
-    public void assembler_Entity_ToCollectionModel_Should_Return_EntityModel_With_Link() {
+    public void assembler_entity_toCollectionModel_should_return_entityModel_with_link() {
 
         Test1BasicReactiveRepresentationModelAssembler assembler = new Test1BasicReactiveRepresentationModelAssembler();
 
@@ -84,11 +82,10 @@ public class BasicReactiveRepresentationModelAssemblerTest {
                     return true;
                 })
                 .verifyComplete();
-
     }
 
     @Test
-    public void assembler_Entity_ToCollectionModel_Should_Return_EntityModel_With_NoLink() {
+    public void assembler_entity_toCollectionModel_should_return_entityModel_with_noLink() {
 
         Test2BasicReactiveRepresentationModelAssembler assembler = new Test2BasicReactiveRepresentationModelAssembler();
 
