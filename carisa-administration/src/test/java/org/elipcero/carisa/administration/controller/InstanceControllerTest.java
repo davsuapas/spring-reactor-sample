@@ -36,6 +36,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 public class InstanceControllerTest extends AbstractControllerTest {
 
     private static final String INSTANCE_NAME = "test instance name";
+    private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
 
     @Autowired
     private InstanceRepository instanceRepository;
@@ -45,7 +46,7 @@ public class InstanceControllerTest extends AbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/instance/5b6962dd-3f90-4c93-8f61-eabfa4a803e2") // Look at instance-controller
+                .uri("/api/instance/" + INSTANCE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -57,13 +58,11 @@ public class InstanceControllerTest extends AbstractControllerTest {
     @Test
     public void create_instance_using_post_should_return_created_and_instance_entity() {
 
-        Instance instance = createInstance();
-
         this.testClient
                 .post()
                 .uri("/api/instance").contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(instance), Instance.class)
+                .body(Mono.just(createInstance()), Instance.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
@@ -74,15 +73,13 @@ public class InstanceControllerTest extends AbstractControllerTest {
     @Test
     public void create_instance_using_put_should_return_ok_and_instance_entity() {
 
-        Instance instance = createInstance();
-
         String id = "8b6962dd-3f90-4c93-8f61-eabfa4a803e2";
 
         this.testClient
                 .put()
                 .uri("/api/instance/" + id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(instance), Instance.class)
+                .body(Mono.just(createInstance()), Instance.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
@@ -113,6 +110,22 @@ public class InstanceControllerTest extends AbstractControllerTest {
                 .expectBody()
                 .jsonPath("$.name").isEqualTo(newName)
                 .jsonPath("$._links.self.href").value(containsString(id));
+    }
+
+    @Test
+    public void find_instance_should_return_affordance() {
+
+        this.testClient
+                .get()
+                .uri("/api/instance/" + INSTANCE_ID)
+                .accept(MediaTypes.HAL_FORMS_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
+                .jsonPath("$._links.self.href").hasJsonPath()
+                .jsonPath("$._templates.default.method").isEqualTo("put")
+                .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
     }
 
     private Instance createInstance() {

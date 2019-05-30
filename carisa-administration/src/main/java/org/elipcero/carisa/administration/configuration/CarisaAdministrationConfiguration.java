@@ -22,16 +22,21 @@ import org.elipcero.carisa.administration.service.InstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.http.MediaType;
 
 /**
  * General configuration
  *
  * @author David Suárez
  */
-@EnableHypermediaSupport(type = { EnableHypermediaSupport.HypermediaType.HAL})
+@EnableHypermediaSupport(type = {
+        EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS })
 @Configuration
 public class CarisaAdministrationConfiguration {
+
+    public static MediaType[] JSON = new MediaType[]{ MediaTypes.HAL_JSON };
 
     @Autowired
     private InstanceRepository instanceRepository;
