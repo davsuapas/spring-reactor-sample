@@ -38,6 +38,15 @@ public class CrudHypermediaController<T> {
     private BasicReactiveRepresentationModelAssembler<T> assembler;
 
     /**
+     * Hypermedia resource (Get) to return web client
+     * @param entity entity to get
+     * @return model representation
+     */
+    public Publisher<EntityModel<T>> get(final Mono<T> entity) {
+        return entity.flatMap(instance -> this.assembler.toModel(instance, null));
+    }
+
+    /**
      * Hypermedia resource (Create) to return web client
      * Mandatory self rel
      *

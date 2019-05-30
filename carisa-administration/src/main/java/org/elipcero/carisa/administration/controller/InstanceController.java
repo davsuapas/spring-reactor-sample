@@ -58,8 +58,7 @@ public class InstanceController {
 
     @GetMapping("/{id}")
     public Publisher<EntityModel<Instance>> getById(final @PathVariable("id") String id) {
-        return this.instanceService.getById(UUID.fromString(id))
-                .flatMap(instance -> this.instanceModelAssembler.toModel(instance, null));
+        return this.crudHypermediaController.get(this.instanceService.getById(UUID.fromString(id)));
     }
 
     @PostMapping

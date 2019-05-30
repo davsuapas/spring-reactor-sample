@@ -93,6 +93,19 @@ public class CrudHypermediaControllerTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void controller_get_operation_should_return_status_200_and_entity_and_link() {
+
+        StepVerifier
+                .create(crudHypermediaController.get(Mono.just(ENTITY)))
+                .expectNextMatches(result -> {
+                    assertThat(result.getContent()).isEqualTo(ENTITY).as("Check the content is ok");
+                    assertThat(result.hasLinks()).isTrue().as("Check the resource has link");
+                    return true;
+                })
+                .verifyComplete();
+    }
+
     private static class Test1BasicReactiveRepresentationModelAssembler
             implements BasicReactiveRepresentationModelAssembler<String> {
 
