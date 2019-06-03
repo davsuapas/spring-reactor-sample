@@ -21,6 +21,7 @@ import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,13 +34,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
+
 /**
  * Instance controller
  *
  * @author David Suárez
  */
 @RestController
-@RequestMapping("/api/instance")
+@RequestMapping("/api/instances")
 public class InstanceController {
 
     private final InstanceService instanceService;
@@ -54,6 +58,15 @@ public class InstanceController {
         this.instanceService = instanceService;
         this.instanceModelAssembler = instanceModelAssembler;
         this.crudHypermediaController = new CrudHypermediaController(this.instanceModelAssembler);
+    }
+
+    @GetMapping
+    public Publisher<RepresentationModel> getMetadata() {
+        return linkTo(
+                methodOn(InstanceController.class).getMetadata())
+                .withSelfRel()
+                .andAffordance(methodOn(InstanceController.class).create(null))
+                .toMono().map(RepresentationModel::new);
     }
 
     @GetMapping("/{id}")

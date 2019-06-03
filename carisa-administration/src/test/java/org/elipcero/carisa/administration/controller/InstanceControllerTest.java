@@ -19,9 +19,7 @@ package org.elipcero.carisa.administration.controller;
 import org.cassandraunit.spring.CassandraDataSet;
 import org.elipcero.carisa.administration.configuration.DataConfiguration;
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import reactor.core.publisher.Mono;
 
@@ -33,20 +31,17 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @author David Suárez
  */
 @CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME, value = "cassandra/instance-controller.cql")
-public class InstanceControllerTest extends AbstractControllerTest {
+public class InstanceControllerTest extends CassandraAbstractControllerTest {
 
     private static final String INSTANCE_NAME = "test instance name";
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
-
-    @Autowired
-    private InstanceRepository instanceRepository;
 
     @Test
     public void find_instance_should_return_ok_and_instance_entity() {
 
         this.testClient
                 .get()
-                .uri("/api/instance/" + INSTANCE_ID)
+                .uri("/api/instances/" + INSTANCE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -60,7 +55,7 @@ public class InstanceControllerTest extends AbstractControllerTest {
 
         this.testClient
                 .post()
-                .uri("/api/instance").contentType(MediaTypes.HAL_JSON)
+                .uri("/api/instances").contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(createInstance()), Instance.class)
                 .exchange()
@@ -77,7 +72,7 @@ public class InstanceControllerTest extends AbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/instance/" + id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/instances/" + id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(createInstance()), Instance.class)
                 .exchange()
@@ -102,7 +97,7 @@ public class InstanceControllerTest extends AbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/instance/" + id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/instances/" + id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(instanceUpdated), Instance.class)
                 .exchange()
@@ -117,7 +112,7 @@ public class InstanceControllerTest extends AbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/instance/" + INSTANCE_ID)
+                .uri("/api/instances/" + INSTANCE_ID)
                 .accept(MediaTypes.HAL_FORMS_JSON)
                 .exchange()
                 .expectStatus().isOk()
