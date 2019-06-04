@@ -16,12 +16,12 @@
 
 package org.elipcero.carisa.administration.controller;
 
+import org.elipcero.carisa.administration.General.StringResource;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,12 +61,12 @@ public class InstanceController {
     }
 
     @GetMapping
-    public Publisher<RepresentationModel> getMetadata() {
+    public Publisher<EntityModel<String>> getMetadata() {
         return linkTo(
                 methodOn(InstanceController.class).getMetadata())
                 .withSelfRel()
                 .andAffordance(methodOn(InstanceController.class).create(null))
-                .toMono().map(RepresentationModel::new);
+                .toMono().map(link -> new EntityModel<>(StringResource.METADATA_INFORMATION, link));
     }
 
     @GetMapping("/{id}")

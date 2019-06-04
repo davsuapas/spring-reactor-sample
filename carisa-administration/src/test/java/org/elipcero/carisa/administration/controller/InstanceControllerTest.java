@@ -17,6 +17,7 @@
 package org.elipcero.carisa.administration.controller;
 
 import org.cassandraunit.spring.CassandraDataSet;
+import org.elipcero.carisa.administration.General.StringResource;
 import org.elipcero.carisa.administration.configuration.DataConfiguration;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.junit.Test;
@@ -46,6 +47,7 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
+                .consumeWith(System.out::println)
                     .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
@@ -61,8 +63,9 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
-                .jsonPath("$._links.self.href").hasJsonPath();
+                .consumeWith(System.out::println)
+                    .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
+                    .jsonPath("$._links.self.href").hasJsonPath();
     }
 
     @Test
@@ -78,8 +81,9 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
-                .jsonPath("$._links.self.href").value(containsString(id));
+                .consumeWith(System.out::println)
+                    .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
+                    .jsonPath("$._links.self.href").value(containsString(id));
     }
 
     @Test
@@ -103,8 +107,9 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo(newName)
-                .jsonPath("$._links.self.href").value(containsString(id));
+                .consumeWith(System.out::println)
+                    .jsonPath("$.name").isEqualTo(newName)
+                    .jsonPath("$._links.self.href").value(containsString(id));
     }
 
     @Test
@@ -117,10 +122,28 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
-                .jsonPath("$._links.self.href").hasJsonPath()
-                .jsonPath("$._templates.default.method").isEqualTo("put")
-                .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
+                .consumeWith(System.out::println)
+                    .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._templates.default.method").isEqualTo("put")
+                    .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
+    }
+
+    @Test
+    public void get_metadata_should_return_ok_and_affordance() {
+
+        this.testClient
+                .get()
+                .uri("/api/instances")
+                .accept(MediaTypes.HAL_FORMS_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .consumeWith(System.out::println)
+                    .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
+                    .jsonPath("$._templates.default.method").isEqualTo("post")
+                    .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
+
     }
 
     private Instance createInstance() {
