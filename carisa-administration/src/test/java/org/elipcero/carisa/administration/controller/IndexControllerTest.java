@@ -17,23 +17,21 @@
 package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Index;
+import org.elipcero.carisa.administration.general.StringResource;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 /**
  * @author David Suárez
  */
-@RunWith(SpringRunner.class)
 @WebFluxTest(IndexController.class)
-public class IndexControllerTest {
-
-    @Autowired
-    protected WebTestClient testClient;
+public class IndexControllerTest extends AbstractControllerTest {
 
     @Test
     public void get_index_should_return_ok_and_links() {
@@ -45,7 +43,13 @@ public class IndexControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.version").isEqualTo(new Index().getVersion())
-                .jsonPath("$.links.[?(@.rel=='instances')].href").isEqualTo("/api/instances");
+                    .jsonPath("$.version").isEqualTo(new Index().getVersion())
+                    .jsonPath("$.links.[?(@.rel=='instances')].href").isEqualTo("/api/instances")
+                .consumeWith(document("index",
+                    responseFields(
+                        fieldWithPath("version").description("Carisa API version (x.x.x)"),
+                        subsectionWithPath("links")
+                                .description("The Carisa resources. " + StringResource.METADATA_INFORMATION)
+                    )));
     }
 }

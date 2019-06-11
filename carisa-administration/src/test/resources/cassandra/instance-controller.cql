@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS carisa_administration.carisa_instance (
     PRIMARY KEY (id)
 );
 
-INSERT into carisa_administration.carisa_instance(id, name) values (5b6962dd-3f90-4c93-8f61-eabfa4a803e2, 'test instance name');
-INSERT into carisa_administration.carisa_instance(id, name) values (9b6962dd-3f90-4c93-8f61-eabfa4a803e2, 'test instance name');
+INSERT into carisa_administration.carisa_instance(id, name) values (5b6962dd-3f90-4c93-8f61-eabfa4a803e2, 'Instance name');
+INSERT into carisa_administration.carisa_instance(id, name) values (9b6962dd-3f90-4c93-8f61-eabfa4a803e2, 'Instance name');

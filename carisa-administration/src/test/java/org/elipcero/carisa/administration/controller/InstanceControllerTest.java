@@ -17,16 +17,26 @@
 package org.elipcero.carisa.administration.controller;
 
 import org.cassandraunit.spring.CassandraDataSet;
-import org.elipcero.carisa.administration.General.StringResource;
 import org.elipcero.carisa.administration.configuration.DataConfiguration;
 import org.elipcero.carisa.administration.domain.Instance;
+import org.elipcero.carisa.administration.general.StringResource;
 import org.junit.Test;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.restdocs.payload.RequestFieldsSnippet;
+import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 /**
  * @author David Suárez
@@ -34,7 +44,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 @CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME, value = "cassandra/instance-controller.cql")
 public class InstanceControllerTest extends CassandraAbstractControllerTest {
 
-    private static final String INSTANCE_NAME = "test instance name";
+    private static final String INSTANCE_NAME = "Instance name";
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
 
     @Test
@@ -42,14 +52,16 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/instances/" + INSTANCE_ID)
+                .uri("/api/instances/{id}", INSTANCE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .consumeWith(System.out::println)
                     .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
-                    .jsonPath("$._links.self.href").hasJsonPath();
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                .consumeWith(document("instances-get",
+                        commonPathParamters(),
+                        commonResponseFields()));
     }
 
     @Test
@@ -63,27 +75,32 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .consumeWith(System.out::println)
                     .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
-                    .jsonPath("$._links.self.href").hasJsonPath();
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                .consumeWith(document("instances-post",
+                    commonRequestFields(),
+                    commonResponseFields()));
     }
 
     @Test
-    public void create_instance_using_put_should_return_ok_and_instance_entity() {
+    public void create_instance_using_put_should_return_Created_and_instance_entity() {
 
         String id = "8b6962dd-3f90-4c93-8f61-eabfa4a803e2";
 
         this.testClient
                 .put()
-                .uri("/api/instances/" + id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/instances/{id}", id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(createInstance()), Instance.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .consumeWith(System.out::println)
                     .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
-                    .jsonPath("$._links.self.href").value(containsString(id));
+                    .jsonPath("$._links.self.href").value(containsString(id))
+                .consumeWith(document("instances-put",
+                    commonPathParamters(),
+                    commonRequestFields(),
+                    commonResponseFields()));
     }
 
     @Test
@@ -107,7 +124,6 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .consumeWith(System.out::println)
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$._links.self.href").value(containsString(id));
     }
@@ -122,7 +138,6 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .consumeWith(System.out::println)
                     .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._templates.default.method").isEqualTo("put")
@@ -139,14 +154,33 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .consumeWith(System.out::println)
                     .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
                     .jsonPath("$._templates.default.method").isEqualTo("post")
                     .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
 
     }
 
-    private Instance createInstance() {
+    private static PathParametersSnippet commonPathParamters() {
+        return pathParameters(
+                parameterWithName("id").description("instance id (UUID string format)")
+        );
+    }
+
+    private static RequestFieldsSnippet commonRequestFields() {
+        return requestFields(
+                fieldWithPath("id").ignored(),
+                fieldWithPath("name").description("Instance name"));
+    }
+
+    private static ResponseFieldsSnippet commonResponseFields() {
+        return responseFields(
+                fieldWithPath("id").description("Instance identifier (UUID)"),
+                fieldWithPath("name").description("Instance name"),
+                subsectionWithPath("_links")
+                        .description("The instance links. " + StringResource.METADATA_INFORMATION));
+    }
+
+    private static Instance createInstance() {
         return Instance.builder()
                 .name(INSTANCE_NAME)
                 .build();

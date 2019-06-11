@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.General;
+package org.elipcero.carisa.administration.general;
 
 import org.springframework.hateoas.MediaTypes;
 

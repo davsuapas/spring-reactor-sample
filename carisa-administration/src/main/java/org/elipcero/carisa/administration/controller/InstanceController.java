@@ -16,8 +16,8 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.General.StringResource;
 import org.elipcero.carisa.administration.domain.Instance;
+import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;

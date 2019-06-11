@@ -29,6 +29,9 @@
 		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
         <dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>
 		<docker.image.prefix>elipceroopensource</docker.image.prefix>
+		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>
+		<asciidoctor-maven-plugin-version>1.5.3</asciidoctor-maven-plugin-version>
+        <maven-resources-plugin-version>2.7</maven-resources-plugin-version>
 	</properties>
 
 	<modules>
