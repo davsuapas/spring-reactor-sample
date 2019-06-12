@@ -36,6 +36,10 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 @RequestMapping("/")
 public class IndexController {
 
+    /**
+     * Return schema like index
+     * @return schema
+     */
     @GetMapping
     public Publisher<EntityModel<Index>> index() {
         return Flux.concat(

@@ -60,6 +60,10 @@ public class InstanceController {
         this.crudHypermediaController = new CrudHypermediaController(this.instanceModelAssembler);
     }
 
+    /**
+     * Return schema
+     * @return
+     */
     @GetMapping
     public Publisher<EntityModel<String>> getMetadata() {
         return linkTo(
@@ -69,16 +73,32 @@ public class InstanceController {
                 .toMono().map(link -> new EntityModel<>(StringResource.METADATA_INFORMATION, link));
     }
 
+    /**
+     * Get instance by id
+     * @param id the instance identifier (UUID string)
+     * @return
+     */
     @GetMapping("/{id}")
     public Publisher<EntityModel<Instance>> getById(final @PathVariable("id") String id) {
         return this.crudHypermediaController.get(this.instanceService.getById(UUID.fromString(id)));
     }
 
+    /**
+     * Create the instance
+     * @param instance the instance (Id == null)
+     * @return
+     */
     @PostMapping
     public Publisher<ResponseEntity<EntityModel<Instance>>> create(final @RequestBody Instance instance) {
         return this.crudHypermediaController.create(this.instanceService.create(instance));
     }
 
+    /**
+     * Update or create instance depending of the identifier if exists
+     * @param id the instance identifier (UUID string)
+     * @param instance the instance (Id == null)
+     * @return
+     */
     @PutMapping("/{id}")
     public Publisher<ResponseEntity<EntityModel<Instance>>> updateOrCreate(
             final @PathVariable("id") String id, final @RequestBody Instance instance) {

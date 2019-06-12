@@ -36,17 +36,26 @@ public class DefaultInstanceService implements InstanceService {
     @NonNull
     private final InstanceRepository instanceRepository;
 
+    /**
+     * @see InstanceService
+     */
     @Override
     public Mono<Instance> getById(final UUID id) {
         return this.instanceRepository.findById(id);
     }
 
+    /**
+     * @see InstanceService
+     */
     @Override
     public Mono<Instance> create(final Instance instance) {
         instance.tryInitId();
         return this.instanceRepository.save(instance);
     }
 
+    /**
+     * @see InstanceService
+     */
     @Override
     public Mono<EntityDataState<Instance>> updateOrCreate(final UUID id, final Instance instance) {
         return this.instanceRepository
