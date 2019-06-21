@@ -60,5 +60,4 @@ public class DataConfiguration extends AbstractReactiveCassandraConfiguration {
     protected int getPort() {
         return this.cassandraProperties.getPort();
     }
-
 }

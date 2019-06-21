@@ -106,4 +106,13 @@ public class InstanceController {
         return this.crudHypermediaController
                 .updateOrCreate(this.instanceService.updateOrCreate(UUID.fromString(id), instance));
     }
+
+    /**
+     * Deploy de instance into the platform
+     * @return the instance. instance.state report of the state of the instance
+     */
+    @PostMapping("/{id}/deploy")
+    public Publisher<ResponseEntity<EntityModel<Instance>>> deploy() {
+
+    }
 }
