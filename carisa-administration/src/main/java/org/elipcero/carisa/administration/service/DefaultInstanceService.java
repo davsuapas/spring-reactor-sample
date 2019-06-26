@@ -20,6 +20,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
+import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Mono;
 
@@ -36,6 +37,9 @@ public class DefaultInstanceService implements InstanceService {
     @NonNull
     private final InstanceRepository instanceRepository;
 
+    @NonNull
+    private final ServiceProperties serviceProperties;
+
     /**
      * @see InstanceService
      */
@@ -49,7 +53,7 @@ public class DefaultInstanceService implements InstanceService {
      */
     @Override
     public Mono<Instance> create(final Instance instance) {
-        instance.tryInitId();
+        instance.tryInit();
         return this.instanceRepository.save(instance);
     }
 
@@ -65,7 +69,23 @@ public class DefaultInstanceService implements InstanceService {
                         .builder()
                             .id(id)
                             .name(instance.getName())
+                            .state(Instance.State.None)
                         .build()
                 );
     }
+
+    /**
+     * @see InstanceService
+
+    public Mono<Instance> deploy(UUID id) {
+        this.webClient.put()
+                .uri(this.serviceProperties.getSkipper().toUri())
+                .accept(MediaTypes.HAL_JSON)
+                .body(BodyInserters.fromObject(KubernetesDeployer.builder()
+                        .name(id.toString())
+                        .namespace(id.toString())
+                    .build()))
+                .exchange()
+    }
+     */
 }

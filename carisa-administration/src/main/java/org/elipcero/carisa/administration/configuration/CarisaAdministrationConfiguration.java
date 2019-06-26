@@ -19,12 +19,12 @@ package org.elipcero.carisa.administration.configuration;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.InstanceService;
+import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.http.MediaType;
 
 /**
  * General configuration
@@ -33,16 +33,18 @@ import org.springframework.http.MediaType;
  */
 @EnableHypermediaSupport(type = {
         EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS })
+@EnableConfigurationProperties(ServiceProperties.class)
 @Configuration
 public class CarisaAdministrationConfiguration {
-
-    public static MediaType[] JSON = new MediaType[]{ MediaTypes.HAL_JSON };
 
     @Autowired
     private InstanceRepository instanceRepository;
 
+    @Autowired
+    private ServiceProperties serviceProperties;
+
     @Bean
     public InstanceService instanceService() {
-        return new DefaultInstanceService(instanceRepository);
+        return new DefaultInstanceService(instanceRepository, serviceProperties);
     }
 }

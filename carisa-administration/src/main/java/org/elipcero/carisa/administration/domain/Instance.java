@@ -16,10 +16,12 @@
 
 package org.elipcero.carisa.administration.domain;
 
+import com.datastax.driver.core.DataType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
@@ -42,9 +44,28 @@ public class Instance {
     @Setter
     private String name;
 
+    public enum State {
+        None,
+        InProgress,
+        Built,
+        Error
+    }
+
+    @CassandraType(type = DataType.Name.INT)
+    private State state = State.None;
+
+    public void tryInit() {
+        this.tryInitId();
+        this.initState();
+    }
+
     public void tryInitId() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
         }
+    }
+
+    public void initState() {
+        this.state = State.None;
     }
 }

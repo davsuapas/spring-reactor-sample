@@ -14,17 +14,18 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
+package org.elipcero.carisa.administration.domain;
 
-import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
-
-import java.util.UUID;
+import lombok.Builder;
 
 /**
- * Repository for instance
+ * This contain all the information to create kubernetes deployer
  *
  * @author David Suárez
  */
-public interface InstanceRepository extends CustomizedReactiveCrudRepository<Instance, UUID>, CustomInstanceRepository {
+
+@Builder
+public class KubernetesDeployer {
+    private String name;
+    private String namespace;
 }

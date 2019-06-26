@@ -58,6 +58,7 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
+                    .jsonPath("$.state").isEqualTo(Instance.State.None.toString())
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("instances-get",
                         commonPathParamters(),
@@ -76,6 +77,7 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .expectStatus().isCreated()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
+                    .jsonPath("$.state").isEqualTo(Instance.State.None.toString())
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("instances-post",
                     commonRequestFields(),
@@ -83,7 +85,7 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
     }
 
     @Test
-    public void create_instance_using_put_should_return_Created_and_instance_entity() {
+    public void create_instance_using_put_should_return_created_and_instance_entity() {
 
         String id = "8b6962dd-3f90-4c93-8f61-eabfa4a803e2";
 
@@ -96,6 +98,7 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .expectStatus().isCreated()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
+                    .jsonPath("$.state").isEqualTo(Instance.State.None.toString())
                     .jsonPath("$._links.self.href").value(containsString(id))
                 .consumeWith(document("instances-put",
                     commonPathParamters(),
@@ -138,7 +141,6 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$.name").isEqualTo(INSTANCE_NAME)
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._templates.default.method").isEqualTo("put")
                     .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
@@ -169,13 +171,17 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
     private static RequestFieldsSnippet commonRequestFields() {
         return requestFields(
                 fieldWithPath("id").ignored(),
-                fieldWithPath("name").description("Instance name"));
+                fieldWithPath("name").description("Instance name"),
+                fieldWithPath("state").ignored());
     }
 
     private static ResponseFieldsSnippet commonResponseFields() {
         return responseFields(
                 fieldWithPath("id").description("Instance identifier (UUID)"),
                 fieldWithPath("name").description("Instance name"),
+                fieldWithPath("state")
+                        .description("Instance state; NONE: No built, INPROGRESS: Building," +
+                                " BUILT: Built, ERROR: Building error"),
                 subsectionWithPath("_links")
                         .description("The instance links. " + StringResource.METADATA_INFORMATION));
     }

@@ -34,7 +34,7 @@ import java.util.UUID;
 public class CassandraDataLockController {
 
     @NonNull
-    private ReactiveCassandraOperations cqlTemplate;
+    private final ReactiveCassandraOperations cqlTemplate;
 
     /**
      * Lock a resource
@@ -42,7 +42,7 @@ public class CassandraDataLockController {
      * @param secondsExpired when expire the resource in seconds
      * @return if it can be locked return true otherwise false
      */
-    public Mono<Boolean> lock(UUID id, int secondsExpired) {
+    public Mono<Boolean> lock(final UUID id, final int secondsExpired) {
 
         return this.cqlTemplate.getReactiveCqlOperations()
                 .execute("INSERT INTO data_lock (Id, DateExpired) VALUES (?, ?) IF NOT EXISTS",

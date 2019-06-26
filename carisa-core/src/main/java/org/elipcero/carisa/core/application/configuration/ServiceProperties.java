@@ -14,17 +14,35 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
+package org.elipcero.carisa.core.application.configuration;
 
-import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
+import lombok.Getter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.UUID;
+import java.net.URI;
 
 /**
- * Repository for instance
+ * Services properties
  *
  * @author David Suárez
  */
-public interface InstanceRepository extends CustomizedReactiveCrudRepository<Instance, UUID>, CustomInstanceRepository {
+@ConfigurationProperties(prefix = "carisa.services")
+@Getter
+public class ServiceProperties {
+
+    private Skipper skipper;
+
+    @Getter
+    public static class CommonService {
+
+        private String uri;
+
+        public URI toUri() {
+            return URI.create(uri);
+        }
+    }
+
+    @Getter
+    public static class Skipper extends CommonService {
+    }
 }

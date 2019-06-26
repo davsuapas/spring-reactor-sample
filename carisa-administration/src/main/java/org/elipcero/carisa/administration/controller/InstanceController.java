@@ -47,9 +47,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 public class InstanceController {
 
     private final InstanceService instanceService;
-
     private final InstanceModelAssembler instanceModelAssembler;
-
     private final CrudHypermediaController<Instance> crudHypermediaController;
 
     public InstanceController(InstanceService instanceService, InstanceModelAssembler instanceModelAssembler) {
@@ -112,7 +110,7 @@ public class InstanceController {
      * @return the instance. instance.state report of the state of the instance
      */
     @PostMapping("/{id}/deploy")
-    public Publisher<ResponseEntity<EntityModel<Instance>>> deploy() {
-
+    public Publisher<ResponseEntity<EntityModel<Instance>>> deploy(@PathVariable("id") String id) {
+        return null;
     }
 }

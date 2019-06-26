@@ -1,1 +1,4 @@
-
+carisa:
+  services:
+    skipper:
+      uri: "http://localhost:7577"

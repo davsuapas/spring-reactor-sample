@@ -17,14 +17,22 @@
 package org.elipcero.carisa.administration.repository;
 
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
 /**
- * Repository for instance
+ * Custom repository for instance
  *
  * @author David Suárez
  */
-public interface InstanceRepository extends CustomizedReactiveCrudRepository<Instance, UUID>, CustomInstanceRepository {
+public interface CustomInstanceRepository {
+
+    /**
+     * Change the state into instance
+     * @param id the instance id to change state
+     * @param state @see Instance.State
+     * @return true if ok
+     */
+    Mono<Boolean> changeState(final UUID id, final Instance.State state);
 }
