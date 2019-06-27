@@ -44,6 +44,10 @@ public class InstanceModelAssembler implements BasicReactiveRepresentationModelA
                 .andAffordance(methodOn(InstanceController.class)
                         .updateOrCreate(instance.getId().toString(), instance));
 
-        return Flux.concat(self.toMono());
+        WebFluxLinkBuilder.WebFluxLink deploy = linkTo(
+                methodOn(InstanceController.class).deploy(instance.getId().toString()))
+                .withRel("deploy");
+
+        return Flux.concat(self.toMono(), deploy.toMono());
     }
 }

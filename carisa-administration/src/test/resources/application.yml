@@ -2,3 +2,8 @@ spring:
   data:
     cassandra:
       port: 9142
+
+carisa:
+  services:
+    skipper:
+      uri: "http://localhost:7577"

@@ -51,4 +51,11 @@ public interface InstanceService {
      * @return instance created or updated
      */
     Mono<EntityDataState<Instance>> updateOrCreate(UUID id, Instance updateInstance);
+
+    /**
+     * Deploy instance into platform. Change state of the instance
+     * @param id the instance id
+     * @return instance deployed
+     */
+    Mono<Instance> deploy(final UUID id);
 }

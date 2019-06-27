@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import org.elipcero.carisa.core.configuration.EnableCassandraDataLock;
 import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
@@ -33,6 +34,7 @@ import org.springframework.data.cassandra.repository.config.EnableReactiveCassan
         basePackages = "org.elipcero.carisa.administration.repository",
         repositoryBaseClass = CustomizedReactiveCrudRepositoryImpl.class)
 @EnableConfigurationProperties(CassandraProperties.class)
+@EnableCassandraDataLock
 @Configuration
 public class DataConfiguration extends AbstractReactiveCassandraConfiguration {
 

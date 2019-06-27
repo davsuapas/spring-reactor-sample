@@ -50,7 +50,7 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
 public class CassandraDataLockControllerTest {
 
     @Autowired
-    private CassandraDataLockController dataLock;
+    private DataLockController dataLock;
 
     @Test
     public void lock_new_resource_should_return_true() {

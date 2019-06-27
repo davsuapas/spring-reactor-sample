@@ -55,7 +55,7 @@ public class InstanceController {
         Assert.notNull(instanceModelAssembler, "The instanceModelAssembler can not be null");
         this.instanceService = instanceService;
         this.instanceModelAssembler = instanceModelAssembler;
-        this.crudHypermediaController = new CrudHypermediaController(this.instanceModelAssembler);
+        this.crudHypermediaController = new CrudHypermediaController(instanceModelAssembler);
     }
 
     /**
@@ -109,8 +109,9 @@ public class InstanceController {
      * Deploy de instance into the platform
      * @return the instance. instance.state report of the state of the instance
      */
-    @PostMapping("/{id}/deploy")
-    public Publisher<ResponseEntity<EntityModel<Instance>>> deploy(@PathVariable("id") String id) {
-        return null;
+    @PutMapping("/{id}/deploy")
+    public Publisher<EntityModel<Instance>> deploy(@PathVariable("id") String id) {
+        return this.instanceService.deploy(UUID.fromString(id))
+                .flatMap(instance -> this.instanceModelAssembler.toModel(instance, null));
     }
 }

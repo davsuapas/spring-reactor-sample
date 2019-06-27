@@ -14,26 +14,31 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.core.application.configuration;
+package org.elipcero.carisa.core.reactive.misc;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 /**
- * Services properties
+ * Controller to critical section lock between process
  *
  * @author David Suárez
  */
-@ConfigurationProperties(prefix = "carisa.services")
-@Getter
-public class ServiceProperties {
+public interface DataLockController {
 
-    private Skipper skipper = new Skipper();
+    /**
+     * Lock a resource
+     * @param id the resource id
+     * @param secondsExpired when expire the resource in seconds
+     * @return if it can be locked return true otherwise false
+     */
+    Mono<Boolean> lock(UUID id, int secondsExpired);
 
-    @Getter
-    @Setter
-    public static class Skipper {
-        private String uri;
-    }
+    /**
+     * Unlock a resource
+     * @param id the resource id
+     * @return if it can be unlocked return true otherwise false
+     */
+    Mono<Boolean> unLock(UUID id);
 }

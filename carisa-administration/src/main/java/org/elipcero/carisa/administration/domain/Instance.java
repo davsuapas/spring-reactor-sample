@@ -47,7 +47,7 @@ public class Instance {
     public enum State {
         None,
         InProgress,
-        Built,
+        Deployed,
         Error
     }
 

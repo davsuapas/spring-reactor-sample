@@ -19,6 +19,7 @@ package org.elipcero.carisa.core.configuration;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.elipcero.carisa.core.reactive.misc.CassandraDataLockController;
+import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +46,7 @@ public class CassandraDataLockConfiguration {
     }
 
     @Bean
-    public CassandraDataLockController dataLockController() {
+    public DataLockController dataLockController() {
         return new CassandraDataLockController(this.cqlTemplate);
     }
 

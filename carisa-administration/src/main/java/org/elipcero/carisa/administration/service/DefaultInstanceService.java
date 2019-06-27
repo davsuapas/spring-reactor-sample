@@ -16,12 +16,16 @@
 
 package org.elipcero.carisa.administration.service;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Instance;
+import org.elipcero.carisa.administration.domain.KubernetesDeployer;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.reactive.misc.DataLockController;
+import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -31,14 +35,29 @@ import java.util.UUID;
  *
  * @author David Suárez
  */
-@RequiredArgsConstructor
 public class DefaultInstanceService implements InstanceService {
 
-    @NonNull
     private final InstanceRepository instanceRepository;
+    private final DataLockController dataLockController;
 
-    @NonNull
-    private final ServiceProperties serviceProperties;
+    private final WebClient webClient;
+
+    public DefaultInstanceService(
+            final InstanceRepository instanceRepository,
+            final ServiceProperties serviceProperties,
+            final DataLockController dataLockController) {
+
+        Assert.notNull(instanceRepository, "The instanceRepository can not be null");
+        Assert.notNull(serviceProperties, "The serviceProperties can not be null");
+        Assert.notNull(dataLockController, "The serviceProperties can not be null");
+        this.instanceRepository = instanceRepository;
+        this.dataLockController = dataLockController;
+
+        ServiceProperties.Skipper skipper = serviceProperties.getSkipper();
+        Assert.notNull(skipper, "The skipper configuration can not be null");
+
+        this.webClient = WebClient.builder().baseUrl(skipper.getUri()).build();
+    }
 
     /**
      * @see InstanceService
@@ -76,16 +95,33 @@ public class DefaultInstanceService implements InstanceService {
 
     /**
      * @see InstanceService
-
-    public Mono<Instance> deploy(UUID id) {
-        this.webClient.put()
-                .uri(this.serviceProperties.getSkipper().toUri())
-                .accept(MediaTypes.HAL_JSON)
-                .body(BodyInserters.fromObject(KubernetesDeployer.builder()
-                        .name(id.toString())
-                        .namespace(id.toString())
-                    .build()))
-                .exchange()
-    }
      */
+    public Mono<Instance> deploy(final UUID id) {
+        return this.dataLockController
+            .lock(id, 60)
+            .flatMap(couldLock -> {
+                if (couldLock) {
+                    return this.instanceRepository.changeState(id, Instance.State.InProgress)
+                        .flatMap(__ -> this.webClient.put()
+                            .uri("/api/platforms/kubernetes/deployers")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .body(BodyInserters.fromObject(KubernetesDeployer.builder()
+                                    .name(id.toString())
+                                    .namespace(id.toString())
+                                    .build()))
+                            .exchange()
+                            .flatMap(response -> {
+                                if (response.statusCode().isError()) {
+                                    return this.instanceRepository.changeState(id, Instance.State.Error);
+                                }
+                                else {
+                                    return this.instanceRepository.changeState(id, Instance.State.Deployed);
+                                }
+                            }));
+                }
+                return Mono.just(false);
+            })
+            .doFinally(__ -> this.dataLockController.unLock(id))
+            .flatMap(__ -> this.instanceRepository.findById(id));
+    }
 }

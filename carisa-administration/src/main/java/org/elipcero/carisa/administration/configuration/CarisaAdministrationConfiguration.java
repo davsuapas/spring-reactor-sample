@@ -20,6 +20,7 @@ import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
+import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,8 +44,11 @@ public class CarisaAdministrationConfiguration {
     @Autowired
     private ServiceProperties serviceProperties;
 
+    @Autowired
+    private DataLockController dataLockController;
+
     @Bean
     public InstanceService instanceService() {
-        return new DefaultInstanceService(instanceRepository, serviceProperties);
+        return new DefaultInstanceService(instanceRepository, serviceProperties, dataLockController);
     }
 }

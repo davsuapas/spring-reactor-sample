@@ -31,17 +31,15 @@ import java.util.UUID;
  * @author David Suárez
  */
 @RequiredArgsConstructor
-public class CassandraDataLockController {
+public class CassandraDataLockController implements DataLockController {
 
     @NonNull
     private final ReactiveCassandraOperations cqlTemplate;
 
     /**
-     * Lock a resource
-     * @param id the resource id
-     * @param secondsExpired when expire the resource in seconds
-     * @return if it can be locked return true otherwise false
+     * @see DataLockController
      */
+    @Override
     public Mono<Boolean> lock(final UUID id, final int secondsExpired) {
 
         return this.cqlTemplate.getReactiveCqlOperations()
@@ -61,10 +59,9 @@ public class CassandraDataLockController {
     }
 
     /**
-     * Unlock a resource
-     * @param id the resource id
-     * @return if it can be unlocked return true otherwise false
+     * @see DataLockController
      */
+    @Override
     public Mono<Boolean> unLock(UUID id) {
         return this.cqlTemplate.getReactiveCqlOperations().execute("DELETE FROM data_lock WHERE Id = ?", id);
     }
