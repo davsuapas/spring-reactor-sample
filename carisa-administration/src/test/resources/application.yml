@@ -6,4 +6,4 @@ spring:
 carisa:
   services:
     skipper:
-      uri: "http://localhost:7577"
+      uri: "http://localhost:8080"

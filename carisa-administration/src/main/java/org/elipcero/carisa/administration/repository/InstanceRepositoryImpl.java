@@ -46,6 +46,6 @@ public class InstanceRepositoryImpl implements CustomInstanceRepository {
      */
     @Override
     public Mono<Boolean> changeState(final UUID id, final Instance.State state) {
-        return this.cqlTemplate.update(query(where("id").is(id)), update("state", state), Instance.class);
+        return this.cqlTemplate.update(query(where("id").is(id)), update("state", state.ordinal()), Instance.class);
     }
 }

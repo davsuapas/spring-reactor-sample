@@ -22,6 +22,7 @@ import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -56,7 +57,11 @@ public class DefaultInstanceService implements InstanceService {
         ServiceProperties.Skipper skipper = serviceProperties.getSkipper();
         Assert.notNull(skipper, "The skipper configuration can not be null");
 
-        this.webClient = WebClient.builder().baseUrl(skipper.getUri()).build();
+        this.webClient = WebClient
+                .builder()
+                    .baseUrl(skipper.getUri())
+                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
     }
 
     /**
@@ -105,9 +110,10 @@ public class DefaultInstanceService implements InstanceService {
                         .flatMap(__ -> this.webClient.put()
                             .uri("/api/platforms/kubernetes/deployers")
                             .accept(MediaType.APPLICATION_JSON)
-                            .body(BodyInserters.fromObject(KubernetesDeployer.builder()
-                                    .name(id.toString())
-                                    .namespace(id.toString())
+                            .body(BodyInserters.fromObject(KubernetesDeployer
+                                    .builder()
+                                        .name(id.toString())
+                                        .namespace(id.toString())
                                     .build()))
                             .exchange()
                             .flatMap(response -> {
