@@ -239,7 +239,7 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
 
     private static PathParametersSnippet commonPathParamters() {
         return pathParameters(
-                parameterWithName("id").description("instance id (UUID string format)")
+                parameterWithName("id").description("Instance id (UUID string format)")
         );
     }
 

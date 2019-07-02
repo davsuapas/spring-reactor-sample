@@ -38,7 +38,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.lin
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
- * Instance controller
+ * Instance controller. @see Instance domain
  *
  * @author David Suárez
  */

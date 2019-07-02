@@ -17,8 +17,11 @@
 package org.elipcero.carisa.administration.configuration;
 
 import org.elipcero.carisa.administration.repository.InstanceRepository;
+import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
+import org.elipcero.carisa.administration.service.DefaultSpaceService;
 import org.elipcero.carisa.administration.service.InstanceService;
+import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +53,13 @@ public class CarisaAdministrationConfiguration {
     @Bean
     public InstanceService instanceService() {
         return new DefaultInstanceService(instanceRepository, serviceProperties, dataLockController);
+    }
+
+    @Autowired
+    private SpaceRepository spaceRepository;
+
+    @Bean
+    public SpaceService spaceService() {
+        return new DefaultSpaceService(spaceRepository);
     }
 }
