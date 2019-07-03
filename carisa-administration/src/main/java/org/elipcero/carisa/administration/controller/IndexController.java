@@ -43,7 +43,8 @@ public class IndexController {
     @GetMapping
     public Publisher<EntityModel<Index>> index() {
         return Flux.concat(
-                linkTo(methodOn(InstanceController.class).getMetadata()).withRel("instances").toMono())
+                linkTo(methodOn(InstanceController.class).getMetadata()).withRel("instances").toMono(),
+                linkTo(methodOn(SpaceController.class).getMetadata()).withRel("spaces").toMono())
                 .collectList().map(links -> new EntityModel<>(new Index(), links));
     }
 }
