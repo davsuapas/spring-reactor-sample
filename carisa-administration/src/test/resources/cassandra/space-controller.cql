@@ -10,3 +10,4 @@ CREATE TABLE IF NOT EXISTS carisa_administration.carisa_space (
 );
 
 INSERT into carisa_administration.carisa_space(id, instanceId, name) values (52107f03-cf1b-4760-b2c2-4273482f0f7a, 523170e2-cd49-4261-913b-1a4c0c7652cf, 'Space name');
+INSERT into carisa_administration.carisa_space(id, instanceId, name) values (12107f03-cf1b-4760-b2c2-4273482f0f7a, 523170e2-cd49-4261-913b-1a4c0c7652cf, 'Space updated');

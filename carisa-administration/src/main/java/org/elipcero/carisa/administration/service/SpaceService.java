@@ -17,6 +17,7 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -34,4 +35,20 @@ public interface SpaceService {
      * @return space found
      */
     Mono<Space> getById(UUID id);
+
+    /**
+     * Create the space
+     * @param space space for creating
+     * @return space created
+     */
+    Mono<Space> create(Space space);
+
+    /**
+     * Update or create the space. If the id exits is updated
+     * otherwise is created. The instanceId can not be updated
+     * @param id
+     * @param space space for updating or creating
+     * @return space created or updated
+     */
+    Mono<EntityDataState<Space>> updateOrCreate(final UUID id, final Space space);
 }

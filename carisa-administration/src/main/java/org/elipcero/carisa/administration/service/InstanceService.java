@@ -38,7 +38,7 @@ public interface InstanceService {
 
     /**
      * Create the instance
-     * @param instance instance for create
+     * @param instance instance for creating
      * @return instance created
      */
     Mono<Instance> create(Instance instance);
@@ -47,10 +47,10 @@ public interface InstanceService {
      * Update or create the instance. If the id exits is updated
      * otherwise is created
      * @param id
-     * @param updateInstance instance for updating or creating
+     * @param instance instance for updating or creating
      * @return instance created or updated
      */
-    Mono<EntityDataState<Instance>> updateOrCreate(UUID id, Instance updateInstance);
+    Mono<EntityDataState<Instance>> updateOrCreate(UUID id, Instance instance);
 
     /**
      * Deploy instance into platform. Change state of the instance

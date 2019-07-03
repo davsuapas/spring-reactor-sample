@@ -20,7 +20,7 @@ import com.datastax.driver.core.DataType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import org.elipcero.carisa.core.data.Entity;
 import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -34,12 +34,8 @@ import java.util.UUID;
  * @author David Suárez
  */
 @Table("carisa_instance")
-@Builder
 @Getter
-public class Instance {
-
-    @Id
-    private UUID id;
+public class Instance extends Entity {
 
     @Setter
     private String name;
@@ -54,15 +50,17 @@ public class Instance {
     @CassandraType(type = DataType.Name.INT)
     private State state = State.None;
 
-    public void tryInit() {
-        this.tryInitId();
-        this.initState();
+    @Builder
+    public Instance(UUID id, String name, State state) {
+        super(id);
+        this.name = name;
+        this.state = state;
     }
 
-    public void tryInitId() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
+    @Override
+    public void tryInit() {
+        super.tryInit();
+        this.initState();
     }
 
     public void initState() {

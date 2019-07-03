@@ -14,35 +14,33 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.core.data;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import org.elipcero.carisa.core.data.Entity;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.data.annotation.Id;
 
 import java.util.UUID;
 
 /**
- * Each instance contains 1-N spaces. Each space split the instance in logic category.
- * Each space can have several dashboard.
+ * Entity general information
  *
  * @author David Suárez
  */
-@Table("carisa_space")
+@AllArgsConstructor
 @Getter
-public class Space extends Entity {
+public abstract class Entity {
 
-    private UUID instanceId;
+    @Id
+    private UUID id;
 
-    @Setter
-    private String name;
+    public void tryInit() {
+        this.tryInitId();
+    }
 
-    @Builder
-    public Space(UUID id, UUID instanceId, String name) {
-        super(id);
-        this.instanceId = instanceId;
-        this.name = name;
+    public void tryInitId() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
     }
 }

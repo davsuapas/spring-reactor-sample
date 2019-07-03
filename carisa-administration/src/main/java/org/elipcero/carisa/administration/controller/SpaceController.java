@@ -21,9 +21,13 @@ import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,5 +60,29 @@ public class SpaceController {
     @GetMapping("/{id}")
     public Publisher<EntityModel<Space>> getById(final @PathVariable("id") String id) {
         return this.crudHypermediaController.get(this.spaceService.getById(UUID.fromString(id)));
+    }
+
+    /**
+     * Create the space
+     * @param space the space (Id == null)
+     * @return
+     */
+    @PostMapping
+    public Publisher<ResponseEntity<EntityModel<Space>>> create(final @RequestBody Space space) {
+        return this.crudHypermediaController.create(this.spaceService.create(space));
+    }
+
+    /**
+     * Update or create space depending of the identifier if exists.
+     * @param id the space identifier (UUID string)
+     * @param space the space (Id == null)
+     * @return
+     */
+    @PutMapping("/{id}")
+    public Publisher<ResponseEntity<EntityModel<Space>>> updateOrCreate(
+            final @PathVariable("id") String id, final @RequestBody Space space) {
+
+        return this.crudHypermediaController
+                .updateOrCreate(this.spaceService.updateOrCreate(UUID.fromString(id), space));
     }
 }

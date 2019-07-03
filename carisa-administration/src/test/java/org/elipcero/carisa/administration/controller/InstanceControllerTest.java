@@ -126,7 +126,7 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
     public void update_instance_using_put_should_return_ok_and_instance_entity() {
 
         String id = "9b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
-        String newName = "test instance name 1";
+        String newName = "Instance name updated";
 
         Instance instanceUpdated = Instance.builder()
                     .id(UUID.fromString(id))

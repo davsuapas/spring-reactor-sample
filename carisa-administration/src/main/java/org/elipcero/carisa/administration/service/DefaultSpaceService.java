@@ -20,6 +20,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -41,5 +42,31 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public Mono<Space> getById(final UUID id) {
         return this.spaceRepository.findById(id);
+    }
+
+    /**
+     * @see SpaceService
+     */
+    @Override
+    public Mono<Space> create(final Space space) {
+        space.tryInit();
+        return this.spaceRepository.save(space);
+    }
+
+    /**
+     * @see SpaceService
+     */
+    @Override
+    public Mono<EntityDataState<Space>> updateOrCreate(final UUID id, final Space space) {
+        return this.spaceRepository
+                .updateCreate(id,
+                        spaceForUpdating -> spaceForUpdating.setName(space.getName()),
+                        Space
+                            .builder()
+                                .id(id)
+                                .name(space.getName())
+                                .instanceId(space.getInstanceId())
+                            .build()
+                );
     }
 }
