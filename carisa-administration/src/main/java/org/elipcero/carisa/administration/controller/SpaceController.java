@@ -17,6 +17,7 @@
 package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
@@ -32,6 +33,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
  * Space controller. @see Space domain
@@ -50,6 +54,19 @@ public class SpaceController {
         Assert.notNull(spaceService, "The spaceService can not be null");
         this.spaceService = spaceService;
         this.crudHypermediaController = new CrudHypermediaController(spaceModelAssembler);
+    }
+
+    /**
+     * Return schema
+     * @return
+     */
+    @GetMapping
+    public Publisher<EntityModel<String>> getMetadata() {
+        return linkTo(
+                methodOn(SpaceController.class).getMetadata())
+                .withSelfRel()
+                .andAffordance(methodOn(SpaceController.class).create(null))
+                .toMono().map(link -> new EntityModel<>(StringResource.METADATA_INFORMATION, link));
     }
 
     /**

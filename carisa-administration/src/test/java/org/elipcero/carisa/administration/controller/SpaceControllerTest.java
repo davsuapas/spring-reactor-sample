@@ -159,7 +159,22 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                 .expectBody()
                 .jsonPath("$._links.self.href").hasJsonPath()
                 .jsonPath("$._templates.default.method").isEqualTo("put")
-                .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
+                .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
+    }
+
+    @Test
+    public void get_metadata_should_return_ok_and_affordance() {
+
+        this.testClient
+                .get()
+                .uri("/api/spaces")
+                .accept(MediaTypes.HAL_FORMS_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
+                .jsonPath("$._templates.default.method").isEqualTo("post")
+                .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
     }
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
