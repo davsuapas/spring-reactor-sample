@@ -114,7 +114,8 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                         commonRequestFields(
                                 Arrays.asList(
                                     fieldWithPath("instanceId")
-                                            .description("This property can not be updated"))),
+                                            .description("Instance identifier (UUID) for this space." +
+                                                    "This property can not be updated"))),
                         commonResponseFields()));
     }
 
@@ -144,6 +145,21 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.self.href").hasJsonPath();
+    }
+
+    @Test
+    public void find_space_should_return_affordance() {
+
+        this.testClient
+                .get()
+                .uri("/api/spaces/" + SPACE_ID)
+                .accept(MediaTypes.HAL_FORMS_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$._links.self.href").hasJsonPath()
+                .jsonPath("$._templates.default.method").isEqualTo("put")
+                .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
     }
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {

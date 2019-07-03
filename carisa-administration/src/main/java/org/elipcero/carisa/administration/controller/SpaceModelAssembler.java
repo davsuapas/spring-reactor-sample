@@ -40,7 +40,10 @@ public class SpaceModelAssembler implements BasicReactiveRepresentationModelAsse
 
         WebFluxLinkBuilder.WebFluxLink self = linkTo(
                 methodOn(SpaceController.class).getById(space.getId().toString()))
-                .withSelfRel();
+                .withSelfRel()
+                .andAffordance(methodOn(SpaceController.class)
+                        .updateOrCreate(space.getId().toString(), space));
+
 
         return Flux.concat(self.toMono());
     }
