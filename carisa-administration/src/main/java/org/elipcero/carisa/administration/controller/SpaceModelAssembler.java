@@ -44,7 +44,10 @@ public class SpaceModelAssembler implements BasicReactiveRepresentationModelAsse
                 .andAffordance(methodOn(SpaceController.class)
                         .updateOrCreate(space.getId().toString(), space));
 
+        WebFluxLinkBuilder.WebFluxLink instances = linkTo(
+                methodOn(InstanceController.class).getById(space.getInstanceId().toString()))
+                .withRel("instance");
 
-        return Flux.concat(self.toMono());
+        return Flux.concat(self.toMono(), instances.toMono());
     }
 }

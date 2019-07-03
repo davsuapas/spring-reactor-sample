@@ -65,6 +65,7 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(SPACE_NAME)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
+                    .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-get",
                         commonPathParamters(),
@@ -84,6 +85,7 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(SPACE_NAME)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
+                    .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-post",
                         commonRequestFields(
@@ -106,9 +108,10 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo(SPACE_NAME)
-                .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
-                .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$.name").isEqualTo(SPACE_NAME)
+                    .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
+                    .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-put",
                         commonPathParamters(),
                         commonRequestFields(
@@ -144,6 +147,7 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
+                    .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 
@@ -157,9 +161,9 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$._links.self.href").hasJsonPath()
-                .jsonPath("$._templates.default.method").isEqualTo("put")
-                .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._templates.default.method").isEqualTo("put")
+                    .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
     }
 
     @Test
@@ -172,9 +176,9 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
-                .jsonPath("$._templates.default.method").isEqualTo("post")
-                .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
+                    .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
+                    .jsonPath("$._templates.default.method").isEqualTo("post")
+                    .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
     }
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
