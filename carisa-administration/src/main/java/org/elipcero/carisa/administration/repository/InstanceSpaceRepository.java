@@ -14,18 +14,27 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.general;
+package org.elipcero.carisa.administration.repository;
 
-import org.springframework.hateoas.MediaTypes;
+import org.elipcero.carisa.administration.domain.InstanceSpace;
+import org.springframework.data.cassandra.core.mapping.MapId;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
+
+import java.util.UUID;
 
 /**
- * String resources
+ * Space by instance repository
  *
  * @author David Suárez
  */
-public class StringResource {
+public interface InstanceSpaceRepository extends ReactiveCrudRepository<InstanceSpace, MapId> {
 
-    public static final String METADATA_INFORMATION
-            = String.format("Use '%s' mediatype for more information. View links section",
-                MediaTypes.HAL_FORMS_JSON_VALUE);
+    /**
+     * Find all spaces by instance
+     *
+     * @param instanceId The instance id to find
+     * @return InstanceSpace
+     */
+    Flux<InstanceSpace> findAllByInstanceId(UUID instanceId);
 }

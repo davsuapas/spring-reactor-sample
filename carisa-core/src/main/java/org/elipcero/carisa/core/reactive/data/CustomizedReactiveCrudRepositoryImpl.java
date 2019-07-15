@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Adding new features to reactive crud repository
@@ -42,16 +43,23 @@ public class CustomizedReactiveCrudRepositoryImpl<T, ID extends Serializable>
     }
 
     /**
-     * Update or create entity of domain. If exists update the entity through of
-     * a predicate parameter, otherwise insert the entity from a parameter
-     *
-     * @param id id for finding
-     * @param updateChange predicate for updating entity
-     * @param entityForCreating entity if is inserted
-     * @return Mono<EntityDataState<T>>
+     * @see CustomizedReactiveCrudRepository
      */
     @Override
-    public Mono<EntityDataState<T>> updateCreate(final ID id, Consumer<T> updateChange, T entityForCreating) {
+    public Mono<EntityDataState<T>> updateCreate(
+            final ID id, final Consumer<T> updateChange, final T entityForCreating) {
+
+        return this.updateCreate(id, updateChange, entityForCreating, () -> Mono.empty());
+    }
+
+    /**
+     * @see CustomizedReactiveCrudRepository
+     */
+    @Override
+    public Mono<EntityDataState<T>> updateCreate(
+            final ID id, final Consumer<T> updateChange,
+            final T entityForCreating, final Supplier<Mono<?>> eventBeforeCreating) {
+
         return this
                 .findById(id)
                 .flatMap(entity -> {
@@ -66,13 +74,14 @@ public class CustomizedReactiveCrudRepositoryImpl<T, ID extends Serializable>
 
                 })
                 .switchIfEmpty(
-                        this.save(entityForCreating)
-                                .map(instanceCreated ->
-                                        EntityDataState.<T>
-                                            builder()
-                                                .domainState(EntityDataState.State.created)
-                                                .entity(instanceCreated)
-                                            .build())
+                        eventBeforeCreating.get().then(
+                            this.save(entityForCreating)
+                                    .map(instanceCreated ->
+                                            EntityDataState.<T>
+                                                builder()
+                                                    .domainState(EntityDataState.State.created)
+                                                    .entity(instanceCreated)
+                                                .build()))
                 );
     }
 }

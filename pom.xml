@@ -24,7 +24,7 @@
 		<spring-cloud-skipper-version>2.0.0.RC1</spring-cloud-skipper-version>
 		<spring-hateoas-version>1.0.0.M2</spring-hateoas-version>
 		<spring-plugin-version>2.0.0.M1</spring-plugin-version>
-		<cassandra-unit-spring-version>3.5.0.1</cassandra-unit-spring-version>
+		<cassandra-unit-spring-version>3.11.2.0</cassandra-unit-spring-version>
         <checkstyle.config.location>src/checkstyle/checkstyle-definition.xml</checkstyle.config.location>
 		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
         <dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>

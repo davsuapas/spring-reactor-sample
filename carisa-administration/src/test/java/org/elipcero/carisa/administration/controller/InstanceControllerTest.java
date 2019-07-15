@@ -27,11 +27,17 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.hypermedia.LinksSnippet;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -39,6 +45,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -51,7 +59,9 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @AutoConfigureWireMock
-@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME, value = "cassandra/instance-controller.cql")
+@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME,
+        value = {"cassandra/instance-controller.cql", "cassandra/instance-space-controller.cql",
+                 "cassandra/space-controller.cql"})
 public class InstanceControllerTest extends CassandraAbstractControllerTest {
 
     private static final String INSTANCE_NAME = "Instance name";
@@ -74,9 +84,38 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$.state").isEqualTo(Instance.State.None.toString())
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._links.deploy.href").hasJsonPath()
+                    .jsonPath("$._links.spaces.href").hasJsonPath()
+                    .jsonPath("$._links.purgeSpaces.href").hasJsonPath()
                 .consumeWith(document("instances-get",
+                        commonLinks(),
                         commonPathParamters(),
                         commonResponseFields()));
+    }
+
+    @Test
+    public void find_spaces_from_instance_should_return_ok_and_spaces_entity() {
+
+        this.testClient
+                .get()
+                .uri("/api/instances/{id}/spaces", INSTANCE_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')].name", SpaceControllerTest.SPACE_ID)
+                        .isEqualTo(SpaceControllerTest.SPACE_NAME)
+                    .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')]._links.space.href", SpaceControllerTest.SPACE_ID)
+                        .hasJsonPath()
+                    .jsonPath("$._links.instance.href").hasJsonPath()
+                .consumeWith(document("instances-spaces-get",
+                        instanceLink(),
+                        commonPathParamters(),
+                        responseFields(
+                                fieldWithPath("_embedded.spaceNameList[].spaceId")
+                                        .description("Space identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.spaceNameList[].name").description("Space name"),
+                                fieldWithPath("_embedded.spaceNameList[]._links.space.href").description("Space information"),
+                                subsectionWithPath("_links").description("View links section"))));
     }
 
     @Test
@@ -94,7 +133,10 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$.state").isEqualTo(Instance.State.None.toString())
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._links.deploy.href").hasJsonPath()
+                    .jsonPath("$._links.spaces.href").hasJsonPath()
+                    .jsonPath("$._links.purgeSpaces.href").hasJsonPath()
                 .consumeWith(document("instances-post",
+                    commonLinks(),
                     commonRequestFields(),
                     commonResponseFields()));
     }
@@ -116,7 +158,10 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$.state").isEqualTo(Instance.State.None.toString())
                     .jsonPath("$._links.self.href").value(containsString(id))
                     .jsonPath("$._links.deploy.href").hasJsonPath()
+                    .jsonPath("$._links.spaces.href").hasJsonPath()
+                    .jsonPath("$._links.purgeSpaces.href").hasJsonPath()
                 .consumeWith(document("instances-put",
+                    commonLinks(),
                     commonPathParamters(),
                     commonRequestFields(),
                     commonResponseFields()));
@@ -137,7 +182,7 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/instances/" + id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/instances/{id}", id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(instanceUpdated), Instance.class)
                 .exchange()
@@ -145,7 +190,34 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$._links.self.href").value(containsString(id))
-                    .jsonPath("$._links.deploy.href").hasJsonPath();
+                    .jsonPath("$._links.deploy.href").hasJsonPath()
+                    .jsonPath("$._links.spaces.href").hasJsonPath()
+                    .jsonPath("$._links.purgeSpaces.href").hasJsonPath();
+    }
+
+    @Test
+    public void remove_instancespace_using_delete_should_return_ok_and_instancespace_entity() {
+
+        String spaceId = "575f260c-32f1-488b-99dc-7694db3eceee";
+
+        this.testClient
+                .delete()
+                .uri("/api/instances/{id}/spaces/{spaceId}", INSTANCE_ID, spaceId)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
+                    .jsonPath("$.spaceId").isEqualTo(spaceId)
+                    .jsonPath("$._links.instance.href").hasJsonPath()
+                .consumeWith(document("instances-spaces-delete",
+                        instanceLink(),
+                        commonPathParamters(Arrays.asList(
+                                parameterWithName("spaceId").description("Space identifier (UUID string format)"))),
+                        responseFields(
+                                fieldWithPath("instanceId").description("Instance identifier (UUID)"),
+                                fieldWithPath("spaceId").description("SpaceId identifier (UUID)"),
+                                generalLink())));
     }
 
     @Test
@@ -238,9 +310,13 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
     }
 
     private static PathParametersSnippet commonPathParamters() {
-        return pathParameters(
-                parameterWithName("id").description("Instance id (UUID string format)")
-        );
+        return commonPathParamters(new ArrayList<ParameterDescriptor>());
+    }
+
+    private static PathParametersSnippet commonPathParamters(List<ParameterDescriptor> params) {
+        List<ParameterDescriptor> paramDescriptor = new ArrayList<>(params);
+        paramDescriptor.add(parameterWithName("id").description("Instance identifier (UUID string format)"));
+        return pathParameters(paramDescriptor);
     }
 
     private static RequestFieldsSnippet commonRequestFields() {
@@ -257,8 +333,24 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                 fieldWithPath("state")
                         .description("Instance state; NONE: No built, INPROGRESS: Deploying," +
                                 " DEPLOYED: Deployed, ERROR: Deploying error"),
-                subsectionWithPath("_links")
-                        .description("The instance links. " + StringResource.METADATA_INFORMATION));
+                generalLink());
+    }
+
+    private static FieldDescriptor generalLink() {
+        return subsectionWithPath("_links")
+                .description("The instance links. " + StringResource.METADATA_INFORMATION);
+    }
+
+    private LinksSnippet commonLinks() {
+        return links(
+                linkWithRel("self").description("Resource instance"),
+                linkWithRel("deploy").description("Deploy instance into platform"),
+                linkWithRel("spaces").description("Spaces list by instance"),
+                linkWithRel("purgeSpaces").description("Purge the spaces by instance. Only if space doesn't exist"));
+    }
+
+    private LinksSnippet instanceLink() {
+        return links(linkWithRel("instance").description("Instance"));
     }
 
     private static Instance createInstance() {

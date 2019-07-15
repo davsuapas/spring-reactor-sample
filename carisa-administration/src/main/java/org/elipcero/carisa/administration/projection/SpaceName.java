@@ -14,18 +14,21 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.general;
+package org.elipcero.carisa.administration.projection;
 
-import org.springframework.hateoas.MediaTypes;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.UUID;
 
 /**
- * String resources
+ * Space short name
  *
  * @author David Suárez
  */
-public class StringResource {
-
-    public static final String METADATA_INFORMATION
-            = String.format("Use '%s' mediatype for more information. View links section",
-                MediaTypes.HAL_FORMS_JSON_VALUE);
+@Builder
+@Getter
+public class SpaceName {
+    private UUID spaceId;
+    private String name;
 }

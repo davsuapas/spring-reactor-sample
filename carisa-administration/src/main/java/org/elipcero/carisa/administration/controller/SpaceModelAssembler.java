@@ -35,6 +35,8 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 @Component
 public class SpaceModelAssembler implements BasicReactiveRepresentationModelAssembler<Space> {
 
+    public static final String SPACE_REL_NAME = "space";
+
     @Override
     public Flux<Link> addLinks(Space space, ServerWebExchange exchange) {
 

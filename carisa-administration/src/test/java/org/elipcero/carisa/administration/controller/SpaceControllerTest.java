@@ -20,7 +20,9 @@ import org.cassandraunit.spring.CassandraDataSet;
 import org.elipcero.carisa.administration.configuration.DataConfiguration;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.general.StringResource;
+import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -46,12 +48,16 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @AutoConfigureWireMock
-@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME, value = "cassandra/space-controller.cql")
+@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME,
+        value = {"cassandra/space-controller.cql", "cassandra/instance-space-controller.cql"})
 public class SpaceControllerTest extends CassandraAbstractControllerTest {
 
-    private static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
+    public static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
     private static final String INSTANCE_ID = "523170e2-cd49-4261-913b-1a4c0c7652cf"; // Look at space-controller
-    private static final String SPACE_NAME = "Space name"; // Look at space-controller
+    public static final String SPACE_NAME = "Space name"; // Look at space-controller
+
+    @Autowired
+    private InstanceSpaceRepository instanceSpaceRepository;
 
     @Test
     public void find_space_should_return_ok_and_space_entity() {
@@ -182,12 +188,10 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
     }
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
-        List<FieldDescriptor> descriptors = new ArrayList<>(fields);
-
-        descriptors.add(fieldWithPath("id").ignored());
-        descriptors.add(fieldWithPath("name").description("Space name"));
-
-        return requestFields(descriptors);
+        List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
+        fieldDescriptor.add(fieldWithPath("id").ignored());
+        fieldDescriptor.add(fieldWithPath("name").description("Space name"));
+        return requestFields(fieldDescriptor);
     }
 
     private static PathParametersSnippet commonPathParamters() {

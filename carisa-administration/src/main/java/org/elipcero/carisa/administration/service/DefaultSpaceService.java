@@ -18,7 +18,9 @@ package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Mono;
@@ -36,6 +38,9 @@ public class DefaultSpaceService implements SpaceService {
     @NonNull
     private final SpaceRepository spaceRepository;
 
+    @NonNull
+    private final InstanceSpaceRepository instanceSpaceRepository;
+
     /**
      * @see SpaceService
      */
@@ -50,7 +55,14 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public Mono<Space> create(final Space space) {
         space.tryInit();
-        return this.spaceRepository.save(space);
+
+        return this.instanceSpaceRepository
+            .save(InstanceSpace
+                .builder()
+                        .instanceId(space.getInstanceId())
+                        .spaceId(space.getId())
+                .build())
+            .flatMap(__ -> this.spaceRepository.save(space));
     }
 
     /**
@@ -66,7 +78,13 @@ public class DefaultSpaceService implements SpaceService {
                                 .id(id)
                                 .name(space.getName())
                                 .instanceId(space.getInstanceId())
-                            .build()
+                            .build(),
+                        () -> this.instanceSpaceRepository // Event before creating
+                                .save(InstanceSpace
+                                    .builder()
+                                        .instanceId(space.getInstanceId())
+                                        .spaceId(id)
+                                    .build())
                 );
     }
 }

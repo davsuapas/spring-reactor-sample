@@ -14,18 +14,30 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.general;
+package org.elipcero.carisa.administration.domain;
 
-import org.springframework.hateoas.MediaTypes;
+import lombok.Builder;
+import lombok.Getter;
+import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+import org.springframework.data.cassandra.core.mapping.Table;
+
+import java.util.UUID;
 
 /**
- * String resources
+ * Spaces by instance
  *
  * @author David Suárez
  */
-public class StringResource {
+@Table("carisa_instance_space")
+@Builder
+@Getter
+public class InstanceSpace {
 
-    public static final String METADATA_INFORMATION
-            = String.format("Use '%s' mediatype for more information. View links section",
-                MediaTypes.HAL_FORMS_JSON_VALUE);
+    @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
+    private UUID instanceId;
+
+    @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+    private UUID spaceId;
 }
+

@@ -18,6 +18,8 @@ package org.elipcero.carisa.administration.controller;
 
 import org.cassandraunit.spring.CassandraUnitDependencyInjectionIntegrationTestExecutionListener;
 import org.cassandraunit.spring.EmbeddedCassandra;
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
+import org.junit.Before;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
 
@@ -32,4 +34,9 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
         mergeMode = MERGE_WITH_DEFAULTS)
 @EmbeddedCassandra
 public abstract class CassandraAbstractControllerTest extends AbstractControllerTest {
+
+    @Before
+    public void initialize() {
+        EmbeddedCassandraServerHelper.getCluster().getConfiguration().getSocketOptions().setReadTimeoutMillis(90000);
+    }
 }

@@ -35,6 +35,8 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 @Component
 public class InstanceModelAssembler implements BasicReactiveRepresentationModelAssembler<Instance> {
 
+    public static final String INSTANCE_REL_NAME = "instance";
+
     @Override
     public Flux<Link> addLinks(Instance instance, ServerWebExchange exchange) {
 
@@ -48,6 +50,14 @@ public class InstanceModelAssembler implements BasicReactiveRepresentationModelA
                 methodOn(InstanceController.class).deploy(instance.getId().toString()))
                 .withRel("deploy");
 
-        return Flux.concat(self.toMono(), deploy.toMono());
+        WebFluxLinkBuilder.WebFluxLink instanceSpace = linkTo(
+                methodOn(InstanceController.class).getSpaces(instance.getId().toString()))
+                .withRel("spaces");
+
+        WebFluxLinkBuilder.WebFluxLink purgeSpaces = linkTo(
+                methodOn(InstanceController.class).purgeInstanceSpace(instance.getId().toString(), null))
+                .withRel("purgeSpaces");
+
+        return Flux.concat(self.toMono(), deploy.toMono(), instanceSpace.toMono(), purgeSpaces.toMono());
     }
 }
