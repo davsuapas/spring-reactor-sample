@@ -212,11 +212,30 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$._links.instance.href").hasJsonPath()
                 .consumeWith(document("instances-spaces-delete",
                         instanceLink(),
-                        commonPathParamters(Arrays.asList(
-                                parameterWithName("spaceId").description("Space identifier (UUID string format)"))),
+                        removeInstanceSpacesPathParameters(),
                         responseFields(
                                 fieldWithPath("instanceId").description("Instance identifier (UUID)"),
                                 fieldWithPath("spaceId").description("SpaceId identifier (UUID)"),
+                                generalLink())));
+    }
+
+    @Test
+    public void remove_instancespace_using_delete_should_return_no_accepted_and_description_error() {
+
+        this.testClient
+                .delete()
+                .uri("/api/instances/{id}/spaces/{spaceId}", INSTANCE_ID, SpaceControllerTest.SPACE_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)
+                .expectBody()
+                    .jsonPath("$.content").hasJsonPath()
+                    .jsonPath("$._links.instance.href").hasJsonPath()
+                .consumeWith(document("instances-spaces-delete-no-accepted",
+                        instanceLink(),
+                        removeInstanceSpacesPathParameters(),
+                        responseFields(
+                                fieldWithPath("content").description("Error description"),
                                 generalLink())));
     }
 
@@ -351,6 +370,11 @@ public class InstanceControllerTest extends CassandraAbstractControllerTest {
 
     private LinksSnippet instanceLink() {
         return links(linkWithRel("instance").description("Instance"));
+    }
+
+    private static PathParametersSnippet removeInstanceSpacesPathParameters() {
+        return commonPathParamters(Arrays.asList(
+                parameterWithName("spaceId").description("Space identifier (UUID string format)")));
     }
 
     private static Instance createInstance() {
