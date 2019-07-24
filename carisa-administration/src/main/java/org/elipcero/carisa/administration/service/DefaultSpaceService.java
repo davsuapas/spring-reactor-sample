@@ -20,9 +20,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -41,6 +44,9 @@ public class DefaultSpaceService implements SpaceService {
     @NonNull
     private final InstanceSpaceRepository instanceSpaceRepository;
 
+    @NonNull
+    private final InstanceRepository instanceRepository;
+
     /**
      * @see SpaceService
      */
@@ -54,15 +60,20 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Mono<Space> create(final Space space) {
-        space.tryInit();
+        space.tryInitId();
 
-        return this.instanceSpaceRepository
-            .save(InstanceSpace
-                .builder()
-                        .instanceId(space.getInstanceId())
-                        .spaceId(space.getId())
-                .build())
-            .flatMap(__ -> this.spaceRepository.save(space));
+        return this.instanceRepository.findById(space.getInstanceId())
+            .flatMap(__ ->
+                this.instanceSpaceRepository
+                    .save(InstanceSpace
+                        .builder()
+                                .instanceId(space.getInstanceId())
+                                .spaceId(space.getId())
+                        .build()))
+                .flatMap(__ -> this.spaceRepository.save(space))
+            .switchIfEmpty(Mono.error(
+                    new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            String.format("The instance: %s doesn't exist", space.getInstanceId()))));
     }
 
     /**
@@ -70,21 +81,10 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Mono<EntityDataState<Space>> updateOrCreate(final UUID id, final Space space) {
+        space.setId(id);
         return this.spaceRepository
                 .updateCreate(id,
                         spaceForUpdating -> spaceForUpdating.setName(space.getName()),
-                        Space
-                            .builder()
-                                .id(id)
-                                .name(space.getName())
-                                .instanceId(space.getInstanceId())
-                            .build(),
-                        () -> this.instanceSpaceRepository // Event before creating
-                                .save(InstanceSpace
-                                    .builder()
-                                        .instanceId(space.getInstanceId())
-                                        .spaceId(id)
-                                    .build())
-                );
+                        this.create(space));
     }
 }

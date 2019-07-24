@@ -23,7 +23,6 @@ import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Reactive extended crud repository
@@ -35,27 +34,14 @@ public interface CustomizedReactiveCrudRepository<T, ID extends Serializable>
         extends ReactiveCrudRepository<T, ID> {
 
     /**
-     * Update or create entity of domain. If exists update the entity through of
-     * a predicate parameter, otherwise insert the entity from a parameter
+     * Update the domain entity or return the created entity. If exists update the entity through of
+     * a predicate parameter, otherwise return the created entity with state
      *
      * @param id id for finding
      * @param updateChange predicate for updating entity
-     * @param entityForCreating entity if is inserted
-     * @param eventBeforeCreating event before creating
-     * @return Mono<EntityDataState<T>>
+     * @param monoEntityCreated entity inserted
+     * @return Mono<EntityDataState<T>> the entity with state
      */
-    Mono<EntityDataState<T>> updateCreate(
-            final ID id, Consumer<T> updateChange, final T entityForCreating,
-            final Supplier<Mono<?>> eventBeforeCreating);
-
-    /**
-     * Update or create entity of domain. If exists update the entity through of
-     * a predicate parameter, otherwise insert the entity from a parameter
-     *
-     * @param id id for finding
-     * @param updateChange predicate for updating entity
-     * @param entityForCreating entity if is inserted
-     * @return Mono<EntityDataState<T>>
-     */
-    Mono<EntityDataState<T>> updateCreate(final ID id, final Consumer<T> updateChange, final T entityForCreating);
+    Mono<EntityDataState<T>> updateCreate(final ID id, final Consumer<T> updateChange,
+                                          final Mono<T> monoEntityCreated);
 }

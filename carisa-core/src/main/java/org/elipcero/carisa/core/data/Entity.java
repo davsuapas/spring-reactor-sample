@@ -18,6 +18,7 @@ package org.elipcero.carisa.core.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
 import java.util.UUID;
@@ -29,18 +30,16 @@ import java.util.UUID;
  */
 @AllArgsConstructor
 @Getter
+@Setter
 public abstract class Entity {
 
     @Id
     private UUID id;
 
-    public void tryInit() {
-        this.tryInitId();
-    }
-
-    public void tryInitId() {
+    public Entity tryInitId() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
         }
+        return this;
     }
 }

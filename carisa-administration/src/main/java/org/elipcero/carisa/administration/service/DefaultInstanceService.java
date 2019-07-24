@@ -21,6 +21,7 @@ import org.elipcero.carisa.administration.domain.KubernetesDeployer;
 import org.elipcero.carisa.administration.projection.SpaceInstanceName;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
+import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
@@ -45,7 +46,7 @@ public class DefaultInstanceService implements InstanceService {
     private final InstanceRepository instanceRepository;
     private final DataLockController dataLockController;
     private final InstanceSpaceRepository instanceSpaceRepository;
-    private final SpaceService spaceService;
+    private final SpaceRepository spaceRepository;
 
     private final WebClient webClient;
 
@@ -54,18 +55,18 @@ public class DefaultInstanceService implements InstanceService {
             final ServiceProperties serviceProperties,
             final DataLockController dataLockController,
             final InstanceSpaceRepository instanceSpaceRepository,
-            final SpaceService spaceService) {
+            final SpaceRepository spaceRepository) {
 
         Assert.notNull(instanceRepository, "The instanceRepository can not be null");
         Assert.notNull(serviceProperties, "The serviceProperties can not be null");
         Assert.notNull(dataLockController, "The serviceProperties can not be null");
         Assert.notNull(instanceSpaceRepository, "The instanceSpaceRepository can not be null");
-        Assert.notNull(spaceService, "The spaceService can not be null");
+        Assert.notNull(spaceRepository, "The spaceRepository can not be null");
 
         this.instanceRepository = instanceRepository;
         this.dataLockController = dataLockController;
         this.instanceSpaceRepository = instanceSpaceRepository;
-        this.spaceService = spaceService;
+        this.spaceRepository = spaceRepository;
 
         ServiceProperties.Skipper skipper = serviceProperties.getSkipper();
         Assert.notNull(skipper, "The skipper configuration can not be null");
@@ -88,7 +89,7 @@ public class DefaultInstanceService implements InstanceService {
     public Flux<SpaceInstanceName> getSpacesByInstance(final UUID instanceId) {
 
         return this.instanceSpaceRepository.findAllByInstanceId(instanceId)
-                .flatMap(instanceSpace -> this.spaceService.getById(instanceSpace.getSpaceId()))
+                .flatMap(instanceSpace -> this.spaceRepository.findById(instanceSpace.getSpaceId()))
                 .map(space -> SpaceInstanceName
                         .builder()
                             .instanceId(instanceId)
@@ -101,7 +102,7 @@ public class DefaultInstanceService implements InstanceService {
      * @see InstanceService
      */
     public Mono<Boolean> removeInstanceSpace(final UUID instanceId, final UUID spaceId) {
-        return this.spaceService.getById(spaceId)
+        return this.spaceRepository.findById(spaceId)
                 .map(__ -> false)
                 .switchIfEmpty(
                         this.instanceSpaceRepository.deleteById(
@@ -114,7 +115,6 @@ public class DefaultInstanceService implements InstanceService {
      */
     @Override
     public Mono<Instance> create(final Instance instance) {
-        instance.tryInit();
         return this.instanceRepository.save(instance);
     }
 
@@ -123,16 +123,12 @@ public class DefaultInstanceService implements InstanceService {
      */
     @Override
     public Mono<EntityDataState<Instance>> updateOrCreate(final UUID id, final Instance instance) {
+        instance.setId(id);
+        instance.tryInitState();
         return this.instanceRepository
                 .updateCreate(id,
                     instanceForUpdating -> instanceForUpdating.setName(instance.getName()),
-                    Instance
-                        .builder()
-                            .id(id)
-                            .name(instance.getName())
-                            .state(Instance.State.None)
-                        .build()
-                );
+                    this.create(instance));
     }
 
     /**

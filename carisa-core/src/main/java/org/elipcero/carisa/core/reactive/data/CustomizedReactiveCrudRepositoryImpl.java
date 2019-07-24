@@ -24,7 +24,6 @@ import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Adding new features to reactive crud repository
@@ -47,41 +46,29 @@ public class CustomizedReactiveCrudRepositoryImpl<T, ID extends Serializable>
      */
     @Override
     public Mono<EntityDataState<T>> updateCreate(
-            final ID id, final Consumer<T> updateChange, final T entityForCreating) {
-
-        return this.updateCreate(id, updateChange, entityForCreating, () -> Mono.empty());
-    }
-
-    /**
-     * @see CustomizedReactiveCrudRepository
-     */
-    @Override
-    public Mono<EntityDataState<T>> updateCreate(
-            final ID id, final Consumer<T> updateChange,
-            final T entityForCreating, final Supplier<Mono<?>> eventBeforeCreating) {
+            final ID id, final Consumer<T> updateChange, final Mono<T> monoEntityCreated) {
 
         return this
                 .findById(id)
                 .flatMap(entity -> {
                     updateChange.accept(entity);
                     return this.save(entity)
-                            .map(instanceUpdated ->
+                            .map(entityUpdated ->
                                     EntityDataState.<T>
                                          builder()
                                             .domainState(EntityDataState.State.updated)
-                                            .entity(instanceUpdated)
+                                            .entity(entityUpdated)
                                          .build());
 
                 })
                 .switchIfEmpty(
-                        eventBeforeCreating.get().then(
-                            this.save(entityForCreating)
-                                    .map(instanceCreated ->
-                                            EntityDataState.<T>
-                                                builder()
-                                                    .domainState(EntityDataState.State.created)
-                                                    .entity(instanceCreated)
-                                                .build()))
+                        monoEntityCreated.map(
+                                entityCreated ->
+                                    EntityDataState.<T>
+                                        builder()
+                                            .domainState(EntityDataState.State.created)
+                                            .entity(entityCreated)
+                                        .build())
                 );
     }
 }

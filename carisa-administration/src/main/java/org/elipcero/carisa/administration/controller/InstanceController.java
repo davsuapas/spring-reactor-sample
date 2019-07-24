@@ -159,7 +159,7 @@ public class InstanceController {
      */
     @PostMapping
     public Publisher<ResponseEntity<EntityModel<Instance>>> create(final @RequestBody Instance instance) {
-        return this.crudHypermediaController.create(this.instanceService.create(instance));
+        return this.crudHypermediaController.create(this.instanceService.create(instance.tryInit()));
     }
 
     /**

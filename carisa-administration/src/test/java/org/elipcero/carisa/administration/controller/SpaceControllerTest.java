@@ -49,11 +49,12 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  */
 @AutoConfigureWireMock
 @CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME,
-        value = {"cassandra/space-controller.cql", "cassandra/instance-space-controller.cql"})
+        value = {"cassandra/instance-controller.cql", "cassandra/space-controller.cql",
+                "cassandra/instance-space-controller.cql"})
 public class SpaceControllerTest extends CassandraAbstractControllerTest {
 
     public static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
-    private static final String INSTANCE_ID = "523170e2-cd49-4261-913b-1a4c0c7652cf"; // Look at space-controller
+    private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at space-controller
     public static final String SPACE_NAME = "Space name"; // Look at space-controller
 
     @Autowired
@@ -99,6 +100,23 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                                     fieldWithPath("instanceId")
                                             .description("Instance identifier (UUID) for this space"))),
                         commonResponseFields()));
+    }
+
+    @Test
+    public void create_space_where_instance_no_exist_using_post_should_return_not_found_and_error() {
+
+        this.testClient
+                .post()
+                .uri("/api/spaces").contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(Space.builder()
+                        .name(SPACE_NAME)
+                        .instanceId(UUID.randomUUID())
+                        .build()), Space.class)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                    .jsonPath("$.message").hasJsonPath();
     }
 
     @Test

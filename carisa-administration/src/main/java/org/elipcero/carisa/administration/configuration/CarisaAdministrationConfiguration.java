@@ -29,15 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.hateoas.config.EnableHypermediaSupport;
 
 /**
  * General configuration
  *
  * @author David Suárez
  */
-@EnableHypermediaSupport(type = {
-        EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS })
 @EnableConfigurationProperties(ServiceProperties.class)
 @Configuration
 public class CarisaAdministrationConfiguration {
@@ -55,7 +52,7 @@ public class CarisaAdministrationConfiguration {
     public InstanceService instanceService() {
         return new DefaultInstanceService(
                 instanceRepository, serviceProperties, dataLockController,
-                instanceSpaceRepository, spaceService());
+                instanceSpaceRepository, spaceRepository);
     }
 
     @Autowired
@@ -66,6 +63,6 @@ public class CarisaAdministrationConfiguration {
 
     @Bean
     public SpaceService spaceService() {
-        return new DefaultSpaceService(spaceRepository, instanceSpaceRepository);
+        return new DefaultSpaceService(spaceRepository, instanceSpaceRepository, instanceRepository);
     }
 }

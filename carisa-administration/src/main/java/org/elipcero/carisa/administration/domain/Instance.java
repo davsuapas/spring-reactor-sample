@@ -48,7 +48,7 @@ public class Instance extends Entity {
     }
 
     @CassandraType(type = DataType.Name.INT)
-    private State state = State.None;
+    private State state;
 
     @Builder
     public Instance(UUID id, String name, State state) {
@@ -57,13 +57,15 @@ public class Instance extends Entity {
         this.state = state;
     }
 
-    @Override
-    public void tryInit() {
-        super.tryInit();
-        this.initState();
+    public Instance tryInit() {
+        this.tryInitId();
+        return this.tryInitState();
     }
 
-    public void initState() {
-        this.state = State.None;
+    public Instance tryInitState() {
+        if (this.state == null) {
+            this.state = State.None;
+        }
+        return this;
     }
 }

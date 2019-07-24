@@ -37,9 +37,9 @@ public interface SpaceService {
     Mono<Space> getById(UUID id);
 
     /**
-     * Create the space and set the space into the instance. Setting the space into instance
+     * Create the space and insert the space into the instance. Insert the space into instance
      * and create the space are not done in the same transaction. In this case, the user has the
-     * responsibility of removing the relation if fault
+     * responsibility of removing the relation if fault. Checking if the instance exists
      * @param space space for creating
      * @return space created
      */

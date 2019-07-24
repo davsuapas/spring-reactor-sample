@@ -54,6 +54,7 @@ public class CrudHypermediaController<T> {
      * @return model representation
      */
     public Publisher<ResponseEntity<EntityModel<T>>> create(final Mono<T> entity) {
+
         return entity
                 .flatMap(entityCreated -> this.assembler.toModel(entityCreated, null))
                 .map(resourceCreated ->
