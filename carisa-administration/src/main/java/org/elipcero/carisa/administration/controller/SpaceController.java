@@ -19,9 +19,11 @@ package org.elipcero.carisa.administration.controller;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.general.StringResource;
+import org.elipcero.carisa.administration.projection.EnteName;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -143,5 +147,31 @@ public class SpaceController {
                                     }
                                 })
                 );
+    }
+
+    /**
+     * Get entes by spaceId
+     * @param id the spaceId
+     * @return Entes collections with links
+     */
+    @GetMapping("/{id}/entes")
+    public Publisher<CollectionModel<EntityModel<EnteName>>> getEntes(final @PathVariable("id") String id) {
+        return this.spaceService.getEntesBySpace(UUID.fromString(id))
+                .flatMap(spaceEnte ->
+                        Flux.concat(
+                                linkTo(
+                                        methodOn(EnteController.class).getById(spaceEnte.getEnteId().toString()))
+                                        .withRel(EnteModelAssembler.ENTE_REL_NAME).toMono())
+                                .map(links -> new EntityModel<>(EnteName
+                                        .builder()
+                                            .enteId(spaceEnte.getEnteId())
+                                            .name(spaceEnte.getEnteName())
+                                        .build(), links)))
+                .collectList()
+                .flatMap(entities ->
+                        linkTo(
+                                methodOn(SpaceController.class).getById(id))
+                                .withRel(SpaceModelAssembler.SPACE_REL_NAME).toMono()
+                                .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
     }
 }

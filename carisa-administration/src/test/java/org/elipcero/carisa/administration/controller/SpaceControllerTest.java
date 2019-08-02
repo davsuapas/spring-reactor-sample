@@ -259,6 +259,32 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                                 generalLink())));
     }
 
+    @Test
+    public void find_entes_from_space_should_return_ok_and_entes_entity() {
+
+        this.testClient
+                .get()
+                .uri("/api/spaces/{id}/entes", SPACE_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')].name", EnteControllerTest.ENTE_ID)
+                        .isEqualTo(EnteControllerTest.ENTE_NAME)
+                    .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')]._links.ente.href", EnteControllerTest.ENTE_ID)
+                        .hasJsonPath()
+                    .jsonPath("$._links.space.href").hasJsonPath()
+                .consumeWith(document("space-entes-get",
+                        spaceLink(),
+                        commonPathParamters(),
+                        responseFields(
+                                fieldWithPath("_embedded.enteNameList[].enteId")
+                                        .description("Ente identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.enteNameList[].name").description("Ente name"),
+                                fieldWithPath("_embedded.enteNameList[]._links.ente.href").description("Ente information"),
+                                subsectionWithPath("_links").description("View links section"))));
+    }
+
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
         fieldDescriptor.add(fieldWithPath("id").ignored());
