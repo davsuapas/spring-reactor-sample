@@ -25,9 +25,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.hypermedia.LinksSnippet;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
@@ -36,6 +39,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -50,10 +55,11 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 @AutoConfigureWireMock
 @CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME,
         value = {"cassandra/instance-controller.cql", "cassandra/space-controller.cql",
-                "cassandra/instance-space-controller.cql"})
+                "cassandra/instance-space-controller.cql", "cassandra/ente-controller.cql",
+                "cassandra/space-ente-controller.cql"})
 public class SpaceControllerTest extends CassandraAbstractControllerTest {
 
-    public static final String SPACE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at space-controller
+    public static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
     public static final String SPACE_NAME = "Space name"; // Look at space-controller
 
@@ -74,6 +80,7 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.purgeEntes.href").hasJsonPath()
                 .consumeWith(document("spaces-get",
                         commonPathParamters(),
                         commonResponseFields()));
@@ -94,6 +101,7 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.purgeEntes.href").hasJsonPath()
                 .consumeWith(document("spaces-post",
                         commonRequestFields(
                                 Arrays.asList(
@@ -135,6 +143,7 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(SPACE_NAME)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$._links.purgeEntes.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-put",
                         commonPathParamters(),
@@ -172,6 +181,7 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$._links.purgeEntes.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 
@@ -205,6 +215,50 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
                     .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
     }
 
+    @Test
+    public void remove_spacesente_using_delete_should_return_ok_and_spacesente_entity() {
+
+        String enteId = "c58698cd-bd52-4fd2-bcf6-6d54bcdc4069";
+
+        this.testClient
+                .delete()
+                .uri("/api/spaces/{id}/entes/{enteId}", SPACE_ID, enteId)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
+                    .jsonPath("$.enteId").isEqualTo(enteId)
+                    .jsonPath("$._links.space.href").hasJsonPath()
+                .consumeWith(document("spaces-entes-delete",
+                        spaceLink(),
+                        removeSpaceEntesPathParameters(),
+                        responseFields(
+                                fieldWithPath("spaceId").description("Space identifier (UUID)"),
+                                fieldWithPath("enteId").description("Ente identifier (UUID)"),
+                                generalLink())));
+    }
+
+    @Test
+    public void remove_spacesente_using_delete_should_return_no_accepted_and_description_error() {
+
+        this.testClient
+                .delete()
+                .uri("/api/spaces/{id}/entes/{enteId}", SPACE_ID, EnteControllerTest.ENTE_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)
+                .expectBody()
+                    .jsonPath("$.content").hasJsonPath()
+                    .jsonPath("$._links.space.href").hasJsonPath()
+                .consumeWith(document("spaces-entes-delete-no-accepted",
+                        spaceLink(),
+                        removeSpaceEntesPathParameters(),
+                        responseFields(
+                                fieldWithPath("content").description("Error description"),
+                                generalLink())));
+    }
+
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
         fieldDescriptor.add(fieldWithPath("id").ignored());
@@ -213,18 +267,37 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
     }
 
     private static PathParametersSnippet commonPathParamters() {
-        return pathParameters(
-                parameterWithName("id").description("Space id (UUID string format)")
-        );
+        return commonPathParamters(new ArrayList<ParameterDescriptor>());
     }
+
+    private static PathParametersSnippet commonPathParamters(List<ParameterDescriptor> params) {
+        List<ParameterDescriptor> paramDescriptor = new ArrayList<>(params);
+        paramDescriptor.add(parameterWithName("id").description("Space id (UUID string format)"));
+        return pathParameters(paramDescriptor);
+    }
+
 
     private static ResponseFieldsSnippet commonResponseFields() {
         return responseFields(
                 fieldWithPath("id").description("Space identifier (UUID)"),
                 fieldWithPath("instanceId").description("Instance identifier (UUID) for this space"),
                 fieldWithPath("name").description("Space name"),
-                subsectionWithPath("_links")
-                        .description("The space links. " + StringResource.METADATA_INFORMATION));
+                generalLink());
+    }
+
+    private static FieldDescriptor generalLink() {
+        return subsectionWithPath("_links")
+                .description("The instance links. " + StringResource.METADATA_INFORMATION);
+    }
+
+    private LinksSnippet spaceLink() {
+        return links(linkWithRel("space").description("Space"));
+    }
+
+    private static PathParametersSnippet removeSpaceEntesPathParameters() {
+        return commonPathParamters(
+                Arrays.asList(
+                    parameterWithName("enteId").description("Ente identifier (UUID string format)")));
     }
 
     private static Space createSpace() {

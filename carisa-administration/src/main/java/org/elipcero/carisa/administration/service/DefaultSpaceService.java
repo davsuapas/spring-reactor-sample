@@ -20,12 +20,17 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.projection.EnteSpaceName;
+import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
+import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -46,6 +51,12 @@ public class DefaultSpaceService implements SpaceService {
 
     @NonNull
     private final InstanceRepository instanceRepository;
+
+    @NonNull
+    private final EnteRepository enteRepository;
+
+    @NonNull
+    private final SpaceEnteRepository spaceEnteRepository;
 
     /**
      * @see SpaceService
@@ -86,5 +97,34 @@ public class DefaultSpaceService implements SpaceService {
                 .updateCreate(id,
                         spaceForUpdating -> spaceForUpdating.setName(space.getName()),
                         this.create(space));
+    }
+
+    /**
+     * @see SpaceService
+     */
+    @Override
+    public Flux<EnteSpaceName> getEntesBySpace(final UUID spaceId) {
+
+        return this.spaceEnteRepository.findAllBySpaceId(spaceId)
+                .flatMap(spaceEnte -> this.enteRepository.findById(spaceEnte.getEnteId()))
+                .map(ente -> EnteSpaceName
+                        .builder()
+                            .spaceId(spaceId)
+                            .enteId(ente.getId())
+                            .EnteName(ente.getName())
+                        .build());
+    }
+
+
+    /**
+     * @see SpaceService
+     */
+    public Mono<Boolean> removeSpaceEnte(final UUID spaceId, final UUID enteId) {
+        return this.enteRepository.findById(enteId)
+                .map(__ -> false)
+                .switchIfEmpty(
+                        this.spaceEnteRepository.deleteById(
+                                BasicMapId.id("spaceId", spaceId).with("enteId", enteId))
+                                .then(Mono.just(true)));
     }
 }

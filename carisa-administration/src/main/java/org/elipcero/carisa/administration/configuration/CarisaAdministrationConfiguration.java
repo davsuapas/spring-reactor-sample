@@ -71,7 +71,9 @@ public class CarisaAdministrationConfiguration {
 
     @Bean
     public SpaceService spaceService() {
-        return new DefaultSpaceService(spaceRepository, instanceSpaceRepository, instanceRepository);
+        return new DefaultSpaceService(
+                spaceRepository, instanceSpaceRepository, instanceRepository,
+                enteRepository, spaceEnteRepository);
     }
 
     // Ente configuration

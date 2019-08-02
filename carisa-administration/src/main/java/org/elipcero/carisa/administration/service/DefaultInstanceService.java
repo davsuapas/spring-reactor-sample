@@ -86,6 +86,10 @@ public class DefaultInstanceService implements InstanceService {
         return this.instanceRepository.findById(id);
     }
 
+    /**
+     * @see InstanceService
+     */
+    @Override
     public Flux<SpaceInstanceName> getSpacesByInstance(final UUID instanceId) {
 
         return this.instanceSpaceRepository.findAllByInstanceId(instanceId)

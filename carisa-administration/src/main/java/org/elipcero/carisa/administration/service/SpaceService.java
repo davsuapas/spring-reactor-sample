@@ -17,7 +17,9 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.projection.EnteSpaceName;
 import org.elipcero.carisa.core.data.EntityDataState;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -53,4 +55,20 @@ public interface SpaceService {
      * @return space created or updated
      */
     Mono<EntityDataState<Space>> updateOrCreate(final UUID id, final Space space);
+
+    /**
+     * Remove the ente by space. The space-ente is just removed if the ente
+     * doesn't exist
+     * @param spaceId the space identifier
+     * @param enteId the ente identifier
+     * @return
+     */
+    Mono<Boolean> removeSpaceEnte(final UUID spaceId, final UUID enteId);
+
+    /**
+     * Get entes by space id
+     * @param spaceId the spaceId to find
+     * @return the ente view
+     */
+    Flux<EnteSpaceName> getEntesBySpace(final UUID spaceId);
 }
