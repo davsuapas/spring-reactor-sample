@@ -18,9 +18,9 @@ package org.elipcero.carisa.administration.controller;
 
 import org.cassandraunit.spring.CassandraDataSet;
 import org.elipcero.carisa.administration.configuration.DataConfiguration;
-import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
+import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -49,70 +49,70 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  */
 @AutoConfigureWireMock
 @CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME,
-        value = {"cassandra/instance-controller.cql", "cassandra/space-controller.cql",
-                "cassandra/instance-space-controller.cql"})
-public class SpaceControllerTest extends CassandraAbstractControllerTest {
+        value = {"cassandra/space-controller.cql", "cassandra/ente-controller.cql",
+                "cassandra/space-ente-controller.cql"})
+public class EnteControllerTest extends CassandraAbstractControllerTest {
 
-    public static final String SPACE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at space-controller
-    private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
-    public static final String SPACE_NAME = "Space name"; // Look at space-controller
+    public static final String ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller
+    private static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
+    public static final String ENTE_NAME = "Ente name"; // Look at space-controller
 
     @Autowired
-    private InstanceSpaceRepository instanceSpaceRepository;
+    private SpaceEnteRepository spaceEnteRepository;
 
     @Test
-    public void find_space_should_return_ok_and_space_entity() {
+    public void find_ente_should_return_ok_and_ente_entity() {
 
         this.testClient
                 .get()
-                .uri("/api/spaces/{id}", SPACE_ID)
+                .uri("/api/entes/{id}", ENTE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$.name").isEqualTo(SPACE_NAME)
-                    .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
-                    .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$.name").isEqualTo(ENTE_NAME)
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
+                    .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
-                .consumeWith(document("spaces-get",
+                .consumeWith(document("entes-get",
                         commonPathParamters(),
                         commonResponseFields()));
     }
 
     @Test
-    public void create_space_using_post_should_return_created_and_space_entity() {
+    public void create_ente_using_post_should_return_created_and_ente_entity() {
 
         this.testClient
                 .post()
-                .uri("/api/spaces").contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes").contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(createSpace()), Space.class)
+                .body(Mono.just(createEnte()), Ente.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                    .jsonPath("$.name").isEqualTo(SPACE_NAME)
-                    .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
-                    .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$.name").isEqualTo(ENTE_NAME)
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
+                    .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
-                .consumeWith(document("spaces-post",
+                .consumeWith(document("entes-post",
                         commonRequestFields(
                                 Arrays.asList(
-                                    fieldWithPath("instanceId")
-                                            .description("Instance identifier (UUID) for this space"))),
+                                    fieldWithPath("spaceId")
+                                            .description("Space identifier (UUID) for this ente"))),
                         commonResponseFields()));
     }
 
     @Test
-    public void create_space_where_instance_no_exist_using_post_should_return_not_found_and_error() {
+    public void create_ente_where_space_no_exist_using_post_should_return_not_found_and_error() {
 
         this.testClient
                 .post()
-                .uri("/api/spaces").contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes").contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(Space.builder()
-                        .name(SPACE_NAME)
-                        .instanceId(UUID.randomUUID())
-                        .build()), Space.class)
+                .body(Mono.just(Ente.builder()
+                        .name(ENTE_NAME)
+                        .spaceId(UUID.randomUUID())
+                        .build()), Ente.class)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
@@ -120,74 +120,74 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
     }
 
     @Test
-    public void create_space_using_put_should_return_created_and_space_entity() {
+    public void create_ente_using_put_should_return_created_and_ente_entity() {
 
         String id = "361370a0-e3e5-45e5-b675-a55fe923873f";
 
         this.testClient
                 .put()
-                .uri("/api/spaces/{id}", id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes/{id}", id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(createSpace()), Space.class)
+                .body(Mono.just(createEnte()), Ente.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                    .jsonPath("$.name").isEqualTo(SPACE_NAME)
-                    .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
-                    .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$.name").isEqualTo(ENTE_NAME)
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
+                    .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
-                .consumeWith(document("spaces-put",
+                .consumeWith(document("entes-put",
                         commonPathParamters(),
                         commonRequestFields(
                                 Arrays.asList(
-                                    fieldWithPath("instanceId")
-                                            .description("Instance identifier (UUID) for this space." +
+                                    fieldWithPath("spaceId")
+                                            .description("Space identifier (UUID) for this ente." +
                                                     "This property can not be updated"))),
                         commonResponseFields()));
     }
 
     @Test
-    public void update_space_using_put_should_return_ok_and_space_entity() {
+    public void update_ente_using_put_should_return_ok_and_ente_entity() {
 
-        String id = "12107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
-        String newName = "Space name updated";
+        String id = "8acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller
+        String newName = "Ente name updated";
 
-        Space spaceUpdated = Space
+        Ente enteUpdated = Ente
                 .builder()
                     .id(UUID.fromString(id))
                     .name(newName)
-                    .instanceId(UUID.randomUUID())
+                    .spaceId(UUID.randomUUID())
                 .build();
 
-        spaceUpdated.setName(newName);
+        enteUpdated.setName(newName);
 
         this.testClient
                 .put()
-                .uri("/api/spaces/" + id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes/" + id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(spaceUpdated), Space.class)
+                .body(Mono.just(enteUpdated), Ente.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(newName)
-                    .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
-                    .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
+                    .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 
     @Test
-    public void find_space_should_return_affordance() {
+    public void find_ente_should_return_affordance() {
 
         this.testClient
                 .get()
-                .uri("/api/spaces/" + SPACE_ID)
+                .uri("/api/entes/" + ENTE_ID)
                 .accept(MediaTypes.HAL_FORMS_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._templates.default.method").isEqualTo("put")
-                    .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
+                    .jsonPath("$._templates.default.properties[?(@.name=='spaceId')].name").isEqualTo("spaceId");
     }
 
     @Test
@@ -195,42 +195,42 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/spaces")
+                .uri("/api/entes")
                 .accept(MediaTypes.HAL_FORMS_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
                     .jsonPath("$._templates.default.method").isEqualTo("post")
-                    .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
+                    .jsonPath("$._templates.default.properties[?(@.name=='spaceId')].name").isEqualTo("spaceId");
     }
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
         fieldDescriptor.add(fieldWithPath("id").ignored());
-        fieldDescriptor.add(fieldWithPath("name").description("Space name"));
+        fieldDescriptor.add(fieldWithPath("name").description("Ente name"));
         return requestFields(fieldDescriptor);
     }
 
     private static PathParametersSnippet commonPathParamters() {
         return pathParameters(
-                parameterWithName("id").description("Space id (UUID string format)")
+                parameterWithName("id").description("Ente id (UUID string format)")
         );
     }
 
     private static ResponseFieldsSnippet commonResponseFields() {
         return responseFields(
-                fieldWithPath("id").description("Space identifier (UUID)"),
-                fieldWithPath("instanceId").description("Instance identifier (UUID) for this space"),
-                fieldWithPath("name").description("Space name"),
+                fieldWithPath("id").description("Ente identifier (UUID)"),
+                fieldWithPath("spaceId").description("Space identifier (UUID) for this ente"),
+                fieldWithPath("name").description("Ente name"),
                 subsectionWithPath("_links")
-                        .description("The space links. " + StringResource.METADATA_INFORMATION));
+                        .description("The ente links. " + StringResource.METADATA_INFORMATION));
     }
 
-    private static Space createSpace() {
-        return Space.builder()
-                .name(SPACE_NAME)
-                .instanceId(UUID.fromString(INSTANCE_ID))
+    private static Ente createEnte() {
+        return Ente.builder()
+                .name(ENTE_NAME)
+                .spaceId(UUID.fromString(SPACE_ID))
                 .build();
     }
 }

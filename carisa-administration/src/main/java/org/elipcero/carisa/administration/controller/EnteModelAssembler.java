@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
@@ -28,28 +28,28 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.lin
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
- * Resources assembler for space
+ * Resources assembler for ente
  *
  * @author David Suárez
  */
 @Component
-public class SpaceModelAssembler implements BasicReactiveRepresentationModelAssembler<Space> {
+public class EnteModelAssembler implements BasicReactiveRepresentationModelAssembler<Ente> {
 
-    public static final String SPACE_REL_NAME = "space";
+    public static final String ENTE_REL_NAME = "ente";
 
     @Override
-    public Flux<Link> addLinks(Space space, ServerWebExchange exchange) {
+    public Flux<Link> addLinks(Ente ente, ServerWebExchange exchange) {
 
         WebFluxLinkBuilder.WebFluxLink self = linkTo(
-                methodOn(SpaceController.class).getById(space.getId().toString()))
+                methodOn(EnteController.class).getById(ente.getId().toString()))
                 .withSelfRel()
-                .andAffordance(methodOn(SpaceController.class)
-                        .updateOrCreate(space.getId().toString(), space));
+                .andAffordance(methodOn(EnteController.class)
+                        .updateOrCreate(ente.getId().toString(), ente));
 
-        WebFluxLinkBuilder.WebFluxLink instances = linkTo(
-                methodOn(InstanceController.class).getById(space.getInstanceId().toString()))
-                .withRel(InstanceModelAssembler.INSTANCE_REL_NAME);
+        WebFluxLinkBuilder.WebFluxLink spaces = linkTo(
+                methodOn(EnteController.class).getById(ente.getSpaceId().toString()))
+                .withRel(SpaceModelAssembler.SPACE_REL_NAME);
 
-        return Flux.concat(self.toMono(), instances.toMono());
+        return Flux.concat(self.toMono(), spaces.toMono());
     }
 }

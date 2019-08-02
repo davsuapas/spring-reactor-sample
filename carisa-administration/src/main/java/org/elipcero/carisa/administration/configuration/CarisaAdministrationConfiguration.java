@@ -16,11 +16,15 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
+import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
+import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
@@ -40,13 +44,15 @@ import org.springframework.context.annotation.Configuration;
 public class CarisaAdministrationConfiguration {
 
     @Autowired
-    private InstanceRepository instanceRepository;
-
-    @Autowired
     private ServiceProperties serviceProperties;
 
     @Autowired
     private DataLockController dataLockController;
+
+    // Instance configuration
+
+    @Autowired
+    private InstanceRepository instanceRepository;
 
     @Bean
     public InstanceService instanceService() {
@@ -54,6 +60,8 @@ public class CarisaAdministrationConfiguration {
                 instanceRepository, serviceProperties, dataLockController,
                 instanceSpaceRepository, spaceRepository);
     }
+
+    // Space configuration
 
     @Autowired
     private SpaceRepository spaceRepository;
@@ -64,5 +72,18 @@ public class CarisaAdministrationConfiguration {
     @Bean
     public SpaceService spaceService() {
         return new DefaultSpaceService(spaceRepository, instanceSpaceRepository, instanceRepository);
+    }
+
+    // Ente configuration
+
+    @Autowired
+    private EnteRepository enteRepository;
+
+    @Autowired
+    private SpaceEnteRepository spaceEnteRepository;
+
+    @Bean
+    public EnteService enteService() {
+        return new DefaultEnteService(enteRepository, spaceEnteRepository, spaceRepository);
     }
 }

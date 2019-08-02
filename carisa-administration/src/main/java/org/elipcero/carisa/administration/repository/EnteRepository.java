@@ -16,25 +16,15 @@
 
 package org.elipcero.carisa.administration.repository;
 
-import org.elipcero.carisa.administration.domain.InstanceSpace;
-import org.springframework.data.cassandra.core.mapping.MapId;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import reactor.core.publisher.Flux;
+import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
 
 import java.util.UUID;
 
 /**
- * Relations between Space and instance repository
+ * Repository for Ente
  *
  * @author David Suárez
  */
-public interface InstanceSpaceRepository extends ReactiveCrudRepository<InstanceSpace, MapId> {
-
-    /**
-     * Find all spaces by instance
-     *
-     * @param instanceId The instance id to find
-     * @return InstanceSpace
-     */
-    Flux<InstanceSpace> findAllByInstanceId(UUID instanceId);
+public interface EnteRepository extends CustomizedReactiveCrudRepository<Ente, UUID> {
 }

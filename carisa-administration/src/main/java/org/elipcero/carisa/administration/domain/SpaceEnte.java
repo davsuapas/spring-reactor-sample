@@ -14,27 +14,30 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
+package org.elipcero.carisa.administration.domain;
 
-import org.elipcero.carisa.administration.domain.InstanceSpace;
-import org.springframework.data.cassandra.core.mapping.MapId;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import reactor.core.publisher.Flux;
+import lombok.Builder;
+import lombok.Getter;
+import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
 
 /**
- * Relations between Space and instance repository
+ * Relation between Spaces and Instance
  *
  * @author David Suárez
  */
-public interface InstanceSpaceRepository extends ReactiveCrudRepository<InstanceSpace, MapId> {
+@Table("carisa_space_ente")
+@Builder
+@Getter
+public class SpaceEnte {
 
-    /**
-     * Find all spaces by instance
-     *
-     * @param instanceId The instance id to find
-     * @return InstanceSpace
-     */
-    Flux<InstanceSpace> findAllByInstanceId(UUID instanceId);
+    @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
+    private UUID spaceId;
+
+    @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+    private UUID enteId;
 }
+

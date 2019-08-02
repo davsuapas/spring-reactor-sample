@@ -14,27 +14,35 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
+package org.elipcero.carisa.administration.domain;
 
-import org.elipcero.carisa.administration.domain.InstanceSpace;
-import org.springframework.data.cassandra.core.mapping.MapId;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import reactor.core.publisher.Flux;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import org.elipcero.carisa.core.data.Entity;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
 
 /**
- * Relations between Space and instance repository
+ * The thinks of space.
+ * The ente are the items of spaces to trace, count, measure, etc.
  *
  * @author David Suárez
  */
-public interface InstanceSpaceRepository extends ReactiveCrudRepository<InstanceSpace, MapId> {
+@Table("carisa_ente")
+@Getter
+public class Ente extends Entity {
 
-    /**
-     * Find all spaces by instance
-     *
-     * @param instanceId The instance id to find
-     * @return InstanceSpace
-     */
-    Flux<InstanceSpace> findAllByInstanceId(UUID instanceId);
+    private UUID spaceId;
+
+    @Setter
+    private String name;
+
+    @Builder
+    public Ente(UUID id, UUID spaceId, String name) {
+        super(id);
+        this.spaceId = spaceId;
+        this.name = name;
+    }
 }

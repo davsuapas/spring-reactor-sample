@@ -16,9 +16,9 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.service.SpaceService;
+import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
@@ -38,23 +38,23 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.lin
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
- * Space controller.
- * @see Space domain
+ * Ente controller.
+ * @see Ente domain
  *
  * @author David Suárez
  */
 @RestController
-@RequestMapping("/api/spaces")
-public class SpaceController {
+@RequestMapping("/api/entes")
+public class EnteController {
 
-    private final CrudHypermediaController<Space> crudHypermediaController;
-    private final SpaceService spaceService;
+    private final CrudHypermediaController<Ente> crudHypermediaController;
+    private final EnteService enteService;
 
-    public SpaceController(SpaceService spaceService, SpaceModelAssembler spaceModelAssembler) {
-        Assert.notNull(spaceModelAssembler, "The spaceModelAssembler can not be null");
-        Assert.notNull(spaceService, "The spaceService can not be null");
-        this.spaceService = spaceService;
-        this.crudHypermediaController = new CrudHypermediaController(spaceModelAssembler);
+    public EnteController(EnteService enteService, EnteModelAssembler enteModelAssembler) {
+        Assert.notNull(enteModelAssembler, "The enteModelAssembler can not be null");
+        Assert.notNull(enteService, "The enteService can not be null");
+        this.enteService = enteService;
+        this.crudHypermediaController = new CrudHypermediaController(enteModelAssembler);
     }
 
     /**
@@ -64,43 +64,43 @@ public class SpaceController {
     @GetMapping
     public Publisher<EntityModel<String>> getMetadata() {
         return linkTo(
-                methodOn(SpaceController.class).getMetadata())
+                methodOn(EnteController.class).getMetadata())
                 .withSelfRel()
-                .andAffordance(methodOn(SpaceController.class).create(null))
+                .andAffordance(methodOn(EnteController.class).create(null))
                 .toMono().map(link -> new EntityModel<>(StringResource.METADATA_INFORMATION, link));
     }
 
     /**
-     * Get space by id
+     * Get Ente by id
      * @param id the space identifier (UUID string)
-     * @return space entity
+     * @return ente entity
      */
     @GetMapping("/{id}")
-    public Publisher<EntityModel<Space>> getById(final @PathVariable("id") String id) {
-        return this.crudHypermediaController.get(this.spaceService.getById(UUID.fromString(id)));
+    public Publisher<EntityModel<Ente>> getById(final @PathVariable("id") String id) {
+        return this.crudHypermediaController.get(this.enteService.getById(UUID.fromString(id)));
     }
 
     /**
-     * Create the space
-     * @param space the space (Id == null)
+     * Create the Ente
+     * @param ente the Ente (Id == null)
      * @return
      */
     @PostMapping
-    public Publisher<ResponseEntity<EntityModel<Space>>> create(final @RequestBody Space space) {
-        return this.crudHypermediaController.create(this.spaceService.create(space));
+    public Publisher<ResponseEntity<EntityModel<Ente>>> create(final @RequestBody Ente ente) {
+        return this.crudHypermediaController.create(this.enteService.create(ente));
     }
 
     /**
-     * Update or create space depending of the identifier if exists.
-     * @param id the space identifier (UUID string)
-     * @param space the space (Id == null)
+     * Update or create the Ente depending of the identifier if exists.
+     * @param id the Ente identifier (UUID string)
+     * @param ente the Ente (Id == null)
      * @return
      */
     @PutMapping("/{id}")
-    public Publisher<ResponseEntity<EntityModel<Space>>> updateOrCreate(
-            final @PathVariable("id") String id, final @RequestBody Space space) {
+    public Publisher<ResponseEntity<EntityModel<Ente>>> updateOrCreate(
+            final @PathVariable("id") String id, final @RequestBody Ente ente) {
 
         return this.crudHypermediaController
-                .updateOrCreate(this.spaceService.updateOrCreate(UUID.fromString(id), space));
+                .updateOrCreate(this.enteService.updateOrCreate(UUID.fromString(id), ente));
     }
 }
