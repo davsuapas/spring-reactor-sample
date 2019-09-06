@@ -16,13 +16,13 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.cassandraunit.spring.CassandraDataSet;
-import org.elipcero.carisa.administration.configuration.DataConfiguration;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
@@ -35,6 +35,7 @@ import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,16 +60,26 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @AutoConfigureWireMock
-@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME,
-        value = {"cassandra/instance-controller.cql", "cassandra/instance-space-controller.cql",
-                 "cassandra/space-controller.cql"})
-public class InstanceControllerTest extends CassandraAbstractControllerTest {
+@SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_instance_controller" })
+public class InstanceControllerTest extends DataAbstractControllerTest {
 
     private static final String INSTANCE_NAME = "Instance name";
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
 
     @Autowired
     private DataLockController dataLockController;
+
+    private static boolean beforeOnce;
+
+    @Before
+    public void prepareData() throws IOException {
+        if (!beforeOnce) {
+            this.executeCommands("instance-controller.cql");
+            this.executeCommands("instance-space-controller.cql");
+            this.executeCommands("space-controller.cql");
+            beforeOnce = true;
+        }
+    }
 
     @Test
     public void find_instance_should_return_ok_and_instance_entity() {

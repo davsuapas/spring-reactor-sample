@@ -23,6 +23,7 @@ import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
 
 import javax.annotation.PostConstruct;
@@ -37,8 +38,10 @@ import javax.annotation.PostConstruct;
 public class CassandraDataLockConfiguration {
 
     @Autowired
-    private ReactiveCassandraOperations cqlTemplate;
+    private CassandraOperations cqlTemplate;
 
+    @Autowired
+    private ReactiveCassandraOperations reactiveCqlTemplate;
 
     @PostConstruct
     public void build() {
@@ -47,7 +50,7 @@ public class CassandraDataLockConfiguration {
 
     @Bean
     public DataLockController dataLockController() {
-        return new CassandraDataLockController(this.cqlTemplate);
+        return new CassandraDataLockController(this.reactiveCqlTemplate);
     }
 
     @AllArgsConstructor
@@ -56,10 +59,9 @@ public class CassandraDataLockConfiguration {
         private CassandraDataLockConfiguration cassandraDataLockConfiguration;
 
         public void BuildIfNecessary() {
-            this.cassandraDataLockConfiguration.cqlTemplate.getReactiveCqlOperations()
-                .execute("CREATE TABLE IF NOT EXISTS data_lock (Id uuid PRIMARY KEY, DateExpired timestamp)")
-                .subscribe(
-                        done -> this.cassandraDataLockConfiguration.log.info("Built datalock schema. Done: {}", done));
+            this.cassandraDataLockConfiguration.cqlTemplate.getCqlOperations()
+                .execute("CREATE TABLE IF NOT EXISTS data_lock (Id uuid PRIMARY KEY, DateExpired timestamp)");
+            this.cassandraDataLockConfiguration.log.info("Built datalock schema.");
         }
     }
 }

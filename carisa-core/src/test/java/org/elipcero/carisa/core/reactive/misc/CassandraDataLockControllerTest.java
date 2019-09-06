@@ -16,9 +16,6 @@
 
 package org.elipcero.carisa.core.reactive.misc;
 
-import org.cassandraunit.spring.CassandraDataSet;
-import org.cassandraunit.spring.CassandraUnitDependencyInjectionIntegrationTestExecutionListener;
-import org.cassandraunit.spring.EmbeddedCassandra;
 import org.elipcero.carisa.core.config.DataConfiguration;
 import org.elipcero.carisa.core.configuration.EnableCassandraDataLock;
 import org.junit.Test;
@@ -27,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.test.StepVerifier;
 
@@ -35,18 +31,12 @@ import java.time.Duration;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 /**
  * @author David Suárez
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CassandraDataLockControllerTest.LockConfiguration.class)
-@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME, value = "cassandra/datalock-controller.cql")
-@TestExecutionListeners(
-        listeners = CassandraUnitDependencyInjectionIntegrationTestExecutionListener.class,
-        mergeMode = MERGE_WITH_DEFAULTS)
-@EmbeddedCassandra
 public class CassandraDataLockControllerTest {
 
     @Autowired

@@ -16,13 +16,13 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.cassandraunit.spring.CassandraDataSet;
-import org.elipcero.carisa.administration.configuration.DataConfiguration;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -31,6 +31,7 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,14 +49,24 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @AutoConfigureWireMock
-@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME,
-        value = {"cassandra/space-controller.cql", "cassandra/ente-controller.cql",
-                "cassandra/space-ente-controller.cql"})
-public class EnteControllerTest extends CassandraAbstractControllerTest {
+@SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_ente_controller" })
+public class EnteControllerTest extends DataAbstractControllerTest {
 
     public static final String ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller
     private static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
     public static final String ENTE_NAME = "Ente name"; // Look at space-controller
+
+    private static boolean beforeOnce;
+
+    @Before
+    public void prepareData() throws IOException {
+        if (!beforeOnce) {
+            this.executeCommands("space-controller.cql");
+            this.executeCommands("ente-controller.cql");
+            this.executeCommands("space-ente-controller.cql");
+            beforeOnce = true;
+        }
+    }
 
     @Autowired
     private SpaceEnteRepository spaceEnteRepository;

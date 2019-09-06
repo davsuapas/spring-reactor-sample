@@ -14,13 +14,13 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.core.config;
+package org.elipcero.carisa.administration.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.cassandra.config.AbstractReactiveCassandraConfiguration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.cassandra.core.cql.keyspace.CreateKeyspaceSpecification;
 import org.springframework.data.cassandra.core.cql.keyspace.DropKeyspaceSpecification;
 
@@ -32,32 +32,13 @@ import java.util.List;
  */
 @EnableConfigurationProperties(CassandraProperties.class)
 @Configuration
-public class DataConfiguration extends AbstractReactiveCassandraConfiguration {
-
-    @Autowired
-    private CassandraProperties cassandraProperties;
-
-    public static final String CONST_KEY_SPACE_NAME = "carisa_core_test";
-
-    @Override
-    protected String getKeyspaceName() {
-        return CONST_KEY_SPACE_NAME;
-    }
-
-    @Override
-    protected boolean getMetricsEnabled() {
-        return false;
-    }
-
-    @Override
-    protected int getPort() {
-        return this.cassandraProperties.getPort();
-    }
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class TestCassandraConfiguration extends CassandraConfiguration {
 
     @Override
     protected List<CreateKeyspaceSpecification> getKeyspaceCreations() {
         final CreateKeyspaceSpecification specification =
-                CreateKeyspaceSpecification.createKeyspace(CONST_KEY_SPACE_NAME)
+                CreateKeyspaceSpecification.createKeyspace(this.getKeyspaceName())
                         .ifNotExists()
                         .withSimpleReplication();
         return Arrays.asList(specification);
@@ -65,6 +46,6 @@ public class DataConfiguration extends AbstractReactiveCassandraConfiguration {
 
     @Override
     protected List<DropKeyspaceSpecification> getKeyspaceDrops() {
-        return Arrays.asList(DropKeyspaceSpecification.dropKeyspace(CONST_KEY_SPACE_NAME));
+        return Arrays.asList(DropKeyspaceSpecification.dropKeyspace(this.getKeyspaceName()));
     }
 }

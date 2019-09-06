@@ -16,13 +16,13 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.cassandraunit.spring.CassandraDataSet;
-import org.elipcero.carisa.administration.configuration.DataConfiguration;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
@@ -34,6 +34,7 @@ import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,11 +54,8 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @AutoConfigureWireMock
-@CassandraDataSet(keyspace = DataConfiguration.CONST_KEY_SPACE_NAME,
-        value = {"cassandra/instance-controller.cql", "cassandra/space-controller.cql",
-                "cassandra/instance-space-controller.cql", "cassandra/ente-controller.cql",
-                "cassandra/space-ente-controller.cql"})
-public class SpaceControllerTest extends CassandraAbstractControllerTest {
+@SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_space_controller" })
+public class SpaceControllerTest extends DataAbstractControllerTest {
 
     public static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
@@ -65,6 +63,20 @@ public class SpaceControllerTest extends CassandraAbstractControllerTest {
 
     @Autowired
     private InstanceSpaceRepository instanceSpaceRepository;
+
+    private static boolean beforeOnce;
+
+    @Before
+    public void prepareData() throws IOException {
+        if (!beforeOnce) {
+            this.executeCommands("instance-controller.cql");
+            this.executeCommands("space-controller.cql");
+            this.executeCommands("instance-space-controller.cql");
+            this.executeCommands("ente-controller.cql");
+            this.executeCommands("space-ente-controller.cql");
+            beforeOnce = true;
+        }
+    }
 
     @Test
     public void find_space_should_return_ok_and_space_entity() {

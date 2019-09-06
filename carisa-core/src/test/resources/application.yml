@@ -1,4 +1,4 @@
 spring:
   data:
     cassandra:
-      port: 9142
+      port: 9042
