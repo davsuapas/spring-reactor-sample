@@ -22,6 +22,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -32,7 +33,7 @@ import (
 // 		Format of the file: /resources/config-<environment>.yaml
 //		Format of environment variable: CARISA_<SERVICENAME>_CONFIG_<ENVIRONMENT>
 // The result is included in data interface
-func LoadConfig(local bool, serviceName string, environment string, out interface{}) {
+func LoadConfig(serviceName string, local bool, environment string, out interface{}) {
 
 	var config []byte
 	var err error
@@ -55,4 +56,23 @@ func LoadConfig(local bool, serviceName string, environment string, out interfac
 	if err = yaml.Unmarshal(config, out); err != nil {
 		panic("Error unmarshal config file: " + resourceName)
 	}
+}
+
+// Getting main parameters of the service
+func MainParams(params []string) (string, bool, string){
+	if len(params) < 3 {
+		panic(
+			`The args number is wrong.
+Use ./servicenname local:<true|false> environment:<string>
+Example: ./serviceName true development`)
+	}
+
+	serviceName := params[0]
+	local, err := strconv.ParseBool(params[1])
+	if err != nil {
+		panic("The local parameter must be bool")
+	}
+	environment := params[2]
+
+	return serviceName, local, environment
 }

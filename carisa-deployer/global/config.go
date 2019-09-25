@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2022 the original author or authors.
+ *  Copyright 2019-2022 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 // Manage several configuration environment
-package carisa_deployer
+package global
 
 import "carisa/core/boots"
 
@@ -23,13 +23,15 @@ type ConfigKubernetes struct {
 	ConfigPath string `yaml:"configPath"`
 }
 
-type Config struct {
+type ConfigContext struct {
 	Kubernetes ConfigKubernetes
 }
 
+// Global configuration context
+var Config ConfigContext
+
 // Load configuration of the service depending of environment
-func LoadConfig(local bool, serviceName string, environment string) Config {
-	cnf := Config{}
-	boots.LoadConfig(local, serviceName, environment, &cnf)
-	return cnf
+func LoadConfig(serviceName string, local bool, environment string) {
+	Config = ConfigContext{}
+	boots.LoadConfig(serviceName, local, environment, &Config)
 }

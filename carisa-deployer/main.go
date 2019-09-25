@@ -17,11 +17,16 @@
 package carisa_deployer
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"carisa/core/boots"
+	"carisa/deployer/global"
+	"os"
 )
 
-func TestLoadConfig(t *testing.T) {
-	cnf := LoadConfig(true, "sn", "test")
-	assert.Equal(t, "$HOME/.kube/config", cnf.Kubernetes.ConfigPath, "should return config path for kubernetes")
+func main() {
+	loadConfig(os.Args)
+}
+
+func loadConfig(params []string) {
+	serviceName, local, env := boots.MainParams(params)
+	global.LoadConfig(serviceName, local, env)
 }
