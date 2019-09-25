@@ -14,28 +14,18 @@
  *  limitations under the License.
  */
 
-// Manage several configuration environment
-package global
+// Build kubernetes environment
+package kubernetes
 
-import "carisa/core/boots"
-
-type ConfigKubernetes struct {
-	ConfigPath string `yaml:"configPath"`
+type Deployer struct {
+	configPath string
 }
 
-type ConfigContext struct {
-	Kubernetes ConfigKubernetes
+func NewDeployer(configPath string) *Deployer {
+	return &Deployer{configPath}
 }
 
-// Global configuration context
-var Config ConfigContext
+// Create creates kubernetes namespace
+func Create() {
 
-// LoadConfig loads configuration of the service depending of environment
-func LoadConfig(params []string) {
-	Config = ConfigContext{}
-	serviceName, local, env := boots.MainParams(params)
-	if serviceName == "" {
-		return
-	}
-	boots.LoadConfig(serviceName, local, env, &Config)
 }

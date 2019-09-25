@@ -58,6 +58,15 @@ func TestMainParams(t *testing.T) {
 	assert.Equal(t, "test", env, "should return the environment name")
 }
 
+func TestMainParamsNoArgs(t *testing.T) {
+
+	sn, local, env := MainParams([]string{"sn"})
+
+	assert.Equal(t, "", sn, "should return blank")
+	assert.Equal(t, false, local, "should return local equal false")
+	assert.Equal(t, "", env, "should return blank")
+}
+
 func TestMainParamsWithArgsWrong(t *testing.T) {
 	assert.Panics(t, func() {MainParams([]string{"true", "test"})}, "should do panic")
 }

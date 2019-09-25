@@ -42,7 +42,7 @@ func LoadConfig(serviceName string, local bool, environment string, out interfac
 	if local {
 		resourceName = fmt.Sprintf("./resources/config-%s.yaml", environment)
 		if config, err = ioutil.ReadFile(resourceName); err != nil {
-			panic("Error reading config file: " + resourceName)
+			panic("error reading config file: " + resourceName)
 		}
 	} else {
 		resourceName = fmt.Sprintf(
@@ -54,12 +54,17 @@ func LoadConfig(serviceName string, local bool, environment string, out interfac
 	}
 
 	if err = yaml.Unmarshal(config, out); err != nil {
-		panic("Error unmarshal config file: " + resourceName)
+		panic("error unmarshal config file: " + resourceName)
 	}
 }
 
 // Getting main parameters of the service
-func MainParams(params []string) (string, bool, string){
+func MainParams(params []string) (string, bool, string) {
+
+	if len(params) == 1 {
+		return "", false, ""
+	}
+
 	if len(params) < 3 {
 		panic(
 			`The args number is wrong.
@@ -70,7 +75,7 @@ Example: ./serviceName true development`)
 	serviceName := params[0]
 	local, err := strconv.ParseBool(params[1])
 	if err != nil {
-		panic("The local parameter must be bool")
+		panic("the local parameter must be bool")
 	}
 	environment := params[2]
 
