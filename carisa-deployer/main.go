@@ -17,16 +17,10 @@
 package carisa_deployer
 
 import (
-	"carisa/core/boots"
 	"carisa/deployer/global"
 	"os"
 )
 
 func main() {
-	loadConfig(os.Args)
-}
-
-func loadConfig(params []string) {
-	serviceName, local, env := boots.MainParams(params)
-	global.LoadConfig(serviceName, local, env)
+	global.LoadConfig(os.Args)
 }

@@ -22,6 +22,6 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	LoadConfig("sn", true, "test")
+	LoadConfig([]string{"sn", "true", "test"})
 	assert.Equal(t, "$HOME/.kube/config", Config.Kubernetes.ConfigPath, "should return config path for kubernetes")
 }

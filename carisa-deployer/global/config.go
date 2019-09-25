@@ -31,7 +31,8 @@ type ConfigContext struct {
 var Config ConfigContext
 
 // Load configuration of the service depending of environment
-func LoadConfig(serviceName string, local bool, environment string) {
+func LoadConfig(params []string) {
 	Config = ConfigContext{}
-	boots.LoadConfig(serviceName, local, environment, &Config)
+	serviceName, local, env := boots.MainParams(params)
+	boots.LoadConfig(serviceName, local, env, &Config)
 }
