@@ -18,30 +18,42 @@
 package kubernetes
 
 import (
+	apiv1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/kubernetes/typed/core/v1"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
 )
 
+// Domain to create namespace
+type DeployerCreation struct {
+	Namespace string
+}
+
 type Deployer struct {
-	configPath string
+	apiCore corev1.CoreV1Interface
 }
 
-func NewDeployer(configPath string) *Deployer {
-	return &Deployer{configPath}
-}
+func NewDeployer(configPath string) (*Deployer, error) {
+	config, err := clientcmd.BuildConfigFromFlags("", configPath)
 
-// Create creates kubernetes namespace
-func CreateNamespace() {
-
-}
-
-func (deployer *Deployer) client() v1.CoreV1Interface {
-	config, err := clientcmd.BuildConfigFromFlags("", deployer.configPath)
 	clientSet, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return clientSet.CoreV1()
+
+	return &Deployer{clientSet.CoreV1()}, err
+}
+
+// Create makes kubernetes namespace
+func (deployer *Deployer) CreateNamespace(creation DeployerCreation) error {
+	_, err := deployer.apiCore.Namespaces().Create(
+		&apiv1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: creation.Namespace}})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return err
 }
