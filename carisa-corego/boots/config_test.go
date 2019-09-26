@@ -27,13 +27,23 @@ type config struct {
 	Key1 string
 }
 
+func TestLoadConfigWithNoArgs(t *testing.T) {
+
+	cnf := config{}
+
+	LoadConfig([]string{"sn"}, &cnf)
+
+	assert.Equal(t, "", cnf.Key, "should return default values")
+	assert.Equal(t, "", cnf.Key1, "should return default values")
+}
+
 func TestLoadConfigFromEnvironmentVariables(t *testing.T) {
 
 	os.Setenv("CARISA_SN_CONFIG_TEST", "key: \"value\"\nkey1: \"value1\"")
 
 	cnf := config{}
 
-	LoadConfig("sn", false,"test", &cnf)
+	LoadConfig([]string{"sn", "false","test"}, &cnf)
 
 	assert.Equal(t, "value", cnf.Key, "should return the value from environment configuration")
 	assert.Equal(t, "value1", cnf.Key1, "should return the value1 from environment configuration")
@@ -43,7 +53,7 @@ func TestLoadConfigFromLocal(t *testing.T) {
 
 	cnf := config{}
 
-	LoadConfig("sn", true, "test", &cnf)
+	LoadConfig([]string{"sn", "true", "test"}, &cnf)
 
 	assert.Equal(t, "value", cnf.Key, "should return the value from local configuration")
 	assert.Equal(t, "value1", cnf.Key1, "should return the value1 from local configuration")
@@ -51,7 +61,7 @@ func TestLoadConfigFromLocal(t *testing.T) {
 
 func TestMainParams(t *testing.T) {
 
-	sn, local, env := MainParams([]string{"sn", "true", "test"})
+	sn, local, env := mainParams([]string{"sn", "true", "test"})
 
 	assert.Equal(t, "sn", sn, "should return the service name")
 	assert.Equal(t, true, local, "should return local equal true")
@@ -60,7 +70,7 @@ func TestMainParams(t *testing.T) {
 
 func TestMainParamsNoArgs(t *testing.T) {
 
-	sn, local, env := MainParams([]string{"sn"})
+	sn, local, env := mainParams([]string{"sn"})
 
 	assert.Equal(t, "", sn, "should return blank")
 	assert.Equal(t, false, local, "should return local equal false")
@@ -68,9 +78,9 @@ func TestMainParamsNoArgs(t *testing.T) {
 }
 
 func TestMainParamsWithArgsWrong(t *testing.T) {
-	assert.Panics(t, func() {MainParams([]string{"true", "test"})}, "should do panic")
+	assert.Panics(t, func() {mainParams([]string{"true", "test"})}, "should do panic")
 }
 
 func TestMainParamsWithVariableLocalWrong(t *testing.T) {
-	assert.Panics(t, func() {MainParams([]string{"sn", "other", "test"})}, "should do panic")
+	assert.Panics(t, func() {mainParams([]string{"sn", "other", "test"})}, "should do panic")
 }

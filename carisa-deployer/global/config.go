@@ -33,9 +33,5 @@ var Config ConfigContext
 // LoadConfig loads configuration of the service depending of environment
 func LoadConfig(params []string) {
 	Config = ConfigContext{}
-	serviceName, local, env := boots.MainParams(params)
-	if serviceName == "" {
-		return
-	}
-	boots.LoadConfig(serviceName, local, env, &Config)
+	boots.LoadConfig(params, &Config)
 }

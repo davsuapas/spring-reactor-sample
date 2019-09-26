@@ -28,16 +28,23 @@ import (
 
 // LoadConfig loads configuration from yaml files or environment variables files
 // depending of the local parameter.
+// params is a array of serviceName, local and environment
 // If local = true is loaded from yaml file otherwise it's loaded from environment variables.
 // The files are located in resources path.
 // 		Format of the file: /resources/config-<environment>.yaml
 //		Format of environment variable: CARISA_<SERVICENAME>_CONFIG_<ENVIRONMENT>
 // The result is included in data interface
-func LoadConfig(serviceName string, local bool, environment string, out interface{}) {
+func LoadConfig(params []string, out interface{}) {
 
 	var config []byte
 	var err error
 	var resourceName string
+
+	serviceName, local, environment := mainParams(params)
+
+	if serviceName == "" {
+		return // default values
+	}
 
 	if local {
 		resourceName = fmt.Sprintf("./resources/config-%s.yaml", environment)
@@ -59,7 +66,7 @@ func LoadConfig(serviceName string, local bool, environment string, out interfac
 }
 
 // Getting main parameters of the service
-func MainParams(params []string) (string, bool, string) {
+func mainParams(params []string) (string, bool, string) {
 
 	if len(params) == 1 {
 		return "", false, ""
@@ -68,8 +75,8 @@ func MainParams(params []string) (string, bool, string) {
 	if len(params) < 3 {
 		panic(
 			`The args number is wrong.
-Use ./servicenname local:<true|false> environment:<string>
-Example: ./serviceName true development`)
+		Use ./servicenname local:<true|false> environment:<string>
+		Example: ./serviceName true development`)
 	}
 
 	serviceName := params[0]

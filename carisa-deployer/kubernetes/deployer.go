@@ -14,8 +14,15 @@
  *  limitations under the License.
  */
 
-// Build kubernetes environment
+// Deploy kubernetes environment
 package kubernetes
+
+import (
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/tools/clientcmd"
+	"log"
+)
 
 type Deployer struct {
 	configPath string
@@ -26,6 +33,15 @@ func NewDeployer(configPath string) *Deployer {
 }
 
 // Create creates kubernetes namespace
-func Create() {
+func CreateNamespace() {
 
+}
+
+func (deployer *Deployer) client() v1.CoreV1Interface {
+	config, err := clientcmd.BuildConfigFromFlags("", deployer.configPath)
+	clientSet, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return clientSet.CoreV1()
 }
