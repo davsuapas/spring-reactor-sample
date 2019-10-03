@@ -14,29 +14,16 @@
  *  limitations under the License.
  */
 
-// Manage several configuration environment
 package global
 
-import "carisa/core/boots"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
-type ConfigKubernetes struct {
-	ConfigPath string `yaml:"configPath"`
-}
-
-type ConfigServer struct {
-	Port int `yaml:"port"`
-}
-
-type ConfigContext struct {
-	Kubernetes ConfigKubernetes
-	Server ConfigServer
-}
-
-// Global configuration context
-var Config ConfigContext
-
-// LoadConfig loads configuration of the Service depending of environment
-func LoadConfig(params []string) {
+func TestKubernetesWeb(t *testing.T) {
 	Config = ConfigContext{}
-	boots.LoadConfig(params, &Config)
+	Config.Kubernetes.ConfigPath = "pathwrong"
+	s := new(ServiceConfig)
+	assert.Panics(t, func(){s.kubernetesWeb()}, "should return kubernetes error")
 }

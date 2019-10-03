@@ -14,29 +14,26 @@
  *  limitations under the License.
  */
 
-// Manage several configuration environment
+// Dependencies controller
 package global
 
-import "carisa/core/boots"
+import "carisa/deployer/kubernetes"
 
-type ConfigKubernetes struct {
-	ConfigPath string `yaml:"configPath"`
+type service interface {
+	kubernetesDeployer() *kubernetes.Deployer
+	kubernetesWeb() *kubernetes.Web
 }
 
-type ConfigServer struct {
-	Port int `yaml:"port"`
+type ServiceConfig struct {}
+
+func (ServiceConfig) kubernetesDeployer() *kubernetes.Deployer  {
+	deployer, err := kubernetes.NewDeployer(Config.Kubernetes.ConfigPath)
+	if err != nil {
+		panic("error creating kubernetes deployer; error: " +  err.Error())
+	}
+	return deployer
 }
 
-type ConfigContext struct {
-	Kubernetes ConfigKubernetes
-	Server ConfigServer
-}
-
-// Global configuration context
-var Config ConfigContext
-
-// LoadConfig loads configuration of the Service depending of environment
-func LoadConfig(params []string) {
-	Config = ConfigContext{}
-	boots.LoadConfig(params, &Config)
+func (s *ServiceConfig) kubernetesWeb() *kubernetes.Web {
+	return &kubernetes.Web{Deployer: s.kubernetesDeployer()}
 }

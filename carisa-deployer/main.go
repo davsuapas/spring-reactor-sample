@@ -1,3 +1,5 @@
+//+build !test
+
 /*
  *  Copyright 2019-2022 the original author or authors.
  *
@@ -17,10 +19,16 @@
 package carisa_deployer
 
 import (
+	"carisa/core/web"
 	"carisa/deployer/global"
 	"os"
 )
 
 func main() {
 	global.LoadConfig(os.Args)
+	w := &global.WebServer{Service: new(global.ServiceConfig)}
+	web.
+		ConfigureServer().
+		Routes(w.Routes).
+		Start(global.Config.Server.Port)
 }

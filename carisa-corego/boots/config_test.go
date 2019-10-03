@@ -33,8 +33,8 @@ func TestLoadConfigWithNoArgs(t *testing.T) {
 
 	LoadConfig([]string{"sn"}, &cnf)
 
-	assert.Equal(t, "", cnf.Key, "should return default values")
-	assert.Equal(t, "", cnf.Key1, "should return default values")
+	assert.Equal(t, "dvalue", cnf.Key, "should return default values")
+	assert.Equal(t, "dvalue1", cnf.Key1, "should return default values")
 }
 
 func TestLoadConfigFromEnvironmentVariables(t *testing.T) {
@@ -43,7 +43,7 @@ func TestLoadConfigFromEnvironmentVariables(t *testing.T) {
 
 	cnf := config{}
 
-	LoadConfig([]string{"sn", "false","test"}, &cnf)
+	LoadConfig([]string{"sn", "false", "test"}, &cnf)
 
 	assert.Equal(t, "value", cnf.Key, "should return the value from environment configuration")
 	assert.Equal(t, "value1", cnf.Key1, "should return the value1 from environment configuration")
@@ -73,14 +73,14 @@ func TestMainParamsNoArgs(t *testing.T) {
 	sn, local, env := mainParams([]string{"sn"})
 
 	assert.Equal(t, "", sn, "should return blank")
-	assert.Equal(t, false, local, "should return local equal false")
-	assert.Equal(t, "", env, "should return blank")
+	assert.Equal(t, true, local, "should return local equal false")
+	assert.Equal(t, "development", env, "should return blank")
 }
 
 func TestMainParamsWithArgsWrong(t *testing.T) {
-	assert.Panics(t, func() {mainParams([]string{"true", "test"})}, "should do panic")
+	assert.Panics(t, func() { mainParams([]string{"true", "test"}) }, "should do panic")
 }
 
 func TestMainParamsWithVariableLocalWrong(t *testing.T) {
-	assert.Panics(t, func() {mainParams([]string{"sn", "other", "test"})}, "should do panic")
+	assert.Panics(t, func() { mainParams([]string{"sn", "other", "test"}) }, "should do panic")
 }

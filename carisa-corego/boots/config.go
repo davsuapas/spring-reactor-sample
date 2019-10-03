@@ -42,14 +42,10 @@ func LoadConfig(params []string, out interface{}) {
 
 	serviceName, local, environment := mainParams(params)
 
-	if serviceName == "" {
-		return // default values
-	}
-
 	if local {
 		resourceName = fmt.Sprintf("./resources/config-%s.yaml", environment)
 		if config, err = ioutil.ReadFile(resourceName); err != nil {
-			panic("error reading config file: " + resourceName)
+			panic("error reading config file: " + resourceName + "; error: " + err.Error())
 		}
 	} else {
 		resourceName = fmt.Sprintf(
@@ -61,7 +57,7 @@ func LoadConfig(params []string, out interface{}) {
 	}
 
 	if err = yaml.Unmarshal(config, out); err != nil {
-		panic("error unmarshal config file: " + resourceName)
+		panic("error unmarshal config file: " + resourceName + "; error: " + err.Error())
 	}
 }
 
@@ -69,7 +65,7 @@ func LoadConfig(params []string, out interface{}) {
 func mainParams(params []string) (string, bool, string) {
 
 	if len(params) == 1 {
-		return "", false, ""
+		return "", true, "development"
 	}
 
 	if len(params) < 3 {

@@ -14,29 +14,16 @@
  *  limitations under the License.
  */
 
-// Manage several configuration environment
+// Web configuration
 package global
 
-import "carisa/core/boots"
+import "github.com/labstack/echo/v4"
 
-type ConfigKubernetes struct {
-	ConfigPath string `yaml:"configPath"`
+type WebServer struct {
+	Service service
 }
 
-type ConfigServer struct {
-	Port int `yaml:"port"`
-}
-
-type ConfigContext struct {
-	Kubernetes ConfigKubernetes
-	Server ConfigServer
-}
-
-// Global configuration context
-var Config ConfigContext
-
-// LoadConfig loads configuration of the Service depending of environment
-func LoadConfig(params []string) {
-	Config = ConfigContext{}
-	boots.LoadConfig(params, &Config)
+func (server *WebServer) Routes(e *echo.Echo) {
+	kw := server.Service.kubernetesWeb()
+	e.POST("/api/platforms", kw.Create)
 }

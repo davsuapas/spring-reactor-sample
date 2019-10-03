@@ -14,29 +14,35 @@
  *  limitations under the License.
  */
 
-// Manage several configuration environment
-package global
+// Server configuration
+package web
 
-import "carisa/core/boots"
+import (
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"strconv"
+)
 
-type ConfigKubernetes struct {
-	ConfigPath string `yaml:"configPath"`
+type Web struct {
+	e *echo.Echo
 }
 
-type ConfigServer struct {
-	Port int `yaml:"port"`
+// Configure initialize web server
+func ConfigureServer() *Web {
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	web := &Web{e}
+	return web
 }
 
-type ConfigContext struct {
-	Kubernetes ConfigKubernetes
-	Server ConfigServer
+// Routes is route template.
+func (web *Web) Routes(r func(*echo.Echo)) *Web {
+	r(web.e)
+	return web
 }
 
-// Global configuration context
-var Config ConfigContext
-
-// LoadConfig loads configuration of the Service depending of environment
-func LoadConfig(params []string) {
-	Config = ConfigContext{}
-	boots.LoadConfig(params, &Config)
+// Start server
+func (web *Web) Start(port int) {
+	web.e.Logger.Fatal(web.e.Start(":" + strconv.Itoa(port)))
 }

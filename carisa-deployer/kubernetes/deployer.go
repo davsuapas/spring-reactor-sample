@@ -26,14 +26,15 @@ import (
 	"log"
 )
 
-// Domain to create namespace
-type DeployerCreation struct {
-	Namespace string
-}
+type (
+	deployerCreation struct {
+		Namespace string
+	}
 
-type Deployer struct {
-	apiCore corev1.CoreV1Interface
-}
+	Deployer struct {
+		apiCore corev1.CoreV1Interface
+	}
+)
 
 func NewDeployer(configPath string) (*Deployer, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", configPath)
@@ -47,7 +48,7 @@ func NewDeployer(configPath string) (*Deployer, error) {
 }
 
 // Create makes kubernetes namespace
-func (deployer *Deployer) CreateNamespace(creation DeployerCreation) error {
+func (deployer *Deployer) CreateNamespace(creation *deployerCreation) error {
 	_, err := deployer.apiCore.Namespaces().Create(
 		&apiv1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: creation.Namespace}})
 

@@ -14,29 +14,19 @@
  *  limitations under the License.
  */
 
-// Manage several configuration environment
-package global
+package web
 
-import "carisa/core/boots"
+import (
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
-type ConfigKubernetes struct {
-	ConfigPath string `yaml:"configPath"`
+func TestConfigureServer(t *testing.T) {
+	assert.NotNil(t, ConfigureServer(), "should configure web server")
 }
 
-type ConfigServer struct {
-	Port int `yaml:"port"`
-}
-
-type ConfigContext struct {
-	Kubernetes ConfigKubernetes
-	Server ConfigServer
-}
-
-// Global configuration context
-var Config ConfigContext
-
-// LoadConfig loads configuration of the Service depending of environment
-func LoadConfig(params []string) {
-	Config = ConfigContext{}
-	boots.LoadConfig(params, &Config)
+func TestRoutes(t *testing.T) {
+	w := ConfigureServer().Routes(func(e *echo.Echo) { e.GET("/path", nil) })
+	assert.Equal(t, 1, len(w.e.Routes()), "should return one route")
 }

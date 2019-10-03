@@ -24,9 +24,5 @@ import (
 func TestLoadConfig(t *testing.T) {
 	LoadConfig([]string{"sn", "true", "test"})
 	assert.Equal(t, "$HOME/.kube/config", Config.Kubernetes.ConfigPath, "should return config path for kubernetes")
-}
-
-func TestLoadConfigNoArgs(t *testing.T) {
-	LoadConfig([]string{"sn"})
-	assert.Equal(t, "", Config.Kubernetes.ConfigPath, "should return blank in config path")
+	assert.Equal(t, 1881, Config.Server.Port, "should return server port")
 }

@@ -1,2 +1,4 @@
+server:
+  port: 1881
 kubernetes:
   configPath: "$HOME/.kube/config"
