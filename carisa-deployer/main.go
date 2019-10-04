@@ -16,7 +16,7 @@
  *  limitations under the License.
  */
 
-package carisa_deployer
+package main
 
 import (
 	"carisa/core/web"
