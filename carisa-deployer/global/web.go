@@ -25,5 +25,5 @@ type WebServer struct {
 
 func (server *WebServer) Routes(e *echo.Echo) {
 	kw := server.Service.kubernetesWeb()
-	e.POST("/api/platforms", kw.Create)
+	e.POST("/api/platforms/kubernetes/create", kw.Create)
 }

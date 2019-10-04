@@ -53,7 +53,7 @@ func (deployer *Deployer) CreateNamespace(creation *deployerCreation) error {
 		&apiv1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: creation.Namespace}})
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Creating Namespace in kubernetes", err)
 	}
 
 	return err
