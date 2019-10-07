@@ -1,0 +1,4 @@
+log:
+  level: info
+  format: standard
+  output: standard
