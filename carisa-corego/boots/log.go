@@ -24,8 +24,8 @@ import (
 
 type LogConfiguration struct {
 	Level  string `yaml:"level"`
-	Format string `yaml:"format, omitempty"`
-	Output string `yaml:"output, omitempty"`
+	Format string `yaml:"format,omitempty"`
+	Output string `yaml:"output,omitempty"`
 }
 
 // Load log configuration

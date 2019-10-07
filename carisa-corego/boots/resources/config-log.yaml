@@ -1,4 +1,4 @@
 log:
-  level: info
-  format: standard
-  output: standard
+  level: "info"
+  format: "json"
+  output: "stdout"

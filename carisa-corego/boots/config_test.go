@@ -22,10 +22,16 @@ import (
 	"testing"
 )
 
-type config struct {
-	Key  string
-	Key1 string
-}
+type (
+	config struct {
+		Key  string
+		Key1 string
+	}
+
+	logC struct {
+		Log LogConfiguration
+	}
+)
 
 func TestLoadConfigWithNoArgs(t *testing.T) {
 
@@ -83,4 +89,26 @@ func TestMainParamsWithArgsWrong(t *testing.T) {
 
 func TestMainParamsWithVariableLocalWrong(t *testing.T) {
 	assert.Panics(t, func() { mainParams([]string{"sn", "other", "test"}) }, "should do panic")
+}
+
+func TestLoadLogConfig(t *testing.T) {
+
+	cnf := logC{}
+
+	LoadConfig([]string{"sn", "true", "log"}, &cnf)
+
+	assert.Equal(t, "info", cnf.Log.Level, "should return info level")
+	assert.Equal(t, "json", cnf.Log.Format, "should return json formatter")
+	assert.Equal(t, "stdout", cnf.Log.Output, "should return stdout output")
+}
+
+func TestLoadLogConfigWithDefault(t *testing.T) {
+
+	cnf := logC{}
+
+	LoadConfig([]string{"sn", "true", "log1"}, &cnf)
+
+	assert.Equal(t, "info", cnf.Log.Level, "should return info level")
+	assert.Equal(t, "", cnf.Log.Format, "should return blank")
+	assert.Equal(t, "", cnf.Log.Output, "should return blank")
 }
