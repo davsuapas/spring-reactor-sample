@@ -18,6 +18,7 @@
 package kubernetes
 
 import (
+	"carisa/core/boots"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -29,18 +30,27 @@ type (
 
 	Web struct {
 		Deployer *Deployer
+		log      *boots.LogWrap
 	}
 )
+
+func NewWeb(d *Deployer, l *boots.LogWrap) *Web {
+	return &Web{d, l.Module("webapi")}
+}
 
 // Create accepts POST request and create the kubernetes namespace
 func (web *Web) Create(c echo.Context) error {
 	creation := new(webDeployerCreation)
+	logc := web.log.Function("create")
 
 	if err := c.Bind(creation); err != nil || creation.Namespace == "" {
+		logc.Errorf("Impossible recover information for namespace: '%s'. Error: '%s'", creation.Namespace, err)
 		return echo.NewHTTPError(http.StatusBadRequest, "Impossible recover information")
 	}
 	if err := web.Deployer.CreateNamespace(&deployerCreation{creation.Namespace}); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Impossible create kubernetes namespace: " + creation.Namespace)
+		logc.Errorf("Impossible create kubernetes namespace: '%s'. Error: '%s'", creation.Namespace, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Impossible create kubernetes namespace: "+creation.Namespace)
 	}
+
 	return c.JSON(http.StatusCreated, creation)
 }

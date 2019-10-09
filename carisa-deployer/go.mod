@@ -8,6 +8,7 @@ require (
 	carisa/core v0.0.0-00010101000000-000000000000
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/labstack/echo/v4 v4.1.10
+	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190923035154-9ee001bba392 // indirect

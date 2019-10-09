@@ -1,4 +1,7 @@
 server:
+  name: "sn"
   port: 1881
 kubernetes:
   configPath: "$HOME/.kube/config"
+log:
+  level: info

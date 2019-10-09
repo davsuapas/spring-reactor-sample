@@ -17,6 +17,7 @@
 package kubernetes
 
 import (
+	"carisa/deployer/global"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -36,7 +37,7 @@ func TestCreateWithStateOk(t *testing.T) {
 		assert.Equal(t, http.StatusCreated, rec.Code, "should return status created")
 		assert.Equal(t, body, rec.Body.String(), "should return namespace created")
 		n, _ := w.Deployer.apiCore.Namespaces().List(metav1.ListOptions{})
-		assert.Equal(t,1, len(n.Items), "should return one namespace")
+		assert.Equal(t, 1, len(n.Items), "should return one namespace")
 	}
 }
 
@@ -57,11 +58,11 @@ func mockHttp(body string) (*httptest.ResponseRecorder, echo.Context, *Web) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	w := &Web{mockNewDeployer()}
+	w := NewWeb(mockNewDeployer(), global.LogTest())
 	return rec, c, w
 }
 
 func mockNewDeployer() *Deployer {
 	clientSet := fake.NewSimpleClientset()
-	return &Deployer{clientSet.CoreV1()}
+	return &Deployer{clientSet.CoreV1(), global.LogTest()}
 }

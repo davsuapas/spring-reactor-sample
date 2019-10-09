@@ -14,16 +14,25 @@
  *  limitations under the License.
  */
 
-package global
+package configuration
 
 import (
+	"carisa/deployer/kubernetes"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestKubernetesWeb(t *testing.T) {
-	Config = ConfigContext{}
-	Config.Kubernetes.ConfigPath = "pathwrong"
-	s := new(ServiceConfig)
-	assert.Panics(t, func(){s.kubernetesWeb()}, "should return kubernetes error")
+type mockWeb struct {
+}
+
+func (w *mockWeb) kubernetesWeb() *kubernetes.Web {
+	return &kubernetes.Web{}
+}
+
+func TestWebRoutes(t *testing.T) {
+	e := echo.New()
+	w := NewWebServer(&mockWeb{})
+	w.Routes(e)
+	assert.Equal(t, 1, len(e.Routes()), "should return routes")
 }

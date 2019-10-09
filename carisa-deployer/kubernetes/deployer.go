@@ -18,12 +18,13 @@
 package kubernetes
 
 import (
+	"carisa/core/boots"
+	"carisa/deployer/global"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
-	"log"
 )
 
 type (
@@ -33,28 +34,28 @@ type (
 
 	Deployer struct {
 		apiCore corev1.CoreV1Interface
+		log     *boots.LogWrap
 	}
 )
 
-func NewDeployer(configPath string) (*Deployer, error) {
-	config, err := clientcmd.BuildConfigFromFlags("", configPath)
+func NewDeployer(config *global.ConfigContext, log *boots.LogWrap) (*Deployer, error) {
+	logMod := log.Module("kubernetes")
+	logMod.Info("kubernetes is configured with path: " + config.Kubernetes.ConfigPath)
 
-	clientSet, err := kubernetes.NewForConfig(config)
+	cnf, err := clientcmd.BuildConfigFromFlags("", config.Kubernetes.ConfigPath)
+
+	clientSet, err := kubernetes.NewForConfig(cnf)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
-	return &Deployer{clientSet.CoreV1()}, err
+	return &Deployer{clientSet.CoreV1(), logMod}, err
 }
 
 // Create makes kubernetes namespace
 func (deployer *Deployer) CreateNamespace(creation *deployerCreation) error {
 	_, err := deployer.apiCore.Namespaces().Create(
 		&apiv1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: creation.Namespace}})
-
-	if err != nil {
-		log.Println("Creating Namespace in kubernetes", err)
-	}
 
 	return err
 }

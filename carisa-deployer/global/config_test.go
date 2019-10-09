@@ -22,7 +22,17 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	LoadConfig([]string{"sn", "true", "test"})
-	assert.Equal(t, "$HOME/.kube/config", Config.Kubernetes.ConfigPath, "should return config path for kubernetes")
-	assert.Equal(t, 1881, Config.Server.Port, "should return server port")
+	cnf := LoadConfig([]string{"sn", "true", "test"})
+	assert.Equal(t, "$HOME/.kube/config", cnf.Kubernetes.ConfigPath, "should return config path for kubernetes")
+	assert.Equal(t, 1881, cnf.Server.Port, "should return server port")
+	assert.Equal(t, "info", cnf.Log.Level, "should return log level")
+}
+
+func TestGetLog(t *testing.T) {
+	log := Log(LoadConfig([]string{"sn", "true", "test"}))
+	assert.Equal(t, "sn", log.Data["service"], "should return log configured")
+}
+
+func TestGetLogForTesting(t *testing.T) {
+	assert.Equal(t, "service", LogTest().Data["service"], "should return log configured")
 }

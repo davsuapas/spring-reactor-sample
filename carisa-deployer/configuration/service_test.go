@@ -14,16 +14,18 @@
  *  limitations under the License.
  */
 
-// Web configuration
-package global
+package configuration
 
-import "github.com/labstack/echo/v4"
+import (
+	"carisa/deployer/global"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
-type WebServer struct {
-	Service service
-}
-
-func (server *WebServer) Routes(e *echo.Echo) {
-	kw := server.Service.kubernetesWeb()
-	e.POST("/api/platforms/kubernetes/create", kw.Create)
+func TestKubernetesWeb(t *testing.T) {
+	c := global.ConfigContext{}
+	c.Kubernetes.ConfigPath = "pathwrong"
+	c.Log.Level = "info"
+	s := NewService(&c)
+	assert.Panics(t, func() { s.kubernetesWeb() }, "should return kubernetes error")
 }

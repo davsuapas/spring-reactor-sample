@@ -24,19 +24,29 @@ type ConfigKubernetes struct {
 }
 
 type ConfigServer struct {
-	Port int `yaml:"port"`
+	Name string `yaml:"name"`
+	Port int    `yaml:"port"`
 }
 
 type ConfigContext struct {
 	Kubernetes ConfigKubernetes
-	Server ConfigServer
+	Server     ConfigServer
+	Log        boots.LogConfiguration
 }
 
-// Global configuration context
-var Config ConfigContext
+// Load loads configuration of the Service depending of environment
+func LoadConfig(params []string) *ConfigContext {
+	config := &ConfigContext{}
+	boots.LoadConfig(params, config)
+	return config
+}
 
-// LoadConfig loads configuration of the Service depending of environment
-func LoadConfig(params []string) {
-	Config = ConfigContext{}
-	boots.LoadConfig(params, &Config)
+// Load log from configuration context
+func Log(config *ConfigContext) *boots.LogWrap {
+	return boots.LoadLog(&config.Log, config.Server.Name)
+}
+
+// For test
+func LogTest() *boots.LogWrap {
+	return boots.LoadLog(&boots.LogConfiguration{Level: "debug"}, "service")
 }

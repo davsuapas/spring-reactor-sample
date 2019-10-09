@@ -14,29 +14,22 @@
  *  limitations under the License.
  */
 
-package global
+// Web configuration
+package configuration
 
 import (
-	"carisa/deployer/kubernetes"
 	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-type mockWeb struct {
+type WebServer struct {
+	service WebService
 }
 
-func (w *mockWeb) kubernetesWeb() *kubernetes.Web {
-	return &kubernetes.Web{}
+func NewWebServer(service WebService) *WebServer {
+	return &WebServer{service}
 }
 
-func (w *mockWeb) kubernetesDeployer() *kubernetes.Deployer {
-	return nil
-}
-
-func TestWebRoutes(t *testing.T) {
-	e := echo.New()
-	w := &WebServer{&mockWeb{}}
-	w.Routes(e)
-	assert.Equal(t, 1, len(e.Routes()),"should return routes")
+func (server *WebServer) Routes(e *echo.Echo) {
+	kw := server.service.kubernetesWeb()
+	e.POST("/api/platforms/kubernetes/create", kw.Create)
 }

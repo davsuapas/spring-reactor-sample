@@ -20,15 +20,16 @@ package main
 
 import (
 	"carisa/core/web"
+	"carisa/deployer/configuration"
 	"carisa/deployer/global"
 	"os"
 )
 
 func main() {
-	global.LoadConfig(os.Args)
-	w := &global.WebServer{Service: new(global.ServiceConfig)}
+	config := global.LoadConfig(os.Args)
+	w := configuration.NewWebServer(configuration.NewService(config))
 	web.
 		ConfigureServer().
 		Routes(w.Routes).
-		Start(global.Config.Server.Port)
+		Start(config.Server.Port)
 }

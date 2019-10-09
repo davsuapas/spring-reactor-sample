@@ -22,14 +22,20 @@ import (
 	"os"
 )
 
-type LogConfiguration struct {
-	Level  string `yaml:"level"`
-	Format string `yaml:"format,omitempty"`
-	Output string `yaml:"output,omitempty"`
-}
+type (
+	LogConfiguration struct {
+		Level  string `yaml:"level"`
+		Format string `yaml:"format,omitempty"`
+		Output string `yaml:"output,omitempty"`
+	}
+
+	LogWrap struct {
+		*log.Entry
+	}
+)
 
 // Load log configuration
-func LoadLog(config *LogConfiguration) {
+func LoadLog(config *LogConfiguration, serviceName string) *LogWrap {
 
 	const INFO = "info"
 	const WARNING = "warning"
@@ -70,9 +76,23 @@ func LoadLog(config *LogConfiguration) {
 
 	if config.Format == JSON {
 		log.SetFormatter(&log.JSONFormatter{})
+	} else {
+		log.SetFormatter(&log.TextFormatter{
+			FullTimestamp: true,
+		})
 	}
 
 	if config.Output == STDOUT {
 		log.SetOutput(os.Stdout)
 	}
+
+	return &LogWrap{log.WithField("service", serviceName)}
+}
+
+func (logW *LogWrap) Module(value string) *LogWrap {
+	return &LogWrap{logW.WithField("module", value)}
+}
+
+func (logW *LogWrap) Function(value string) *LogWrap {
+	return &LogWrap{logW.WithField("function", value)}
 }

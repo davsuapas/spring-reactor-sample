@@ -15,25 +15,35 @@
  */
 
 // Dependencies controller
-package global
+package configuration
 
-import "carisa/deployer/kubernetes"
+import (
+	"carisa/core/boots"
+	"carisa/deployer/global"
+	"carisa/deployer/kubernetes"
+)
 
-type service interface {
-	kubernetesDeployer() *kubernetes.Deployer
+type WebService interface {
 	kubernetesWeb() *kubernetes.Web
 }
 
-type ServiceConfig struct {}
-
-func (ServiceConfig) kubernetesDeployer() *kubernetes.Deployer  {
-	deployer, err := kubernetes.NewDeployer(Config.Kubernetes.ConfigPath)
-	if err != nil {
-		panic("error creating kubernetes deployer; error: " +  err.Error())
-	}
-	return deployer
+type Service struct {
+	config *global.ConfigContext
+	log    *boots.LogWrap
 }
 
-func (s *ServiceConfig) kubernetesWeb() *kubernetes.Web {
-	return &kubernetes.Web{Deployer: s.kubernetesDeployer()}
+func NewService(c *global.ConfigContext) *Service {
+	return &Service{c, global.Log(c)}
+}
+
+func (s *Service) kubernetesWeb() *kubernetes.Web {
+	return kubernetes.NewWeb(s.kubernetesDeployer(), s.log)
+}
+
+func (s *Service) kubernetesDeployer() *kubernetes.Deployer {
+	deployer, err := kubernetes.NewDeployer(s.config, s.log)
+	if err != nil {
+		panic("error creating kubernetes deployer; error: " + err.Error())
+	}
+	return deployer
 }
