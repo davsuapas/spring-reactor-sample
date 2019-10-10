@@ -14,22 +14,17 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.administration.repository;
 
-import lombok.Builder;
-import lombok.Getter;
+import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
 
 import java.util.UUID;
 
 /**
- * Ente-Space name projection
+ * Repository for Ente property
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class EnteSpaceName {
-    private UUID spaceId;
-    private UUID enteId;
-    private String EnteName;
+public interface EntePropertyRepository extends CustomizedReactiveCrudRepository<EnteProperty, UUID> {
 }

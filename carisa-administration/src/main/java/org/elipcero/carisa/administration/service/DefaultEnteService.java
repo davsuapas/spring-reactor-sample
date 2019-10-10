@@ -20,12 +20,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
-import org.elipcero.carisa.administration.repository.EnteRepository;
-import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
-import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.projection.EnteEntePropertyName;
+import org.elipcero.carisa.administration.repository.*;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -46,6 +47,12 @@ public class DefaultEnteService implements EnteService {
 
     @NonNull
     private final SpaceRepository spaceRepository;
+
+    @NonNull
+    private final EntePropertyRepository entePropertyRepository;
+
+    @NonNull
+    private final EnteEntePropertyRepository enteEntePropertyRepository;
 
     /**
      * @see EnteService
@@ -86,5 +93,32 @@ public class DefaultEnteService implements EnteService {
                 .updateCreate(id,
                         enteForUpdating -> enteForUpdating.setName(ente.getName()),
                         this.create(ente));
+    }
+
+    /**
+     * @see EnteService
+     */
+    @Override
+    public Flux<EnteEntePropertyName> getEntePropertiesByEnte(final UUID enteId) {
+        return this.enteEntePropertyRepository.findAllByEnteId(enteId)
+                .flatMap(enteEnteProperty -> this.entePropertyRepository.findById(enteEnteProperty.getEntePropertyId()))
+                .map(enteProperty -> EnteEntePropertyName
+                        .builder()
+                            .enteId(enteId)
+                            .entePropertyId(enteProperty.getId())
+                            .entePropertyName(enteProperty.getName())
+                        .build());
+    }
+
+    /**
+     * @see EnteService
+     */
+    public Mono<Boolean> removeEnteEnteProperty(final UUID enteId, final UUID entePropertyId) {
+        return this.entePropertyRepository.findById(entePropertyId)
+                .map(__ -> false)
+                .switchIfEmpty(
+                        this.enteEntePropertyRepository.deleteById(
+                                BasicMapId.id("enteId", enteId).with("entePropertyId", entePropertyId))
+                                .then(Mono.just(true)));
     }
 }

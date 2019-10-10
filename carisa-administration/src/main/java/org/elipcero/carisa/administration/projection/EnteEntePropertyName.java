@@ -22,14 +22,14 @@ import lombok.Getter;
 import java.util.UUID;
 
 /**
- * Ente-Space name projection
+ * Ente-EnteProperty name projection
  *
  * @author David Suárez
  */
 @Builder
 @Getter
-public class EnteSpaceName {
-    private UUID spaceId;
+public class EnteEntePropertyName {
     private UUID enteId;
-    private String EnteName;
+    private UUID entePropertyId;
+    private String entePropertyName;
 }

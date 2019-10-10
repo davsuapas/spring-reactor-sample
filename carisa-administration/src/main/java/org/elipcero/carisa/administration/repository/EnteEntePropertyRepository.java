@@ -14,22 +14,27 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.administration.repository;
 
-import lombok.Builder;
-import lombok.Getter;
+import org.elipcero.carisa.administration.domain.EnteEnteProperty;
+import org.springframework.data.cassandra.core.mapping.MapId;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
 
 import java.util.UUID;
 
 /**
- * Ente-Space name projection
+ * Relations between Ente property and Ente repository
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class EnteSpaceName {
-    private UUID spaceId;
-    private UUID enteId;
-    private String EnteName;
+public interface EnteEntePropertyRepository extends ReactiveCrudRepository<EnteEnteProperty, MapId> {
+
+    /**
+     * Find all Ente properties by Ente
+     *
+     * @param enteId The ente id to find
+     * @return EnteEnteProperty
+     */
+    Flux<EnteEnteProperty> findAllByEnteId(UUID enteId);
 }

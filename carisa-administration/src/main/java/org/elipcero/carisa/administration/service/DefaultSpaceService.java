@@ -21,11 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteSpaceName;
-import org.elipcero.carisa.administration.repository.EnteRepository;
-import org.elipcero.carisa.administration.repository.InstanceRepository;
-import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
-import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
-import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.repository.*;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.http.HttpStatus;
@@ -114,7 +110,6 @@ public class DefaultSpaceService implements SpaceService {
                             .EnteName(ente.getName())
                         .build());
     }
-
 
     /**
      * @see SpaceService

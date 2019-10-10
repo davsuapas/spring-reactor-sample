@@ -17,7 +17,9 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.administration.projection.EnteEntePropertyName;
 import org.elipcero.carisa.core.data.EntityDataState;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -37,9 +39,9 @@ public interface EnteService {
     Mono<Ente> getById(UUID id);
 
     /**
-     * Create the Ente and insert it into the Space. Insert the Ente into Space
-     * and create it are not done in the same transaction. In this case, the user has the
-     * responsibility of removing the relation when fault. Checking if the space exists
+     * Create the Ente and insert it into the Space. It's not done in the same transaction.
+     * In this case, the user has the responsibility of removing the relation when fault,
+     * checking if the space exists
      * @param ente Ente for creating
      * @return Ente created
      */
@@ -53,4 +55,20 @@ public interface EnteService {
      * @return Ente created or updated
      */
     Mono<EntityDataState<Ente>> updateOrCreate(final UUID id, final Ente ente);
+
+    /**
+     * Remove the ente property by ente. The ente-enteproperty is just removed if the propertyente
+     * doesn't exist
+     * @param enteId the ente identifier
+     * @param entePropertyId the ente property identifier
+     * @return
+     */
+    Mono<Boolean> removeEnteEnteProperty(final UUID enteId, final UUID entePropertyId);
+
+    /**
+     * Get ente properties by ente id
+     * @param enteId the enteId to find
+     * @return the ente property view
+     */
+    Flux<EnteEntePropertyName> getEntePropertiesByEnte(final UUID enteId);
 }

@@ -14,22 +14,30 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.administration.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
 
 /**
- * Ente-Space name projection
+ * Relation between Ente and Ente property
  *
  * @author David Suárez
  */
+@Table("carisa_ente_enteproperty")
 @Builder
 @Getter
-public class EnteSpaceName {
-    private UUID spaceId;
+public class EnteEnteProperty {
+
+    @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private UUID enteId;
-    private String EnteName;
+
+    @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+    private UUID entePropertyId;
 }
+
