@@ -24,9 +24,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.hypermedia.LinksSnippet;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
@@ -36,6 +39,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -59,6 +64,8 @@ public class EnteControllerTest extends DataAbstractControllerTest {
             this.executeCommands("space-controller.cql");
             this.executeCommands("ente-controller.cql");
             this.executeCommands("space-ente-controller.cql");
+            this.executeCommands("ente-enteproperty-controller.cql");
+            this.executeCommands("ente-property-controller.cql");
             beforeOnce = true;
         }
     }
@@ -80,6 +87,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.purgeProperties.href").hasJsonPath()
                 .consumeWith(document("entes-get",
                         commonPathParamters(),
                         commonResponseFields()));
@@ -100,6 +108,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.purgeProperties.href").hasJsonPath()
                 .consumeWith(document("entes-post",
                         commonRequestFields(
                                 Arrays.asList(
@@ -142,6 +151,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.purgeProperties.href").hasJsonPath()
                 .consumeWith(document("entes-put",
                         commonPathParamters(),
                         commonRequestFields(
@@ -178,6 +188,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.purgeProperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 
@@ -209,6 +220,97 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
                     .jsonPath("$._templates.default.method").isEqualTo("post")
                     .jsonPath("$._templates.default.properties[?(@.name=='spaceId')].name").isEqualTo("spaceId");
+    }
+
+    @Test
+    public void remove_ente_enteproperty_using_delete_should_return_ok_and_ente_enteproperty_entity() {
+
+        String entePropertyId = "49ddffc7-bffe-4819-a112-e5112c1dc009";
+
+        this.testClient
+                .delete()
+                .uri("/api/entes/{id}/properties/{entePropertyId}", ENTE_ID, entePropertyId)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.enteId").isEqualTo(ENTE_ID)
+                    .jsonPath("$.entePropertyId").isEqualTo(entePropertyId)
+                    .jsonPath("$._links.ente.href").hasJsonPath()
+                .consumeWith(document("entes-enteproperties-delete",
+                        enteLink(),
+                        removeEnteEntePropertiesPathParameters(),
+                        responseFields(
+                                fieldWithPath("enteId").description("Ente identifier (UUID)"),
+                                fieldWithPath("entePropertyId").description("Ente property identifier (UUID)"),
+                                generalLink())));
+    }
+
+    @Test
+    public void remove_ente_enteproperty_using_delete_should_return_no_accepted_and_description_error() {
+
+        this.testClient
+                .delete()
+                .uri("/api/entes/{id}/properties/{entePropertyId}", ENTE_ID, EntePropertyControllerTest.ENTE_PROPERTY_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)
+                .expectBody()
+                    .jsonPath("$.content").hasJsonPath()
+                    .jsonPath("$._links.ente.href").hasJsonPath()
+                .consumeWith(document("entes-enteproperties-delete-no-accepted",
+                        enteLink(),
+                        removeEnteEntePropertiesPathParameters(),
+                        responseFields(
+                                fieldWithPath("content").description("Error description"),
+                                generalLink())));
+    }
+
+    @Test
+    public void find_enteproperties_from_ente_should_return_ok_and_enteproperties_entity() {
+
+        this.testClient
+                .get()
+                .uri("/api/entes/{id}/properties", ENTE_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$._embedded.entePropertyNameList[?(@.entePropertyId=='%s')].name", EntePropertyControllerTest.ENTE_PROPERTY_ID)
+                        .isEqualTo(EntePropertyControllerTest.ENTE_PROPERTY_NAME)
+                    .jsonPath("$._embedded.entePropertyNameList[?(@.entePropertyId=='%s')]._links.property.href", EntePropertyControllerTest.ENTE_PROPERTY_ID)
+                        .hasJsonPath()
+                    .jsonPath("$._links.ente.href").hasJsonPath()
+                .consumeWith(document("ente-enteproperties-get",
+                        enteLink(),
+                        commonPathParamters(),
+                        responseFields(
+                                fieldWithPath("_embedded.entePropertyNameList[].entePropertyId")
+                                        .description("Ente property identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.entePropertyNameList[].name").description("Ente property name"),
+                                fieldWithPath("_embedded.entePropertyNameList[]._links.property.href").description("Ente property information"),
+                                subsectionWithPath("_links").description("View links section"))));
+    }
+
+    private LinksSnippet enteLink() {
+        return links(linkWithRel("ente").description("Ente"));
+    }
+
+    private static PathParametersSnippet removeEnteEntePropertiesPathParameters() {
+        return commonPathParamters(
+                Arrays.asList(
+                        parameterWithName("entePropertyId").description("Ente property identifier (UUID string format)")));
+    }
+
+    private static PathParametersSnippet commonPathParamters(List<ParameterDescriptor> params) {
+        List<ParameterDescriptor> paramDescriptor = new ArrayList<>(params);
+        paramDescriptor.add(parameterWithName("id").description("Ente id (UUID string format)"));
+        return pathParameters(paramDescriptor);
+    }
+
+    private static FieldDescriptor generalLink() {
+        return subsectionWithPath("_links")
+                .description("The instance links. " + StringResource.METADATA_INFORMATION);
     }
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {

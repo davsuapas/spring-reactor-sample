@@ -309,7 +309,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
         return pathParameters(paramDescriptor);
     }
 
-
     private static ResponseFieldsSnippet commonResponseFields() {
         return responseFields(
                 fieldWithPath("id").description("Space identifier (UUID)"),

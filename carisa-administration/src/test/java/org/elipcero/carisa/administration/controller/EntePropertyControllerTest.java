@@ -47,7 +47,7 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
     public static final String ENTE_PROPERTY_NAME = "Ente property name"; // Look at ente-property-controller.cql
     public static final String ENTE_PROPERTY_ID = "c0838415-6ae2-4914-b202-f1b3adbf0353"; // Look at ente-property-controller.cql
-    public static final String ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller.cql
+    private static final String ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller.cql
 
     private static boolean beforeOnce;
 
