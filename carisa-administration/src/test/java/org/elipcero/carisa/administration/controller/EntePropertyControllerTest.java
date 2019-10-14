@@ -34,7 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
@@ -46,7 +49,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
     public static final String ENTE_PROPERTY_NAME = "Ente property name"; // Look at ente-property-controller.cql
-    public static final String ENTE_PROPERTY_ID = "c0838415-6ae2-4914-b202-f1b3adbf0353"; // Look at ente-property-controller.cql
+    public static final String ENTE_PROPERTY_ID = "c0838415-6ae2-4914-b202-f1b3adbf0353";
     private static final String ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller.cql
 
     private static boolean beforeOnce;
@@ -195,7 +198,8 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._templates.default.method").isEqualTo("put")
-                    .jsonPath("$._templates.default.properties[?(@.name=='enteId')].name").isEqualTo("enteId");
+                    .jsonPath("$._templates.default.properties[?(@.name=='enteId')].name")
+                        .isEqualTo("enteId");
     }
 
     @Test
@@ -210,14 +214,16 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
                     .jsonPath("$._templates.default.method").isEqualTo("post")
-                    .jsonPath("$._templates.default.properties[?(@.name=='enteId')].name").isEqualTo("enteId");
+                    .jsonPath("$._templates.default.properties[?(@.name=='enteId')].name")
+                        .isEqualTo("enteId");
     }
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
         fieldDescriptor.add(fieldWithPath("id").ignored());
         fieldDescriptor.add(fieldWithPath("name").description("Ente property name"));
-        fieldDescriptor.add(fieldWithPath("type").description("Ente property type (Integer, Decimal, Boolean, DateTime)"));
+        fieldDescriptor.add(fieldWithPath("type")
+                .description("Ente property type (Integer, Decimal, Boolean, DateTime)"));
         return requestFields(fieldDescriptor);
     }
 

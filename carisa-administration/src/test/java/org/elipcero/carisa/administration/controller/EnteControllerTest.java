@@ -41,7 +41,10 @@ import java.util.UUID;
 
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
@@ -204,7 +207,8 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._templates.default.method").isEqualTo("put")
-                    .jsonPath("$._templates.default.properties[?(@.name=='spaceId')].name").isEqualTo("spaceId");
+                    .jsonPath("$._templates.default.properties[?(@.name=='spaceId')].name")
+                        .isEqualTo("spaceId");
     }
 
     @Test
@@ -219,7 +223,8 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
                     .jsonPath("$._templates.default.method").isEqualTo("post")
-                    .jsonPath("$._templates.default.properties[?(@.name=='spaceId')].name").isEqualTo("spaceId");
+                    .jsonPath("$._templates.default.properties[?(@.name=='spaceId')].name")
+                        .isEqualTo("spaceId");
     }
 
     @Test
@@ -251,7 +256,8 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .delete()
-                .uri("/api/entes/{id}/properties/{entePropertyId}", ENTE_ID, EntePropertyControllerTest.ENTE_PROPERTY_ID)
+                .uri("/api/entes/{id}/properties/{entePropertyId}",
+                        ENTE_ID, EntePropertyControllerTest.ENTE_PROPERTY_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)
@@ -276,9 +282,11 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.entePropertyNameList[?(@.entePropertyId=='%s')].name", EntePropertyControllerTest.ENTE_PROPERTY_ID)
+                    .jsonPath("$._embedded.entePropertyNameList[?(@.entePropertyId=='%s')].name",
+                            EntePropertyControllerTest.ENTE_PROPERTY_ID)
                         .isEqualTo(EntePropertyControllerTest.ENTE_PROPERTY_NAME)
-                    .jsonPath("$._embedded.entePropertyNameList[?(@.entePropertyId=='%s')]._links.property.href", EntePropertyControllerTest.ENTE_PROPERTY_ID)
+                    .jsonPath("$._embedded.entePropertyNameList[?(@.entePropertyId=='%s')]._links.property.href",
+                            EntePropertyControllerTest.ENTE_PROPERTY_ID)
                         .hasJsonPath()
                     .jsonPath("$._links.ente.href").hasJsonPath()
                 .consumeWith(document("ente-enteproperties-get",
@@ -287,8 +295,10 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                         responseFields(
                                 fieldWithPath("_embedded.entePropertyNameList[].entePropertyId")
                                         .description("Ente property identifier. (UUID string format)"),
-                                fieldWithPath("_embedded.entePropertyNameList[].name").description("Ente property name"),
-                                fieldWithPath("_embedded.entePropertyNameList[]._links.property.href").description("Ente property information"),
+                                fieldWithPath("_embedded.entePropertyNameList[].name")
+                                        .description("Ente property name"),
+                                fieldWithPath("_embedded.entePropertyNameList[]._links.property.href")
+                                        .description("Ente property information"),
                                 subsectionWithPath("_links").description("View links section"))));
     }
 
@@ -299,7 +309,8 @@ public class EnteControllerTest extends DataAbstractControllerTest {
     private static PathParametersSnippet removeEnteEntePropertiesPathParameters() {
         return commonPathParamters(
                 Arrays.asList(
-                        parameterWithName("entePropertyId").description("Ente property identifier (UUID string format)")));
+                        parameterWithName("entePropertyId")
+                                .description("Ente property identifier (UUID string format)")));
     }
 
     private static PathParametersSnippet commonPathParamters(List<ParameterDescriptor> params) {

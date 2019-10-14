@@ -16,8 +16,21 @@
 
 package org.elipcero.carisa.administration.configuration;
 
-import org.elipcero.carisa.administration.repository.*;
-import org.elipcero.carisa.administration.service.*;
+import org.elipcero.carisa.administration.repository.EnteEntePropertyRepository;
+import org.elipcero.carisa.administration.repository.EntePropertyRepository;
+import org.elipcero.carisa.administration.repository.EnteRepository;
+import org.elipcero.carisa.administration.repository.InstanceRepository;
+import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
+import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
+import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
+import org.elipcero.carisa.administration.service.DefaultEnteService;
+import org.elipcero.carisa.administration.service.DefaultInstanceService;
+import org.elipcero.carisa.administration.service.DefaultSpaceService;
+import org.elipcero.carisa.administration.service.EntePropertyService;
+import org.elipcero.carisa.administration.service.EnteService;
+import org.elipcero.carisa.administration.service.InstanceService;
+import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.beans.factory.annotation.Autowired;

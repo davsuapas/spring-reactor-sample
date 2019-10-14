@@ -45,7 +45,8 @@ public class IndexController {
         return Flux.concat(
                 linkTo(methodOn(InstanceController.class).getMetadata()).withRel("instances").toMono(),
                 linkTo(methodOn(SpaceController.class).getMetadata()).withRel("spaces").toMono(),
-                linkTo(methodOn(EnteController.class).getMetadata()).withRel("entes").toMono())
+                linkTo(methodOn(EnteController.class).getMetadata()).withRel("entes").toMono(),
+                linkTo(methodOn(EntePropertyController.class).getMetadata()).withRel("enteProperties").toMono())
                 .collectList().map(links -> new EntityModel<>(new Index(), links));
     }
 }

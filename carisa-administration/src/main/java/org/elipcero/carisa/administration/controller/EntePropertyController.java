@@ -25,7 +25,13 @@ import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -45,7 +51,8 @@ public class EntePropertyController {
     private final CrudHypermediaController<EnteProperty> crudHypermediaController;
     private final EntePropertyService entePropertyService;
 
-    public EntePropertyController(EntePropertyService entePropertyService, EntePropertyModelAssembler entePropertyModelAssembler) {
+    public EntePropertyController(EntePropertyService entePropertyService,
+                                  EntePropertyModelAssembler entePropertyModelAssembler) {
         Assert.notNull(entePropertyModelAssembler, "The entePropertyModelAssembler can not be null");
         Assert.notNull(entePropertyService, "The entePropertyService can not be null");
         this.entePropertyService = entePropertyService;
