@@ -17,7 +17,6 @@
 package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.projection.SpaceName;
 import org.elipcero.carisa.administration.service.InstanceService;
@@ -25,10 +24,8 @@ import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -112,44 +109,6 @@ public class InstanceController {
                                 methodOn(InstanceController.class).getById(id))
                                 .withRel(InstanceModelAssembler.INSTANCE_REL_NAME).toMono()
                             .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
-    }
-
-    /**
-     * Remove instance-space. Validate that the space doesn't exist
-     * @param instanceId the instance identifier
-     * @param spaceId the space identifier
-     * @return the instance-space removed
-     */
-    @DeleteMapping("/{id}/spaces/{spaceId}")
-    public Publisher<ResponseEntity<?>> purgeInstanceSpace(
-            final @PathVariable("id") String instanceId,
-            final @PathVariable("spaceId") String spaceId) {
-
-        UUID uuidInstanceId = UUID.fromString(instanceId);
-        UUID uuidSpaceId = UUID.fromString(spaceId);
-
-        return this.instanceService.removeInstanceSpace(uuidInstanceId, uuidSpaceId)
-                .flatMap(completed ->
-                    linkTo(
-                            methodOn(InstanceController.class).getById(instanceId))
-                            .withRel(InstanceModelAssembler.INSTANCE_REL_NAME).toMono()
-                    .map(link -> {
-                         if (completed) {
-                             return ResponseEntity.ok(
-                                     new EntityModel<>(InstanceSpace.builder()
-                                                .instanceId(uuidInstanceId)
-                                                .spaceId(uuidSpaceId)
-                                             .build(), link));
-                         }
-                         else {
-                             return new ResponseEntity<>(
-                                         new EntityModel<>(
-                                         "The instance-space is just removed " +
-                                                 "if the space doesn't exist", link),
-                                         HttpStatus.NOT_ACCEPTABLE);
-                         }
-                     })
-                );
     }
 
     /**

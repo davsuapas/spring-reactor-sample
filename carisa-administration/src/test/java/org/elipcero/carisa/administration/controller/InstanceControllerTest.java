@@ -37,7 +37,6 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -96,7 +95,6 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._links.deploy.href").hasJsonPath()
                     .jsonPath("$._links.spaces.href").hasJsonPath()
-                    .jsonPath("$._links.purgeSpaces.href").hasJsonPath()
                 .consumeWith(document("instances-get",
                         commonLinks(),
                         commonPathParamters(),
@@ -145,7 +143,6 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$._links.self.href").hasJsonPath()
                     .jsonPath("$._links.deploy.href").hasJsonPath()
                     .jsonPath("$._links.spaces.href").hasJsonPath()
-                    .jsonPath("$._links.purgeSpaces.href").hasJsonPath()
                 .consumeWith(document("instances-post",
                     commonLinks(),
                     commonRequestFields(),
@@ -170,7 +167,6 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$._links.self.href").value(containsString(id))
                     .jsonPath("$._links.deploy.href").hasJsonPath()
                     .jsonPath("$._links.spaces.href").hasJsonPath()
-                    .jsonPath("$._links.purgeSpaces.href").hasJsonPath()
                 .consumeWith(document("instances-put",
                     commonLinks(),
                     commonPathParamters(),
@@ -202,52 +198,7 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$._links.self.href").value(containsString(id))
                     .jsonPath("$._links.deploy.href").hasJsonPath()
-                    .jsonPath("$._links.spaces.href").hasJsonPath()
-                    .jsonPath("$._links.purgeSpaces.href").hasJsonPath();
-    }
-
-    @Test
-    public void remove_instancespace_using_delete_should_return_ok_and_instancespace_entity() {
-
-        String spaceId = "575f260c-32f1-488b-99dc-7694db3eceee";
-
-        this.testClient
-                .delete()
-                .uri("/api/instances/{id}/spaces/{spaceId}", INSTANCE_ID, spaceId)
-                .accept(MediaTypes.HAL_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                    .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
-                    .jsonPath("$.spaceId").isEqualTo(spaceId)
-                    .jsonPath("$._links.instance.href").hasJsonPath()
-                .consumeWith(document("instances-spaces-delete",
-                        instanceLink(),
-                        removeInstanceSpacesPathParameters(),
-                        responseFields(
-                                fieldWithPath("instanceId").description("Instance identifier (UUID)"),
-                                fieldWithPath("spaceId").description("SpaceId identifier (UUID)"),
-                                generalLink())));
-    }
-
-    @Test
-    public void remove_instancespace_using_delete_should_return_no_accepted_and_description_error() {
-
-        this.testClient
-                .delete()
-                .uri("/api/instances/{id}/spaces/{spaceId}", INSTANCE_ID, SpaceControllerTest.SPACE_ID)
-                .accept(MediaTypes.HAL_JSON)
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)
-                .expectBody()
-                    .jsonPath("$.content").hasJsonPath()
-                    .jsonPath("$._links.instance.href").hasJsonPath()
-                .consumeWith(document("instances-spaces-delete-no-accepted",
-                        instanceLink(),
-                        removeInstanceSpacesPathParameters(),
-                        responseFields(
-                                fieldWithPath("content").description("Error description"),
-                                generalLink())));
+                    .jsonPath("$._links.spaces.href").hasJsonPath();
     }
 
     @Test
@@ -375,17 +326,11 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
         return links(
                 linkWithRel("self").description("Resource instance"),
                 linkWithRel("deploy").description("Deploy instance into platform"),
-                linkWithRel("spaces").description("Spaces list by instance"),
-                linkWithRel("purgeSpaces").description("Purge the spaces by instance. Only if space doesn't exist"));
+                linkWithRel("spaces").description("Spaces list by instance"));
     }
 
     private LinksSnippet instanceLink() {
         return links(linkWithRel("instance").description("Instance"));
-    }
-
-    private static PathParametersSnippet removeInstanceSpacesPathParameters() {
-        return commonPathParamters(Arrays.asList(
-                parameterWithName("spaceId").description("Space identifier (UUID string format)")));
     }
 
     private static Instance createInstance() {

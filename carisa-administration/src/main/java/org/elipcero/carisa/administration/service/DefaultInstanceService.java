@@ -17,7 +17,6 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.KubernetesDeployer;
 import org.elipcero.carisa.administration.projection.SpaceInstanceName;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
@@ -100,18 +99,6 @@ public class DefaultInstanceService implements InstanceService {
                             .spaceId(space.getId())
                             .SpaceName(space.getName())
                         .build());
-    }
-
-    /**
-     * @see InstanceService
-     */
-    public Mono<Boolean> removeInstanceSpace(final UUID instanceId, final UUID spaceId) {
-        return this.spaceRepository.findById(spaceId)
-                .map(__ -> false)
-                .switchIfEmpty(
-                        this.instanceSpaceRepository.deleteById(
-                                InstanceSpace.getId(instanceId, spaceId))
-                        .then(Mono.just(true)));
     }
 
     /**

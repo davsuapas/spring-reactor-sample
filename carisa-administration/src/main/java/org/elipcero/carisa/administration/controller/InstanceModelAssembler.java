@@ -54,10 +54,6 @@ public class InstanceModelAssembler implements BasicReactiveRepresentationModelA
                 methodOn(InstanceController.class).getSpaces(instance.getId().toString()))
                 .withRel("spaces");
 
-        WebFluxLinkBuilder.WebFluxLink purgeSpaces = linkTo(
-                methodOn(InstanceController.class).purgeInstanceSpace(instance.getId().toString(), null))
-                .withRel("purgeSpaces");
-
-        return Flux.concat(self.toMono(), deploy.toMono(), instanceSpace.toMono(), purgeSpaces.toMono());
+        return Flux.concat(self.toMono(), deploy.toMono(), instanceSpace.toMono());
     }
 }

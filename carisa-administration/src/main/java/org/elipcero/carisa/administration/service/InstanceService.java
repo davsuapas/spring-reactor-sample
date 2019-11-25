@@ -39,15 +39,6 @@ public interface InstanceService {
     Mono<Instance> getById(UUID id);
 
     /**
-     * Remove the space by instance. The instance-space is just removed if the space
-     * doesn't exist
-     * @param instanceId the instance identifier
-     * @param spaceId the space identifier
-     * @return
-     */
-    Mono<Boolean> removeInstanceSpace(final UUID instanceId, final UUID spaceId);
-
-    /**
      * Get spaces by instance id
      * @param instanceId the instanceId to find
      * @return the space view
