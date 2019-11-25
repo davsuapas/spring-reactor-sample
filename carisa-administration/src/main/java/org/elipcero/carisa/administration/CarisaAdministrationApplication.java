@@ -9,5 +9,4 @@ public class CarisaAdministrationApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CarisaAdministrationApplication.class, args);
 	}
-
 }

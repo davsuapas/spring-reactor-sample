@@ -27,7 +27,6 @@ import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
-import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -112,17 +111,5 @@ public class DefaultEnteService implements EnteService {
                             .entePropertyId(enteProperty.getId())
                             .entePropertyName(enteProperty.getName())
                         .build());
-    }
-
-    /**
-     * @see EnteService
-     */
-    public Mono<Boolean> removeEnteEnteProperty(final UUID enteId, final UUID entePropertyId) {
-        return this.entePropertyRepository.findById(entePropertyId)
-                .map(__ -> false)
-                .switchIfEmpty(
-                        this.enteEntePropertyRepository.deleteById(
-                                BasicMapId.id("enteId", enteId).with("entePropertyId", entePropertyId))
-                                .then(Mono.just(true)));
     }
 }

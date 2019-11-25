@@ -17,7 +17,6 @@
 package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Ente;
-import org.elipcero.carisa.administration.domain.EnteEnteProperty;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.projection.EntePropertyName;
 import org.elipcero.carisa.administration.service.EnteService;
@@ -25,10 +24,8 @@ import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -109,44 +106,6 @@ public class EnteController {
 
         return this.crudHypermediaController
                 .updateOrCreate(this.enteService.updateOrCreate(UUID.fromString(id), ente));
-    }
-
-    /**
-     * Remove ente-properties. Validate that the property doesn't exist
-     * @param entePropertyId the Ente identifier
-     * @param entePropertyId the enteProperty identifier
-     * @return the ente-properties removed
-     */
-    @DeleteMapping("/{id}/properties/{entePropertyId}")
-    public Publisher<ResponseEntity<?>> purgeSpaceEnte(
-            final @PathVariable("id") String enteId,
-            final @PathVariable("entePropertyId") String entePropertyId) {
-
-        UUID uuidEnteId = UUID.fromString(enteId);
-        UUID uuidEntePropertyId = UUID.fromString(entePropertyId);
-
-        return this.enteService.removeEnteEnteProperty(uuidEnteId, uuidEntePropertyId)
-                .flatMap(completed ->
-                        linkTo(
-                                methodOn(EnteController.class).getById(enteId))
-                                .withRel(EnteModelAssembler.ENTE_REL_NAME).toMono()
-                                .map(link -> {
-                                    if (completed) {
-                                        return ResponseEntity.ok(
-                                                new EntityModel<>(EnteEnteProperty.builder()
-                                                        .enteId(uuidEnteId)
-                                                        .entePropertyId(uuidEntePropertyId)
-                                                        .build(), link));
-                                    }
-                                    else {
-                                        return new ResponseEntity<>(
-                                                new EntityModel<>(
-                                                        "The ente-property is just removed " +
-                                                                "if the ente property doesn't exist", link),
-                                                HttpStatus.NOT_ACCEPTABLE);
-                                    }
-                                })
-                );
     }
 
     /**

@@ -57,15 +57,6 @@ public interface EnteService {
     Mono<EntityDataState<Ente>> updateOrCreate(final UUID id, final Ente ente);
 
     /**
-     * Remove the ente property by ente. The ente-enteproperty is just removed if the propertyente
-     * doesn't exist
-     * @param enteId the ente identifier
-     * @param entePropertyId the ente property identifier
-     * @return
-     */
-    Mono<Boolean> removeEnteEnteProperty(final UUID enteId, final UUID entePropertyId);
-
-    /**
      * Get ente properties by ente id
      * @param enteId the enteId to find
      * @return the ente property view
