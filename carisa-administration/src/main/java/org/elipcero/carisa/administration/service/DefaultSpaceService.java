@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteSpaceName;
@@ -27,6 +28,7 @@ import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
 import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.springframework.data.cassandra.core.mapping.MapId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -105,12 +107,18 @@ public class DefaultSpaceService implements SpaceService {
     public Flux<EnteSpaceName> getEntesBySpace(final UUID spaceId) {
 
         return this.spaceEnteRepository.findAllBySpaceId(spaceId)
-                .flatMap(spaceEnte -> this.enteRepository.findById(spaceEnte.getEnteId()))
+                .flatMap(spaceEnte -> this.enteRepository
+                        .findById(spaceEnte.getEnteId())
+                        .switchIfEmpty(this.purgeSpaceEnte(spaceEnte.getId())))
                 .map(ente -> EnteSpaceName
                         .builder()
                             .spaceId(spaceId)
                             .enteId(ente.getId())
                             .EnteName(ente.getName())
                         .build());
+    }
+
+    private Mono<Ente> purgeSpaceEnte(MapId id) {
+        return this.spaceEnteRepository.deleteById(id).then(Mono.empty());
     }
 }

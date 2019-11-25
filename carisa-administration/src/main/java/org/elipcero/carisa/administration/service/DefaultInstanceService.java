@@ -17,6 +17,7 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Instance;
+import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.KubernetesDeployer;
 import org.elipcero.carisa.administration.projection.SpaceInstanceName;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
@@ -25,7 +26,6 @@ import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
-import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -110,7 +110,7 @@ public class DefaultInstanceService implements InstanceService {
                 .map(__ -> false)
                 .switchIfEmpty(
                         this.instanceSpaceRepository.deleteById(
-                            BasicMapId.id("instanceId", instanceId).with("spaceId", spaceId))
+                                InstanceSpace.getId(instanceId, spaceId))
                         .then(Mono.just(true)));
     }
 

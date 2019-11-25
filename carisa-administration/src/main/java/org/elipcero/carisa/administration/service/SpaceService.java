@@ -57,7 +57,8 @@ public interface SpaceService {
     Mono<EntityDataState<Space>> updateOrCreate(final UUID id, final Space space);
 
     /**
-     * Get entes by space id
+     * Get entes by space id. If the ente doesn't exist the relation between space and ente
+     * is removed automatically (purge)
      * @param spaceId the spaceId to find
      * @return the ente view
      */

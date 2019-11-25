@@ -19,6 +19,8 @@ package org.elipcero.carisa.administration.domain;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.BasicMapId;
+import org.springframework.data.cassandra.core.mapping.MapId;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -39,5 +41,9 @@ public class InstanceSpace {
 
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
     private UUID spaceId;
+
+    public static MapId getId(UUID instanceId, UUID spaceId) {
+        return BasicMapId.id("instanceId", instanceId).with("spaceId", spaceId);
+    }
 }
 

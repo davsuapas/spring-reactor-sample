@@ -18,7 +18,7 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
+import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     public static final String SPACE_NAME = "Space name"; // Look at space-controller
 
     @Autowired
-    private InstanceSpaceRepository instanceSpaceRepository;
+    private SpaceEnteRepository spaceEnteRepository;
 
     private static boolean beforeOnce;
 
@@ -221,7 +221,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_entes_from_space_should_return_ok_and_entes_entity() {
+    public void find_entes_from_space_should_return_ok_and_entes_entity_and_entes_no_exist_purged() {
 
         this.testClient
                 .get()
@@ -234,6 +234,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                         .isEqualTo(EnteControllerTest.ENTE_NAME)
                     .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')]._links.ente.href", EnteControllerTest.ENTE_ID)
                         .hasJsonPath()
+                    .jsonPath("$._embedded.enteNameList.length()").isEqualTo(1)
                     .jsonPath("$._links.space.href").hasJsonPath()
                 .consumeWith(document("space-entes-get",
                         spaceLink(),
