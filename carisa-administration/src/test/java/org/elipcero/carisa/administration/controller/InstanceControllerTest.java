@@ -115,6 +115,7 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
                         .isEqualTo(SpaceControllerTest.SPACE_NAME)
                     .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')]._links.space.href", SpaceControllerTest.SPACE_ID)
                         .hasJsonPath()
+                    .jsonPath("$._embedded.spaceNameList.length()").isEqualTo(1)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                 .consumeWith(document("instances-spaces-get",
                         instanceLink(),

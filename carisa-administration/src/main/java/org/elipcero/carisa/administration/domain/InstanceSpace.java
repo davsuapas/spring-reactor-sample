@@ -42,7 +42,7 @@ public class InstanceSpace {
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
     private UUID spaceId;
 
-    public static MapId getId(UUID instanceId, UUID spaceId) {
+    public MapId getId() {
         return BasicMapId.id("instanceId", instanceId).with("spaceId", spaceId);
     }
 }

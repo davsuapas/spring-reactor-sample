@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.KubernetesDeployer;
+import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.SpaceInstanceName;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
@@ -25,6 +26,7 @@ import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
+import org.springframework.data.cassandra.core.mapping.MapId;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -92,13 +94,20 @@ public class DefaultInstanceService implements InstanceService {
     public Flux<SpaceInstanceName> getSpacesByInstance(final UUID instanceId) {
 
         return this.instanceSpaceRepository.findAllByInstanceId(instanceId)
-                .flatMap(instanceSpace -> this.spaceRepository.findById(instanceSpace.getSpaceId()))
+                .flatMap(instanceSpace ->
+                        this.spaceRepository
+                                .findById(instanceSpace.getSpaceId())
+                                .switchIfEmpty(this.purgeInstanceSpace(instanceSpace.getId())))
                 .map(space -> SpaceInstanceName
                         .builder()
                             .instanceId(instanceId)
                             .spaceId(space.getId())
                             .SpaceName(space.getName())
                         .build());
+    }
+
+    private Mono<Space> purgeInstanceSpace(MapId id) {
+        return this.instanceSpaceRepository.deleteById(id).then(Mono.empty());
     }
 
     /**
