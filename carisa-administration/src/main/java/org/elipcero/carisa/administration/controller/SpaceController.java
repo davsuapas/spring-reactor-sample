@@ -17,7 +17,6 @@
 package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.projection.EnteName;
 import org.elipcero.carisa.administration.service.SpaceService;
@@ -25,10 +24,8 @@ import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -109,44 +106,6 @@ public class SpaceController {
 
         return this.crudHypermediaController
                 .updateOrCreate(this.spaceService.updateOrCreate(UUID.fromString(id), space));
-    }
-
-    /**
-     * Remove space-ente. Validate that the ente doesn't exist
-     * @param spaceId the Space identifier
-     * @param enteId the ente identifier
-     * @return the space-ente removed
-     */
-    @DeleteMapping("/{id}/entes/{enteId}")
-    public Publisher<ResponseEntity<?>> purgeSpaceEnte(
-            final @PathVariable("id") String spaceId,
-            final @PathVariable("enteId") String enteId) {
-
-        UUID uuidSpaceId = UUID.fromString(spaceId);
-        UUID uuidEnteId = UUID.fromString(enteId);
-
-        return this.spaceService.removeSpaceEnte(uuidSpaceId, uuidEnteId)
-                .flatMap(completed ->
-                        linkTo(
-                                methodOn(SpaceController.class).getById(spaceId))
-                                .withRel(SpaceModelAssembler.SPACE_REL_NAME).toMono()
-                                .map(link -> {
-                                    if (completed) {
-                                        return ResponseEntity.ok(
-                                                new EntityModel<>(SpaceEnte.builder()
-                                                            .spaceId(uuidSpaceId)
-                                                            .enteId(uuidEnteId)
-                                                        .build(), link));
-                                    }
-                                    else {
-                                        return new ResponseEntity<>(
-                                                new EntityModel<>(
-                                                        "The space-ente is just removed " +
-                                                                "if the ente doesn't exist", link),
-                                                HttpStatus.NOT_ACCEPTABLE);
-                                    }
-                                })
-                );
     }
 
     /**

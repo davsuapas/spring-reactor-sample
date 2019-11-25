@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.hypermedia.LinksSnippet;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
@@ -90,7 +89,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
-                    .jsonPath("$._links.purgeEntes.href").hasJsonPath()
                 .consumeWith(document("spaces-get",
                         commonPathParamters(),
                         commonResponseFields()));
@@ -111,7 +109,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
-                    .jsonPath("$._links.purgeEntes.href").hasJsonPath()
                 .consumeWith(document("spaces-post",
                         commonRequestFields(
                                 Arrays.asList(
@@ -153,7 +150,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(SPACE_NAME)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
-                    .jsonPath("$._links.purgeEntes.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-put",
                         commonPathParamters(),
@@ -191,7 +187,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
-                    .jsonPath("$._links.purgeEntes.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 
@@ -223,50 +218,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
                     .jsonPath("$._templates.default.method").isEqualTo("post")
                     .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name").isEqualTo("instanceId");
-    }
-
-    @Test
-    public void remove_spacesente_using_delete_should_return_ok_and_spacesente_entity() {
-
-        String enteId = "c58698cd-bd52-4fd2-bcf6-6d54bcdc4069";
-
-        this.testClient
-                .delete()
-                .uri("/api/spaces/{id}/entes/{enteId}", SPACE_ID, enteId)
-                .accept(MediaTypes.HAL_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
-                    .jsonPath("$.enteId").isEqualTo(enteId)
-                    .jsonPath("$._links.space.href").hasJsonPath()
-                .consumeWith(document("spaces-entes-delete",
-                        spaceLink(),
-                        removeSpaceEntesPathParameters(),
-                        responseFields(
-                                fieldWithPath("spaceId").description("Space identifier (UUID)"),
-                                fieldWithPath("enteId").description("Ente identifier (UUID)"),
-                                generalLink())));
-    }
-
-    @Test
-    public void remove_spacesente_using_delete_should_return_no_accepted_and_description_error() {
-
-        this.testClient
-                .delete()
-                .uri("/api/spaces/{id}/entes/{enteId}", SPACE_ID, EnteControllerTest.ENTE_ID)
-                .accept(MediaTypes.HAL_JSON)
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)
-                .expectBody()
-                    .jsonPath("$.content").hasJsonPath()
-                    .jsonPath("$._links.space.href").hasJsonPath()
-                .consumeWith(document("spaces-entes-delete-no-accepted",
-                        spaceLink(),
-                        removeSpaceEntesPathParameters(),
-                        responseFields(
-                                fieldWithPath("content").description("Error description"),
-                                generalLink())));
     }
 
     @Test
@@ -327,12 +278,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
 
     private LinksSnippet spaceLink() {
         return links(linkWithRel("space").description("Space"));
-    }
-
-    private static PathParametersSnippet removeSpaceEntesPathParameters() {
-        return commonPathParamters(
-                Arrays.asList(
-                    parameterWithName("enteId").description("Ente identifier (UUID string format)")));
     }
 
     private static Space createSpace() {

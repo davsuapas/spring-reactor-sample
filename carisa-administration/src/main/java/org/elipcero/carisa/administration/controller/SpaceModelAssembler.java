@@ -50,10 +50,6 @@ public class SpaceModelAssembler implements BasicReactiveRepresentationModelAsse
                 methodOn(InstanceController.class).getById(space.getInstanceId().toString()))
                 .withRel(InstanceModelAssembler.INSTANCE_REL_NAME);
 
-        WebFluxLinkBuilder.WebFluxLink purgeEntes = linkTo(
-                methodOn(SpaceController.class).purgeSpaceEnte(space.getId().toString(), null))
-                .withRel("purgeEntes");
-
-        return Flux.concat(self.toMono(), instances.toMono(), purgeEntes.toMono());
+        return Flux.concat(self.toMono(), instances.toMono());
     }
 }
