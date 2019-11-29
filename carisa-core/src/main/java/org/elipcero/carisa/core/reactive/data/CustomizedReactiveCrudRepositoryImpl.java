@@ -22,7 +22,6 @@ import org.springframework.data.cassandra.repository.query.CassandraEntityInform
 import org.springframework.data.cassandra.repository.support.SimpleReactiveCassandraRepository;
 import reactor.core.publisher.Mono;
 
-import java.io.Serializable;
 import java.util.function.Consumer;
 
 /**
@@ -30,7 +29,7 @@ import java.util.function.Consumer;
  *
  * @author David Suárez
  */
-public class CustomizedReactiveCrudRepositoryImpl<T, ID extends Serializable>
+public class CustomizedReactiveCrudRepositoryImpl<T, ID>
         extends SimpleReactiveCassandraRepository<T, ID>
         implements CustomizedReactiveCrudRepository<T, ID> {
 

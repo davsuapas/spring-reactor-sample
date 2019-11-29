@@ -21,7 +21,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 
-import java.io.Serializable;
 import java.util.function.Consumer;
 
 /**
@@ -30,7 +29,7 @@ import java.util.function.Consumer;
  * @author David Suárez
  */
 @NoRepositoryBean
-public interface CustomizedReactiveCrudRepository<T, ID extends Serializable>
+public interface CustomizedReactiveCrudRepository<T, ID>
         extends ReactiveCrudRepository<T, ID> {
 
     /**

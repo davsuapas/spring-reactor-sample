@@ -118,16 +118,18 @@ public class EnteController {
             final @PathVariable("id") String id) {
 
         return this.enteService.getEntePropertiesByEnte(UUID.fromString(id))
-                .flatMap(enteEnteProperty ->
+                .flatMap(enteProperty ->
                         Flux.concat(
                                 linkTo(
                                         methodOn(EntePropertyController.class)
-                                                .getById(enteEnteProperty.getEntePropertyId().toString()))
+                                                .getById(
+                                                        enteProperty.getEnteId().toString(),
+                                                        enteProperty.getPropertyId().toString()))
                                         .withRel(EntePropertyModelAssembler.PROPERTY_REL_NAME).toMono())
                                 .map(links -> new EntityModel<>(EntePropertyName
                                         .builder()
-                                            .entePropertyId(enteEnteProperty.getEntePropertyId())
-                                            .name(enteEnteProperty.getEntePropertyName())
+                                            .entePropertyId(enteProperty.getPropertyId())
+                                            .name(enteProperty.getName())
                                         .build(), links)))
                 .collectList()
                 .flatMap(entities ->

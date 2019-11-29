@@ -19,9 +19,8 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
-import org.elipcero.carisa.administration.projection.EnteEntePropertyName;
-import org.elipcero.carisa.administration.repository.EnteEntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
@@ -53,9 +52,6 @@ public class DefaultEnteService implements EnteService {
 
     @NonNull
     private final EntePropertyRepository entePropertyRepository;
-
-    @NonNull
-    private final EnteEntePropertyRepository enteEntePropertyRepository;
 
     /**
      * @see EnteService
@@ -102,14 +98,7 @@ public class DefaultEnteService implements EnteService {
      * @see EnteService
      */
     @Override
-    public Flux<EnteEntePropertyName> getEntePropertiesByEnte(final UUID enteId) {
-        return this.enteEntePropertyRepository.findAllByEnteId(enteId)
-                .flatMap(enteEnteProperty -> this.entePropertyRepository.findById(enteEnteProperty.getEntePropertyId()))
-                .map(enteProperty -> EnteEntePropertyName
-                        .builder()
-                            .enteId(enteId)
-                            .entePropertyId(enteProperty.getId())
-                            .entePropertyName(enteProperty.getName())
-                        .build());
+    public Flux<EnteProperty> getEntePropertiesByEnte(final UUID enteId) {
+        return this.entePropertyRepository.findAllByEnteId(enteId);
     }
 }

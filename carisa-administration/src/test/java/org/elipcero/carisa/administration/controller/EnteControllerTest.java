@@ -66,7 +66,6 @@ public class EnteControllerTest extends DataAbstractControllerTest {
             this.executeCommands("space-controller.cql");
             this.executeCommands("ente-controller.cql");
             this.executeCommands("space-ente-controller.cql");
-            this.executeCommands("ente-enteproperty-controller.cql");
             this.executeCommands("ente-property-controller.cql");
             beforeOnce = true;
         }

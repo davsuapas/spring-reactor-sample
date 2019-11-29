@@ -59,26 +59,23 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
         if (!beforeOnce) {
             this.executeCommands("ente-controller.cql");
             this.executeCommands("ente-property-controller.cql");
-            this.executeCommands("ente-enteproperty-controller.cql");
             beforeOnce = true;
         }
     }
-
-    // @Autowired
-    // private EnteEntePropertyRepository enteEntePropertyRepository;
 
     @Test
     public void find_ente_property_should_return_ok_and_ente_property_entity() {
 
         this.testClient
                 .get()
-                .uri("/api/enteproperties/{id}", ENTE_PROPERTY_ID)
+                .uri("/api/entes/{enteId}/properties/{propertyId}", ENTE_ID, ENTE_PROPERTY_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$.enteId").isEqualTo(ENTE_ID)
+                    .jsonPath("$.propertyId").isEqualTo(ENTE_PROPERTY_ID)
+                    .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.Integer.toString())
                     .jsonPath("$._links.ente.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
@@ -98,8 +95,8 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                    .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$.enteId").isEqualTo(ENTE_ID)
+                    .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.Boolean.toString())
                     .jsonPath("$._links.ente.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
@@ -130,42 +127,38 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
     @Test
     public void create_enteproperty_using_put_should_return_created_and_enteproperty_entity() {
 
-        String id = "361370a0-e3e5-45e5-b675-a55fe923873f";
+        String propertyId = "361370a0-e3e5-45e5-b675-a55fe923873f";
 
         this.testClient
                 .put()
-                .uri("/api/enteproperties/{id}", id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes/{enteId}/properties/{propertyId}", ENTE_ID, propertyId)
+                    .contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(createEnteProperty()), EnteProperty.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
-                .jsonPath("$.enteId").isEqualTo(ENTE_ID)
-                .jsonPath("$.type").isEqualTo(EnteProperty.Type.Boolean.toString())
-                .jsonPath("$._links.ente.href").hasJsonPath()
-                .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$.enteId").isEqualTo(ENTE_ID)
+                    .jsonPath("$.propertyId").isEqualTo(propertyId)
+                    .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
+                    .jsonPath("$.type").isEqualTo(EnteProperty.Type.Boolean.toString())
+                    .jsonPath("$._links.ente.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("enteproperties-put",
                         commonPathParamters(),
-                        commonRequestFields(
-                                Arrays.asList(
-                                        fieldWithPath("enteId")
-                                                .description("Ente identifier (UUID) for this ente property." +
-                                                        "This property can not be updated"))),
+                        commonRequestFields(Arrays.asList(fieldWithPath("enteId").ignored())),
                         commonResponseFields()));
     }
 
     @Test
     public void update_enteproperty_using_put_should_return_ok_and_enteproperty_entity() {
 
-        String id = "d0838415-6ae2-4914-b202-f1b3adbf0353"; // Look at enteproperties-controller
+        String propertyId = "d0838415-6ae2-4914-b202-f1b3adbf0353"; // Look at enteproperties-controller
         String newName = "Ente property name updated";
 
         EnteProperty entePropertyUpdated = EnteProperty
                 .builder()
-                    .id(UUID.fromString(id))
                     .name(newName)
-                    .enteId(UUID.randomUUID())
                     .type(EnteProperty.Type.DateTime)
                 .build();
 
@@ -173,14 +166,16 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/enteproperties/{id}", id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes/{enteId}/properties/{propertyId}", ENTE_ID, propertyId)
+                    .contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(entePropertyUpdated), EnteProperty.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.enteId").isEqualTo(ENTE_ID)
+                    .jsonPath("$.propertyId").isEqualTo(propertyId)
+                    .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.DateTime.toString())
                     .jsonPath("$._links.ente.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
@@ -191,7 +186,7 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/enteproperties/" + ENTE_PROPERTY_ID)
+                .uri("/api/entes/{enteId}/properties/{propertyId}", ENTE_ID, ENTE_PROPERTY_ID)
                 .accept(MediaTypes.HAL_FORMS_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -220,7 +215,7 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
-        fieldDescriptor.add(fieldWithPath("id").ignored());
+        fieldDescriptor.add(fieldWithPath("propertyId").ignored());
         fieldDescriptor.add(fieldWithPath("name").description("Ente property name"));
         fieldDescriptor.add(fieldWithPath("type")
                 .description("Ente property type (Integer, Decimal, Boolean, DateTime)"));
@@ -229,14 +224,15 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
     private static PathParametersSnippet commonPathParamters() {
         return pathParameters(
-                parameterWithName("id").description("Ente property id (UUID string format)")
+                parameterWithName("enteId").description("Ente id (UUID string format)"),
+                parameterWithName("propertyId").description("Ente property id (UUID string format)")
         );
     }
 
     private static ResponseFieldsSnippet commonResponseFields() {
         return responseFields(
-                fieldWithPath("id").description("Ente property identifier (UUID)"),
                 fieldWithPath("enteId").description("Ente identifier (UUID) for this ente property"),
+                fieldWithPath("propertyId").description("Ente property identifier (UUID)"),
                 fieldWithPath("name").description("Ente property name"),
                 fieldWithPath("type").description("Ente property type (Integer, Decimal, Boolean, DateTime)"),
                 subsectionWithPath("_links")

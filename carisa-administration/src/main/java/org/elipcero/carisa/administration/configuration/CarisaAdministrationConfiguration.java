@@ -16,7 +16,6 @@
 
 package org.elipcero.carisa.administration.configuration;
 
-import org.elipcero.carisa.administration.repository.EnteEntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
@@ -91,7 +90,7 @@ public class CarisaAdministrationConfiguration {
     @Bean
     public EnteService enteService() {
         return new DefaultEnteService(enteRepository, spaceEnteRepository,
-                spaceRepository, entePropertyRepository, enteEntePropertyRepository);
+                spaceRepository, entePropertyRepository);
     }
 
     // Ente property configuration
@@ -99,11 +98,8 @@ public class CarisaAdministrationConfiguration {
     @Autowired
     private EntePropertyRepository entePropertyRepository;
 
-    @Autowired
-    private EnteEntePropertyRepository enteEntePropertyRepository;
-
     @Bean
     public EntePropertyService entePropertyService() {
-        return new DefaultEntePropertyService(entePropertyRepository, enteEntePropertyRepository, enteRepository);
+        return new DefaultEntePropertyService(entePropertyRepository, enteRepository);
     }
 }

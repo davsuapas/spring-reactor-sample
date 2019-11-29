@@ -17,7 +17,7 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Ente;
-import org.elipcero.carisa.administration.projection.EnteEntePropertyName;
+import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -61,5 +61,5 @@ public interface EnteService {
      * @param enteId the enteId to find
      * @return the ente property view
      */
-    Flux<EnteEntePropertyName> getEntePropertiesByEnte(final UUID enteId);
+    Flux<EnteProperty> getEntePropertiesByEnte(final UUID enteId);
 }

@@ -33,8 +33,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
@@ -45,7 +43,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
  * @author David Suárez
  */
 @RestController
-@RequestMapping("/api/enteproperties")
+@RequestMapping("/api")
 public class EntePropertyController {
 
     private final CrudHypermediaController<EnteProperty> crudHypermediaController;
@@ -63,7 +61,7 @@ public class EntePropertyController {
      * Return schema
      * @return
      */
-    @GetMapping
+    @GetMapping("/enteproperties")
     public Publisher<EntityModel<String>> getMetadata() {
         return linkTo(
                 methodOn(EntePropertyController.class).getMetadata())
@@ -73,13 +71,18 @@ public class EntePropertyController {
     }
 
     /**
-     * Get Ente property by id
-     * @param id the space identifier (UUID string)
+     * Get ente property by id
+     * @param enteId the ente identifier (UUID string)
+     * @param propertyId the property identifier (UUID string)
      * @return ente property entity
      */
-    @GetMapping("/{id}")
-    public Publisher<EntityModel<EnteProperty>> getById(final @PathVariable("id") String id) {
-        return this.crudHypermediaController.get(this.entePropertyService.getById(UUID.fromString(id)));
+    @GetMapping("/entes/{enteId}/properties/{propertyId}")
+    public Publisher<EntityModel<EnteProperty>> getById(
+            final @PathVariable("enteId") String enteId,
+            final @PathVariable("propertyId") String propertyId) {
+
+        return this.crudHypermediaController.get(
+                this.entePropertyService.getById(EnteProperty.getId(enteId, propertyId)));
     }
 
     /**
@@ -87,22 +90,26 @@ public class EntePropertyController {
      * @param enteProperty the Ente property (Id == null)
      * @return
      */
-    @PostMapping
+    @PostMapping("/enteproperties")
     public Publisher<ResponseEntity<EntityModel<EnteProperty>>> create(final @RequestBody EnteProperty enteProperty) {
         return this.crudHypermediaController.create(this.entePropertyService.create(enteProperty));
     }
 
     /**
-     * Update or create the Ente property depending of the identifier if exists.
-     * @param id the Ente property identifier (UUID string)
+     * Update or create the ente property depending of the identifier if exists.
+     * @param enteId the ente identifier (UUID string)
+     * @param propertyId the property identifier (UUID string)
      * @param enteProperty the EnteProperty property (Id == null)
      * @return
      */
-    @PutMapping("/{id}")
+    @PutMapping("/entes/{enteId}/properties/{propertyId}")
     public Publisher<ResponseEntity<EntityModel<EnteProperty>>> updateOrCreate(
-            final @PathVariable("id") String id, final @RequestBody EnteProperty enteProperty) {
+            final @PathVariable("enteId") String enteId,
+            final @PathVariable("propertyId") String propertyId,
+            final @RequestBody EnteProperty enteProperty) {
 
         return this.crudHypermediaController
-                .updateOrCreate(this.entePropertyService.updateOrCreate(UUID.fromString(id), enteProperty));
+                .updateOrCreate(this.entePropertyService.updateOrCreate(
+                        EnteProperty.getId(enteId, propertyId), enteProperty));
     }
 }

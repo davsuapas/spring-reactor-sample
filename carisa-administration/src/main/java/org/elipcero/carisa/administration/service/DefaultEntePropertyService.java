@@ -18,17 +18,14 @@ package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.elipcero.carisa.administration.domain.EnteEnteProperty;
 import org.elipcero.carisa.administration.domain.EnteProperty;
-import org.elipcero.carisa.administration.repository.EnteEntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.springframework.data.cassandra.core.mapping.MapId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
-
-import java.util.UUID;
 
 /**
  * @see EntePropertyService
@@ -42,16 +39,13 @@ public class DefaultEntePropertyService implements EntePropertyService {
     private final EntePropertyRepository entePropertyRepository;
 
     @NonNull
-    private final EnteEntePropertyRepository enteEntePropertyRepository;
-
-    @NonNull
     private final EnteRepository enteRepository;
 
     /**
      * @see EntePropertyService
      */
     @Override
-    public Mono<EnteProperty> getById(final UUID id) {
+    public Mono<EnteProperty> getById(final MapId id) {
         return this.entePropertyRepository.findById(id);
     }
 
@@ -61,16 +55,16 @@ public class DefaultEntePropertyService implements EntePropertyService {
     @Override
     public Mono<EnteProperty> create(final EnteProperty enteProperty) {
         enteProperty.tryInitId();
-
         return this.enteRepository.findById(enteProperty.getEnteId())
             .flatMap(__ ->
-                this.enteEntePropertyRepository
-                    .save(EnteEnteProperty
+                this.entePropertyRepository
+                    .save(EnteProperty
                         .builder()
                                 .enteId(enteProperty.getEnteId())
-                                .entePropertyId(enteProperty.getId())
+                                .propertyId(enteProperty.getPropertyId())
+                                .name(enteProperty.getName())
+                                .type(enteProperty.getType())
                         .build()))
-                .flatMap(__ -> this.entePropertyRepository.save(enteProperty))
             .switchIfEmpty(Mono.error(
                     new ResponseStatusException(HttpStatus.NOT_FOUND,
                             String.format("The Ente: %s doesn't exist", enteProperty.getEnteId()))));
@@ -80,7 +74,7 @@ public class DefaultEntePropertyService implements EntePropertyService {
      * @see EntePropertyService
      */
     @Override
-    public Mono<EntityDataState<EnteProperty>> updateOrCreate(final UUID id, final EnteProperty enteProperty) {
+    public Mono<EntityDataState<EnteProperty>> updateOrCreate(final MapId id, final EnteProperty enteProperty) {
         enteProperty.setId(id);
         return this.entePropertyRepository
                 .updateCreate(id,
