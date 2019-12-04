@@ -19,18 +19,11 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
-import org.elipcero.carisa.administration.domain.InstanceSpace;
+import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteSpaceName;
-import org.elipcero.carisa.administration.repository.EnteRepository;
-import org.elipcero.carisa.administration.repository.InstanceRepository;
-import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
-import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
-import org.springframework.data.cassandra.core.mapping.MapId;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -48,16 +41,10 @@ public class DefaultSpaceService implements SpaceService {
     private final SpaceRepository spaceRepository;
 
     @NonNull
-    private final InstanceSpaceRepository instanceSpaceRepository;
+    private final DependencyRelationService<Instance, Space> instanceSpaceService;
 
     @NonNull
-    private final InstanceRepository instanceRepository;
-
-    @NonNull
-    private final EnteRepository enteRepository;
-
-    @NonNull
-    private final SpaceEnteRepository spaceEnteRepository;
+    private final DependencyRelationService<Space, Ente> spaceEnteService;
 
     /**
      * @see SpaceService
@@ -72,20 +59,8 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Mono<Space> create(final Space space) {
-        space.tryInitId();
-
-        return this.instanceRepository.findById(space.getInstanceId())
-            .flatMap(__ ->
-                this.instanceSpaceRepository
-                    .save(InstanceSpace
-                        .builder()
-                                .instanceId(space.getInstanceId())
-                                .spaceId(space.getId())
-                        .build()))
-                .flatMap(__ -> this.spaceRepository.save(space))
-            .switchIfEmpty(Mono.error(
-                    new ResponseStatusException(HttpStatus.NOT_FOUND,
-                            String.format("The instance: %s doesn't exist", space.getInstanceId()))));
+        return this.instanceSpaceService.create(
+                (Space)space.tryInitId(), "The instance: %s doesn't exist");
     }
 
     /**
@@ -106,19 +81,12 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public Flux<EnteSpaceName> getEntesBySpace(final UUID spaceId) {
 
-        return this.spaceEnteRepository.findAllBySpaceId(spaceId)
-                .flatMap(spaceEnte -> this.enteRepository
-                        .findById(spaceEnte.getEnteId())
-                        .switchIfEmpty(this.purgeSpaceEnte(spaceEnte.getId())))
+        return this.spaceEnteService.getChildrenByParent(spaceId)
                 .map(ente -> EnteSpaceName
                         .builder()
                             .spaceId(spaceId)
                             .enteId(ente.getId())
                             .EnteName(ente.getName())
                         .build());
-    }
-
-    private Mono<Ente> purgeSpaceEnte(MapId id) {
-        return this.spaceEnteRepository.deleteById(id).then(Mono.empty());
     }
 }

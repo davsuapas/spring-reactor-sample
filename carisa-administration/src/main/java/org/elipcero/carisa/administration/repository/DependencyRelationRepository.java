@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.repository;
 
-import org.elipcero.carisa.administration.domain.SpaceEnte;
+import org.elipcero.carisa.administration.domain.DependencyRelation;
 import org.springframework.data.cassandra.core.mapping.MapId;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
@@ -24,17 +24,17 @@ import reactor.core.publisher.Flux;
 import java.util.UUID;
 
 /**
- * Relations between Ente and Space repository
+ * Relations between parent and child
  *
  * @author David Suárez
  */
-public interface SpaceEnteRepository extends ReactiveCrudRepository<SpaceEnte, MapId> {
+public interface DependencyRelationRepository extends ReactiveCrudRepository<DependencyRelation, MapId> {
 
     /**
-     * Find all entes by space
+     * Find all children by parent
      *
-     * @param spaceId The space id to find
-     * @return SpaceEnte
+     * @param parentId The parent id to find
+     * @return DependencyRelation relations
      */
-    Flux<SpaceEnte> findAllBySpaceId(UUID spaceId);
+    Flux<DependencyRelation> findAllByParentId(UUID parentId);
 }

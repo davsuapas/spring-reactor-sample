@@ -18,10 +18,8 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.restdocs.hypermedia.LinksSnippet;
@@ -70,9 +68,6 @@ public class EnteControllerTest extends DataAbstractControllerTest {
             beforeOnce = true;
         }
     }
-
-    @Autowired
-    private SpaceEnteRepository spaceEnteRepository;
 
     @Test
     public void find_ente_should_return_ok_and_ente_entity() {

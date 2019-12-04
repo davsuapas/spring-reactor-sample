@@ -18,10 +18,8 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.restdocs.hypermedia.LinksSnippet;
@@ -58,9 +56,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
     public static final String SPACE_NAME = "Space name"; // Look at space-controller
 
-    @Autowired
-    private SpaceEnteRepository spaceEnteRepository;
-
     private static boolean beforeOnce;
 
     @Before
@@ -68,9 +63,9 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
         if (!beforeOnce) {
             this.executeCommands("instance-controller.cql");
             this.executeCommands("space-controller.cql");
-            this.executeCommands("instance-space-controller.cql");
             this.executeCommands("ente-controller.cql");
-            this.executeCommands("space-ente-controller.cql");
+            this.executeCommands("instance-space-controller.cql");
+            this.executeCommands("space-ente-controller.cql", false);
             beforeOnce = true;
         }
     }

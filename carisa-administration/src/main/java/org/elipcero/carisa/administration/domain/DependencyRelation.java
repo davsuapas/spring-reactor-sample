@@ -27,23 +27,23 @@ import org.springframework.data.cassandra.core.mapping.Table;
 import java.util.UUID;
 
 /**
- * Spaces by instance
+ * Relations N to N. In this entity is stored all N to N relations of the system
  *
  * @author David Suárez
  */
-@Table("carisa_instance_space")
+@Table("carisa_dependency_relation")
 @Builder
 @Getter
-public class InstanceSpace {
+public class DependencyRelation {
 
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private UUID instanceId;
+    private UUID parentId;
 
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    private UUID spaceId;
+    private UUID childId;
 
     public MapId getId() {
-        return BasicMapId.id("instanceId", instanceId).with("spaceId", spaceId);
+        return BasicMapId.id("parentId", parentId).with("childId", childId);
     }
 }
 

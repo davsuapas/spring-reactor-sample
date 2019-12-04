@@ -20,14 +20,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteProperty;
-import org.elipcero.carisa.administration.domain.SpaceEnte;
+import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.repository.EntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
-import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
-import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -45,10 +41,7 @@ public class DefaultEnteService implements EnteService {
     private final EnteRepository enteRepository;
 
     @NonNull
-    private final SpaceEnteRepository spaceEnteRepository;
-
-    @NonNull
-    private final SpaceRepository spaceRepository;
+    private final DependencyRelationService<Space, Ente> dependencyRelationService;
 
     @NonNull
     private final EntePropertyRepository entePropertyRepository;
@@ -66,20 +59,7 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Mono<Ente> create(final Ente ente) {
-        ente.tryInitId();
-
-        return this.spaceRepository.findById(ente.getSpaceId())
-            .flatMap(__ ->
-                this.spaceEnteRepository
-                    .save(SpaceEnte
-                        .builder()
-                                .spaceId(ente.getSpaceId())
-                                .enteId(ente.getId())
-                        .build()))
-                .flatMap(__ -> this.enteRepository.save(ente))
-            .switchIfEmpty(Mono.error(
-                    new ResponseStatusException(HttpStatus.NOT_FOUND,
-                            String.format("The space: %s doesn't exist", ente.getSpaceId()))));
+        return dependencyRelationService.create((Ente)ente.tryInitId(), "The space: %s doesn't exist");
     }
 
     /**

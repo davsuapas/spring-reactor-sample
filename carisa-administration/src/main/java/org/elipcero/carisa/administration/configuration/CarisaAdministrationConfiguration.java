@@ -16,16 +16,19 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.administration.domain.Instance;
+import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.repository.DependencyRelationRepository;
 import org.elipcero.carisa.administration.repository.EntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
-import org.elipcero.carisa.administration.repository.InstanceSpaceRepository;
-import org.elipcero.carisa.administration.repository.SpaceEnteRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
+import org.elipcero.carisa.administration.service.DependencyRelationService;
 import org.elipcero.carisa.administration.service.EntePropertyService;
 import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
@@ -52,6 +55,23 @@ public class CarisaAdministrationConfiguration {
     @Autowired
     private DataLockController dataLockController;
 
+    // Dependency relations
+
+    @Autowired
+    private DependencyRelationRepository dependencyRelationRepository;
+
+    @Bean
+    public DependencyRelationService<Space, Ente> spaceEnteRelationService() {
+        return new DependencyRelationService<Space, Ente>(
+                dependencyRelationRepository, spaceRepository, enteRepository);
+    }
+
+    @Bean
+    public DependencyRelationService<Instance, Space> instanceSpaceRelationService() {
+        return new DependencyRelationService<Instance, Space>(
+                dependencyRelationRepository, instanceRepository, spaceRepository);
+    }
+
     // Instance configuration
 
     @Autowired
@@ -60,8 +80,7 @@ public class CarisaAdministrationConfiguration {
     @Bean
     public InstanceService instanceService() {
         return new DefaultInstanceService(
-                instanceRepository, serviceProperties, dataLockController,
-                instanceSpaceRepository, spaceRepository);
+                instanceRepository, serviceProperties, dataLockController, instanceSpaceRelationService());
     }
 
     // Space configuration
@@ -69,14 +88,9 @@ public class CarisaAdministrationConfiguration {
     @Autowired
     private SpaceRepository spaceRepository;
 
-    @Autowired
-    private InstanceSpaceRepository instanceSpaceRepository;
-
     @Bean
     public SpaceService spaceService() {
-        return new DefaultSpaceService(
-                spaceRepository, instanceSpaceRepository, instanceRepository,
-                enteRepository, spaceEnteRepository);
+        return new DefaultSpaceService(spaceRepository, instanceSpaceRelationService(), spaceEnteRelationService());
     }
 
     // Ente configuration
@@ -84,13 +98,9 @@ public class CarisaAdministrationConfiguration {
     @Autowired
     private EnteRepository enteRepository;
 
-    @Autowired
-    private SpaceEnteRepository spaceEnteRepository;
-
     @Bean
     public EnteService enteService() {
-        return new DefaultEnteService(enteRepository, spaceEnteRepository,
-                spaceRepository, entePropertyRepository);
+        return new DefaultEnteService(enteRepository, spaceEnteRelationService(), entePropertyRepository);
     }
 
     // Ente property configuration

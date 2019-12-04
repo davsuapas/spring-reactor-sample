@@ -31,10 +31,26 @@ public abstract class DataAbstractControllerTest extends AbstractControllerTest 
     @Autowired
     private CassandraTemplate cqlTemplate;
 
-    protected void executeCommands(String resourceName) {
+    protected void executeCommands(final String resourceName) {
+        this.executeCommands(resourceName, true);
+    }
+
+    /**
+     * Execute cassandra sentences.
+     * @param resourceName
+     * @param dropTable If dropTable == true execute drop table sentences
+     */
+    protected void executeCommands(final String resourceName, final Boolean dropTable) {
         try {
             Arrays.stream(Util.loadCqlFromResource(resourceName).split("\n"))
-                    .forEach(sentence -> this.cqlTemplate.getCqlOperations().execute(sentence));
+                    .forEach(sentence -> {
+                        if (dropTable) {
+                            this.cqlTemplate.getCqlOperations().execute(sentence);
+                        }
+                        else if (!(sentence.toLowerCase().contains("drop table"))) {
+                            this.cqlTemplate.getCqlOperations().execute(sentence);
+                        }
+                    });
         }
         catch (IOException e) {
             e.printStackTrace();
