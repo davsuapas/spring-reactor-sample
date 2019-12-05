@@ -37,8 +37,6 @@ public interface EntePropertyService {
 
     /**
      * Create the Ente property and insert it into the Ente. It's not done in the same transaction.
-     * In this case, the user has the responsibility of removing the relation when fault,
-     * checking if the ente exists
      * @param enteProperty Ente property for creating
      * @return Ente property created
      */

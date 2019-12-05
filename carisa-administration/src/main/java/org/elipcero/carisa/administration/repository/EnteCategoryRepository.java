@@ -14,37 +14,17 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.administration.repository;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import org.elipcero.carisa.core.data.Entity;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.elipcero.carisa.administration.domain.EnteCategory;
+import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
 
 import java.util.UUID;
 
 /**
- * Ente group. Each group can have groups or entes.
- * Each group references to ente properties or properties of other groups.
- * If it is root the parent is a space,
+ * Repository for instance
  *
  * @author David Suárez
  */
-@Table("carisa_ente_group")
-@Getter
-public class EnteGroup extends Entity {
-
-    private UUID parentId;
-
-    @Setter
-    private String name;
-
-    @Builder
-    public EnteGroup(UUID id, UUID parentId, String name) {
-        super(id);
-        this.parentId = parentId;
-        this.name = name;
-    }
+public interface EnteCategoryRepository extends CustomizedReactiveCrudRepository<EnteCategory, UUID> {
 }
-

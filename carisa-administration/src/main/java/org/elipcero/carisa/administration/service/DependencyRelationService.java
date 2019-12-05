@@ -47,6 +47,12 @@ public class DependencyRelationService<TParent, TChild extends ChildRelation> {
     @NonNull
     private final ReactiveCrudRepository<TChild, UUID> childRepository;
 
+    /**
+     * Create the child. If the parent doesn't exist throw exception
+     * @param child child to create
+     * @param errorMessage error message for user
+     * @return
+     */
     public Mono<TChild> create(final TChild child, final String errorMessage) {
         return this.parentRepository.findById(child.getParentId())
                 .flatMap(__ ->
@@ -62,6 +68,11 @@ public class DependencyRelationService<TParent, TChild extends ChildRelation> {
                                 String.format(errorMessage, child.getParentId()))));
     }
 
+    /**
+     * Get children by parent. If the child doesn't exist is purged
+     * @param parentId
+     * @return
+     */
     public Flux<TChild> getChildrenByParent(UUID parentId) {
         return this.dependencyRelationRepository.findAllByParentId(parentId)
                 .flatMap(relation -> this.childRepository

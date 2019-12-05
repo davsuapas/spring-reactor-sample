@@ -40,8 +40,6 @@ public interface EnteService {
 
     /**
      * Create the Ente and insert it into the Space. It's not done in the same transaction.
-     * In this case, the user has the responsibility of removing the relation when fault,
-     * checking if the space exists
      * @param ente Ente for creating
      * @return Ente created
      */

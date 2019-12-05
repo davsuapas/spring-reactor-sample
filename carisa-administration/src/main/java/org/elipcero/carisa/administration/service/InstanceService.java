@@ -39,7 +39,7 @@ public interface InstanceService {
     Mono<Instance> getById(UUID id);
 
     /**
-     * Get spaces by instance id
+     * Get spaces by instance id. If the space doesn't exist is removed
      * @param instanceId the instanceId to find
      * @return the space view
      */
