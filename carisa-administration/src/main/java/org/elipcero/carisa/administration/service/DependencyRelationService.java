@@ -39,6 +39,9 @@ import java.util.UUID;
 public class DependencyRelationService<TParent, TChild extends ChildRelation> {
 
     @NonNull
+    private final DependencyRelation.Relation relation;
+
+    @NonNull
     private final DependencyRelationRepository dependencyRelationRepository;
 
     @NonNull
@@ -59,6 +62,7 @@ public class DependencyRelationService<TParent, TChild extends ChildRelation> {
                         dependencyRelationRepository
                                 .save(DependencyRelation
                                         .builder()
+                                            .relation(this.relation)
                                             .parentId(child.getParentId())
                                             .childId(child.getChildId())
                                         .build()))
@@ -74,7 +78,7 @@ public class DependencyRelationService<TParent, TChild extends ChildRelation> {
      * @return
      */
     public Flux<TChild> getChildrenByParent(UUID parentId) {
-        return this.dependencyRelationRepository.findAllByParentId(parentId)
+        return this.dependencyRelationRepository.findAllByParentIdAndRelation(parentId, this.relation.ordinal())
                 .flatMap(relation -> this.childRepository
                             .findById(relation.getChildId())
                             .switchIfEmpty(this.purge(relation.getId())));

@@ -36,5 +36,5 @@ public interface DependencyRelationRepository extends ReactiveCrudRepository<Dep
      * @param parentId The parent id to find
      * @return DependencyRelation relations
      */
-    Flux<DependencyRelation> findAllByParentId(UUID parentId);
+    Flux<DependencyRelation> findAllByParentIdAndRelation(UUID parentId, int relation);
 }

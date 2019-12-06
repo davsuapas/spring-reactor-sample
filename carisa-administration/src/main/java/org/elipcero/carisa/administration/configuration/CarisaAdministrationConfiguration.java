@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import org.elipcero.carisa.administration.domain.DependencyRelation;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.Space;
@@ -61,15 +62,17 @@ public class CarisaAdministrationConfiguration {
     private DependencyRelationRepository dependencyRelationRepository;
 
     @Bean
-    public DependencyRelationService<Space, Ente> spaceEnteRelationService() {
-        return new DependencyRelationService<Space, Ente>(
-                dependencyRelationRepository, spaceRepository, enteRepository);
+    public DependencyRelationService<Instance, Space> instanceSpaceRelationService() {
+        return new DependencyRelationService<>(
+                DependencyRelation.Relation.InstanceSpace,
+                dependencyRelationRepository, instanceRepository, spaceRepository);
     }
 
     @Bean
-    public DependencyRelationService<Instance, Space> instanceSpaceRelationService() {
-        return new DependencyRelationService<Instance, Space>(
-                dependencyRelationRepository, instanceRepository, spaceRepository);
+    public DependencyRelationService<Space, Ente> spaceEnteRelationService() {
+        return new DependencyRelationService<>(
+                DependencyRelation.Relation.SpaceEnte,
+                dependencyRelationRepository, spaceRepository, enteRepository);
     }
 
     // Instance configuration
