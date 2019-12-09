@@ -24,6 +24,7 @@ import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteSpaceName;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.reactive.data.DependencyRelation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -41,10 +42,10 @@ public class DefaultSpaceService implements SpaceService {
     private final SpaceRepository spaceRepository;
 
     @NonNull
-    private final DependencyRelationService<Instance, Space> instanceSpaceService;
+    private final DependencyRelation<Instance, Space> instanceSpaceService;
 
     @NonNull
-    private final DependencyRelationService<Space, Ente> spaceEnteService;
+    private final DependencyRelation<Space, Ente> spaceEnteService;
 
     /**
      * @see SpaceService

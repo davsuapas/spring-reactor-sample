@@ -24,6 +24,7 @@ import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.repository.EntePropertyRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.reactive.data.DependencyRelation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -41,7 +42,7 @@ public class DefaultEnteService implements EnteService {
     private final EnteRepository enteRepository;
 
     @NonNull
-    private final DependencyRelationService<Space, Ente> dependencyRelationService;
+    private final DependencyRelation<Space, Ente> dependencyRelationService;
 
     @NonNull
     private final EntePropertyRepository entePropertyRepository;

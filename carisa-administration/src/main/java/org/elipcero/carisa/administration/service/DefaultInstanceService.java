@@ -23,6 +23,8 @@ import org.elipcero.carisa.administration.projection.SpaceInstanceName;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.Relation;
+import org.elipcero.carisa.core.reactive.data.DependencyRelation;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -43,7 +45,7 @@ public class DefaultInstanceService implements InstanceService {
 
     private final InstanceRepository instanceRepository;
     private final DataLockController dataLockController;
-    private final DependencyRelationService<Instance, Space> dependencyRelationService;
+    private final DependencyRelation<Instance, TRelation extends Relation<ID>, ID> dependencyRelationService;
 
     private final WebClient webClient;
 
@@ -51,7 +53,7 @@ public class DefaultInstanceService implements InstanceService {
             final InstanceRepository instanceRepository,
             final ServiceProperties serviceProperties,
             final DataLockController dataLockController,
-            final DependencyRelationService<Instance, Space> dependencyRelationService) {
+            final DependencyRelation<Instance, Space> dependencyRelationService) {
 
         Assert.notNull(instanceRepository, "The instanceRepository can not be null");
         Assert.notNull(serviceProperties, "The serviceProperties can not be null");

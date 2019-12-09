@@ -16,7 +16,6 @@
 
 package org.elipcero.carisa.administration.configuration;
 
-import org.elipcero.carisa.administration.domain.DependencyRelation;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.Space;
@@ -29,12 +28,12 @@ import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
-import org.elipcero.carisa.administration.service.DependencyRelationService;
 import org.elipcero.carisa.administration.service.EntePropertyService;
 import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
+import org.elipcero.carisa.core.reactive.data.DependencyRelation;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -62,16 +61,16 @@ public class CarisaAdministrationConfiguration {
     private DependencyRelationRepository dependencyRelationRepository;
 
     @Bean
-    public DependencyRelationService<Instance, Space> instanceSpaceRelationService() {
-        return new DependencyRelationService<>(
-                DependencyRelation.Relation.InstanceSpace,
+    public DependencyRelation<Instance, Space> instanceSpaceRelationService() {
+        return new DependencyRelation<>(
+                org.elipcero.carisa.administration.domain.DependencyRelation.Relation.InstanceSpace,
                 dependencyRelationRepository, instanceRepository, spaceRepository);
     }
 
     @Bean
-    public DependencyRelationService<Space, Ente> spaceEnteRelationService() {
-        return new DependencyRelationService<>(
-                DependencyRelation.Relation.SpaceEnte,
+    public DependencyRelation<Space, Ente> spaceEnteRelationService() {
+        return new DependencyRelation<>(
+                org.elipcero.carisa.administration.domain.DependencyRelation.Relation.SpaceEnte,
                 dependencyRelationRepository, spaceRepository, enteRepository);
     }
 
