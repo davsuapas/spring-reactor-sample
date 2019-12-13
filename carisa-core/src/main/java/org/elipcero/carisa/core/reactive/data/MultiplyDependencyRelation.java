@@ -12,7 +12,7 @@ import java.util.UUID;
  * @param <TChild> Many relation
  * @param <TRelation> Intermediate relation
  */
-public interface MultiplyDependencyRelation<TChild, TRelation extends Relation> {
+public interface MultiplyDependencyRelation<TChild, TRelation extends Relation> extends DependencyRelation<TRelation> {
 
     /**
      * Create the child and the relation referencing to the parent.

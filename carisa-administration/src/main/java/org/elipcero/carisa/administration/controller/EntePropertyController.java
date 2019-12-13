@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
@@ -82,7 +84,8 @@ public class EntePropertyController {
             final @PathVariable("propertyId") String propertyId) {
 
         return this.crudHypermediaController.get(
-                this.entePropertyService.getById(EnteProperty.getId(enteId, propertyId)));
+                this.entePropertyService
+                        .getById(EnteProperty.GetMapId(UUID.fromString(enteId), UUID.fromString(propertyId))));
     }
 
     /**
@@ -102,14 +105,17 @@ public class EntePropertyController {
      * @param enteProperty the EnteProperty property (Id == null)
      * @return
      */
-    @PutMapping("/entes/{enteId}/properties/{propertyId}")
+    @PutMapping("spaces/{spaceId}/entes/{enteId}/properties/{propertyId}")
     public Publisher<ResponseEntity<EntityModel<EnteProperty>>> updateOrCreate(
+            final @PathVariable("spaceId") String spaceId,
             final @PathVariable("enteId") String enteId,
             final @PathVariable("propertyId") String propertyId,
             final @RequestBody EnteProperty enteProperty) {
 
-        return this.crudHypermediaController
-                .updateOrCreate(this.entePropertyService.updateOrCreate(
-                        EnteProperty.getId(enteId, propertyId), enteProperty));
+        enteProperty.setSpaceId(UUID.fromString(spaceId));
+        enteProperty.setEnteId(UUID.fromString(enteId));
+        enteProperty.setId(UUID.fromString(propertyId));
+
+        return this.crudHypermediaController.updateOrCreate(this.entePropertyService.updateOrCreate(enteProperty));
     }
 }

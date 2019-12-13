@@ -20,14 +20,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteProperty;
-import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.repository.EntePropertyRepository;
-import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
-import org.elipcero.carisa.core.reactive.data.DependencyRelation;
+import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -39,20 +37,17 @@ import java.util.UUID;
 public class DefaultEnteService implements EnteService {
 
     @NonNull
-    private final EnteRepository enteRepository;
+    private final EmbeddedDependencyRelation<Ente> spaceEnteService;
 
     @NonNull
-    private final DependencyRelation<Space, Ente> dependencyRelationService;
-
-    @NonNull
-    private final EntePropertyRepository entePropertyRepository;
+    private final EmbeddedDependencyRelation<EnteProperty> entePropertyService;
 
     /**
      * @see EnteService
      */
     @Override
-    public Mono<Ente> getById(final UUID id) {
-        return this.enteRepository.findById(id);
+    public Mono<Ente> getById(final Map<String, Object> id) {
+        return this.spaceEnteService.getById(id);
     }
 
     /**
@@ -60,17 +55,16 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Mono<Ente> create(final Ente ente) {
-        return dependencyRelationService.create((Ente)ente.tryInitId(), "The space: %s doesn't exist");
+        return spaceEnteService.create(ente, "The space: %s doesn't exist");
     }
 
     /**
      * @see SpaceService
      */
     @Override
-    public Mono<EntityDataState<Ente>> updateOrCreate(final UUID id, final Ente ente) {
-        ente.setId(id);
-        return this.enteRepository
-                .updateCreate(id,
+    public Mono<EntityDataState<Ente>> updateOrCreate(final Ente ente) {
+        return this.spaceEnteService
+                .updateOrCreate(ente,
                         enteForUpdating -> enteForUpdating.setName(ente.getName()),
                         this.create(ente));
     }
@@ -80,6 +74,6 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Flux<EnteProperty> getEntePropertiesByEnte(final UUID enteId) {
-        return this.entePropertyRepository.findAllByEnteId(enteId);
+        return this.entePropertyService.getRelationsByParent(enteId);
     }
 }

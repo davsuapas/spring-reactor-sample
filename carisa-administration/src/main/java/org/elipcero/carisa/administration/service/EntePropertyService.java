@@ -18,8 +18,9 @@ package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.data.EntityDataState;
-import org.springframework.data.cassandra.core.mapping.MapId;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 /**
  * Operations for Ente property
@@ -33,7 +34,7 @@ public interface EntePropertyService {
      * @param id
      * @return ente found
      */
-    Mono<EnteProperty> getById(final MapId id);
+    Mono<EnteProperty> getById(final Map<String, Object> id);
 
     /**
      * Create the Ente property and insert it into the Ente. It's not done in the same transaction.
@@ -45,9 +46,8 @@ public interface EntePropertyService {
     /**
      * Update or create the ente property. If the id exits is updated
      * otherwise is created. The EntePropertyId can not be updated. To create @see create
-     * @param id
      * @param enteProperty Ente property for updating or creating
      * @return Ente property created or updated
      */
-    Mono<EntityDataState<EnteProperty>> updateOrCreate(final MapId id, final EnteProperty enteProperty);
+    Mono<EntityDataState<EnteProperty>> updateOrCreate(final EnteProperty enteProperty);
 }

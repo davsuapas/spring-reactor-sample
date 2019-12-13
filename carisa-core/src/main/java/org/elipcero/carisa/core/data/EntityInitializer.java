@@ -14,25 +14,19 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
-
-import lombok.Getter;
-import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
-
-import java.util.UUID;
+package org.elipcero.carisa.core.data;
 
 /**
- * Relations N to N. In this entity is stored all N to N relations of the system
+ * Entity initializer
  *
  * @author David Suárez
+ * @param <T>
  */
-@Getter
-public class DependencyRelation {
+public interface EntityInitializer<T> {
 
-    @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private UUID parentId;
-
-    @PrimaryKeyColumn(ordinal = 2, type = PrimaryKeyType.CLUSTERED)
-    private UUID childId;
+    /**
+     * Try initialize identifier
+     * @return the same entity
+     */
+    T tryInitId();
 }

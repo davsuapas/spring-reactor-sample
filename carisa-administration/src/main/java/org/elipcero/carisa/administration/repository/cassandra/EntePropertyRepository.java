@@ -14,27 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
+package org.elipcero.carisa.administration.repository.cassandra;
 
-import org.elipcero.carisa.administration.domain.DependencyRelation;
+import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
 import org.springframework.data.cassandra.core.mapping.MapId;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import reactor.core.publisher.Flux;
-
-import java.util.UUID;
 
 /**
- * Relations between parent and child
+ * Relations between Ente property and Ente repository
  *
  * @author David Suárez
  */
-public interface DependencyRelationRepository extends ReactiveCrudRepository<DependencyRelation, MapId> {
-
-    /**
-     * Find all children by parent
-     *
-     * @param parentId The parent id to find
-     * @return DependencyRelation relations
-     */
-    Flux<DependencyRelation> findAllByParentIdAndRelation(UUID parentId, int relation);
+public interface EntePropertyRepository extends DependencyRelationRepository<EnteProperty, MapId> {
 }

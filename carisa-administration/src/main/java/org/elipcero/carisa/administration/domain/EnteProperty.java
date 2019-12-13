@@ -17,17 +17,19 @@
 package org.elipcero.carisa.administration.domain;
 
 import com.datastax.driver.core.DataType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.elipcero.carisa.core.data.EntityInitializer;
+import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
-import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.CassandraType;
-import org.springframework.data.cassandra.core.mapping.MapId;
+import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -37,19 +39,46 @@ import java.util.UUID;
  */
 @Table("carisa_ente_property")
 @Getter
-public class EnteProperty {
+@Setter
+public class EnteProperty implements Relation, EntityInitializer<EnteProperty> {
 
-    public static final String ENTE_ID = "enteId";
-    public static final String PROPERTY_ID = "propertyId";
+    public static String ENTEID_COLUMN_NAME = "enteId";
+    public static String ID_COLUMN_NAME = "id";
 
+    @Column("parentId")
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private UUID enteId;
 
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    private UUID propertyId;
+    private UUID id;
 
-    @Setter
+    private UUID spaceId; // Is necessary to find Ente
+
     private String name;
+
+    @Builder
+    public EnteProperty(UUID id, UUID enteId, UUID spaceId, String name, EnteProperty.Type type) {
+        this.id = id;
+        this.enteId = enteId;
+        this.name = name;
+        this.type = type;
+        this.spaceId = spaceId;
+    }
+
+    @Override
+    public UUID getParentId() {
+        return this.enteId;
+    }
+
+    @Override
+    public UUID getChildId() {
+        return this.id;
+    }
+
+    @Override
+    public void setParentId(UUID value) {
+        this.enteId = value;
+    }
 
     public enum Type {
         Integer,
@@ -58,37 +87,22 @@ public class EnteProperty {
         DateTime
     }
 
+    public static Map<String, Object> GetMapId(UUID enteId, UUID id) {
+        return new HashMap<String, Object>() {{
+            put(ENTEID_COLUMN_NAME, enteId);
+            put(ID_COLUMN_NAME, id);
+        }};
+    }
+
     @CassandraType(type = DataType.Name.INT)
     @Setter
     private EnteProperty.Type type;
 
-    @JsonIgnore
-    public void setId(MapId id) {
-        this.enteId = (UUID)id.get(ENTE_ID);
-        this.propertyId = (UUID)id.get(PROPERTY_ID);
-    }
-
     public EnteProperty tryInitId() {
-        if (this.propertyId == null) {
-            this.propertyId = UUID.randomUUID();
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
         }
         return this;
-    }
-
-    @Builder
-    public EnteProperty(UUID propertyId, UUID enteId, String name, EnteProperty.Type type) {
-        this.propertyId = propertyId;
-        this.enteId = enteId;
-        this.name = name;
-        this.type = type;
-    }
-
-    public static MapId getId(String enteId, String propertyId) {
-        return getId(UUID.fromString(enteId), UUID.fromString(propertyId));
-    }
-
-    public static MapId getId(UUID enteId, UUID propertyId) {
-        return BasicMapId.id(ENTE_ID, enteId).with(PROPERTY_ID, propertyId);
     }
 }
 

@@ -17,11 +17,9 @@
 package org.elipcero.carisa.administration.configuration;
 
 import org.elipcero.carisa.administration.domain.Ente;
-import org.elipcero.carisa.administration.domain.Instance;
+import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.repository.DependencyRelationRepository;
-import org.elipcero.carisa.administration.repository.EntePropertyRepository;
-import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
@@ -33,7 +31,8 @@ import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
-import org.elipcero.carisa.core.reactive.data.DependencyRelation;
+import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,7 +46,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @EnableConfigurationProperties(ServiceProperties.class)
 @Configuration
-public class CarisaAdministrationConfiguration {
+public class HorizontalServiceConfiguration {
 
     @Autowired
     private ServiceProperties serviceProperties;
@@ -55,24 +54,16 @@ public class CarisaAdministrationConfiguration {
     @Autowired
     private DataLockController dataLockController;
 
-    // Dependency relations
+    // Relations
 
     @Autowired
-    private DependencyRelationRepository dependencyRelationRepository;
+    private MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService;
 
-    @Bean
-    public DependencyRelation<Instance, Space> instanceSpaceRelationService() {
-        return new DependencyRelation<>(
-                org.elipcero.carisa.administration.domain.DependencyRelation.Relation.InstanceSpace,
-                dependencyRelationRepository, instanceRepository, spaceRepository);
-    }
+    @Autowired
+    private EmbeddedDependencyRelation<Ente> spaceEnteService;
 
-    @Bean
-    public DependencyRelation<Space, Ente> spaceEnteRelationService() {
-        return new DependencyRelation<>(
-                org.elipcero.carisa.administration.domain.DependencyRelation.Relation.SpaceEnte,
-                dependencyRelationRepository, spaceRepository, enteRepository);
-    }
+    @Autowired
+    private EmbeddedDependencyRelation<EnteProperty> entePropertyService;
 
     // Instance configuration
 
@@ -82,7 +73,7 @@ public class CarisaAdministrationConfiguration {
     @Bean
     public InstanceService instanceService() {
         return new DefaultInstanceService(
-                instanceRepository, serviceProperties, dataLockController, instanceSpaceRelationService());
+                instanceRepository, serviceProperties, dataLockController, instanceSpaceService);
     }
 
     // Space configuration
@@ -92,26 +83,20 @@ public class CarisaAdministrationConfiguration {
 
     @Bean
     public SpaceService spaceService() {
-        return new DefaultSpaceService(spaceRepository, instanceSpaceRelationService(), spaceEnteRelationService());
+        return new DefaultSpaceService(spaceRepository, instanceSpaceService, spaceEnteService);
     }
 
     // Ente configuration
 
-    @Autowired
-    private EnteRepository enteRepository;
-
     @Bean
     public EnteService enteService() {
-        return new DefaultEnteService(enteRepository, spaceEnteRelationService(), entePropertyRepository);
+        return new DefaultEnteService(spaceEnteService, entePropertyService);
     }
 
     // Ente property configuration
 
-    @Autowired
-    private EntePropertyRepository entePropertyRepository;
-
     @Bean
     public EntePropertyService entePropertyService() {
-        return new DefaultEntePropertyService(entePropertyRepository, enteRepository);
+        return new DefaultEntePropertyService(entePropertyService);
     }
 }

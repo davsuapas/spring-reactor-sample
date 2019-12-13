@@ -22,6 +22,7 @@ import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -33,10 +34,10 @@ public interface EnteService {
 
     /**
      * Get ente by id
-     * @param id
+     * @param id identifier
      * @return ente found
      */
-    Mono<Ente> getById(UUID id);
+    Mono<Ente> getById(Map<String, Object> id);
 
     /**
      * Create the Ente and insert it into the Space. It's not done in the same transaction.
@@ -48,11 +49,10 @@ public interface EnteService {
     /**
      * Update or create the ente. If the id exits is updated
      * otherwise is created. The EnteId can not be updated. To create @see create
-     * @param id
      * @param ente Ente for updating or creating
      * @return Ente created or updated
      */
-    Mono<EntityDataState<Ente>> updateOrCreate(final UUID id, final Ente ente);
+    Mono<EntityDataState<Ente>> updateOrCreate(final Ente ente);
 
     /**
      * Get ente properties by ente id

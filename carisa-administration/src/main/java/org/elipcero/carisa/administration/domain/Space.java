@@ -16,7 +16,6 @@
 
 package org.elipcero.carisa.administration.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +32,7 @@ import java.util.UUID;
  */
 @Table("carisa_space")
 @Getter
-public class Space extends Entity implements ChildRelation {
+public class Space extends Entity {
 
     private UUID instanceId;
 
@@ -45,17 +44,5 @@ public class Space extends Entity implements ChildRelation {
         super(id);
         this.instanceId = instanceId;
         this.name = name;
-    }
-
-    @JsonIgnore
-    @Override
-    public UUID getParentId() {
-        return this.instanceId;
-    }
-
-    @JsonIgnore
-    @Override
-    public UUID getChildId() {
-        return this.getId();
     }
 }

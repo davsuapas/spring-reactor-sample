@@ -7,10 +7,10 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 /**
- * Manage dependency relations operations. The many relations attributes is embedded into entity relation
+ * Manage dependency relations operations. The many relations attributes are embedded into entity relation
  * @param <TRelation> Intermediate relation
  */
-public interface EmbeddedDependencyRelation<TRelation extends Relation> {
+public interface EmbeddedDependencyRelation<TRelation extends Relation> extends DependencyRelation<TRelation> {
 
     /**
      * Create the relation as child. If the parent doesn't exist throw exception

@@ -48,7 +48,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
  * @author David Suárez
  */
 @RestController
-@RequestMapping("/api/entes")
+@RequestMapping("/api")
 public class EnteController {
 
     private final CrudHypermediaController<Ente> crudHypermediaController;
@@ -65,7 +65,7 @@ public class EnteController {
      * Return schema
      * @return
      */
-    @GetMapping
+    @GetMapping("/entes")
     public Publisher<EntityModel<String>> getMetadata() {
         return linkTo(
                 methodOn(EnteController.class).getMetadata())
@@ -76,65 +76,75 @@ public class EnteController {
 
     /**
      * Get Ente by id
-     * @param id the space identifier (UUID string)
+     * @param spaceId the space identifier (UUID string)
+     * @param enteId the ente identifier (UUID string)
      * @return ente entity
      */
-    @GetMapping("/{id}")
-    public Publisher<EntityModel<Ente>> getById(final @PathVariable("id") String id) {
-        return this.crudHypermediaController.get(this.enteService.getById(UUID.fromString(id)));
+    @GetMapping("/spaces/{spaceId}/entes/{enteId}")
+    public Publisher<EntityModel<Ente>> getById(
+            final @PathVariable("spaceId") String spaceId, final @PathVariable("enteId") String enteId) {
+        return this.crudHypermediaController.get(
+                this.enteService.getById(Ente.GetMapId(UUID.fromString(spaceId), UUID.fromString(enteId))));
     }
 
     /**
      * Create the Ente
      * @param ente the Ente (Id == null)
-     * @return
+     * @return ente
      */
-    @PostMapping
+    @PostMapping("/entes")
     public Publisher<ResponseEntity<EntityModel<Ente>>> create(final @RequestBody Ente ente) {
         return this.crudHypermediaController.create(this.enteService.create(ente));
     }
 
     /**
      * Update or create the Ente depending of the identifier if exists.
-     * @param id the Ente identifier (UUID string)
+     * @param spaceId the space identifier (UUID string)
+     * @param enteId the ente identifier (UUID string)
      * @param ente the Ente (Id == null)
-     * @return
+     * @return ente
      */
-    @PutMapping("/{id}")
+    @PutMapping("/spaces/{spaceId}/entes/{enteId}")
     public Publisher<ResponseEntity<EntityModel<Ente>>> updateOrCreate(
-            final @PathVariable("id") String id, final @RequestBody Ente ente) {
+            final @PathVariable("spaceId") String spaceId,
+            final @PathVariable("enteId") String enteId,
+            final @RequestBody Ente ente) {
 
-        return this.crudHypermediaController
-                .updateOrCreate(this.enteService.updateOrCreate(UUID.fromString(id), ente));
+        ente.setSpaceId(UUID.fromString(spaceId));
+        ente.setId(UUID.fromString(enteId));
+
+        return this.crudHypermediaController.updateOrCreate(this.enteService.updateOrCreate(ente));
     }
 
     /**
      * Get ente properties by enteId
-     * @param id the enteId
+     * @param spaceId the space identifier (UUID string)
+     * @param enteId the ente identifier (UUID string)
      * @return Ente property collections with links
      */
-    @GetMapping("/{id}/properties")
+    @GetMapping("/spaces/{spaceId}/entes/{enteId}/properties")
     public Publisher<CollectionModel<EntityModel<EntePropertyName>>> getProperties(
-            final @PathVariable("id") String id) {
+            final @PathVariable("spaceId") String spaceId,
+            final @PathVariable("enteId") String enteId) {
 
-        return this.enteService.getEntePropertiesByEnte(UUID.fromString(id))
+        return this.enteService.getEntePropertiesByEnte(UUID.fromString(enteId))
                 .flatMap(enteProperty ->
                         Flux.concat(
                                 linkTo(
                                         methodOn(EntePropertyController.class)
                                                 .getById(
                                                         enteProperty.getEnteId().toString(),
-                                                        enteProperty.getPropertyId().toString()))
+                                                        enteProperty.getId().toString()))
                                         .withRel(EntePropertyModelAssembler.PROPERTY_REL_NAME).toMono())
                                 .map(links -> new EntityModel<>(EntePropertyName
                                         .builder()
-                                            .entePropertyId(enteProperty.getPropertyId())
+                                            .entePropertyId(enteProperty.getId())
                                             .name(enteProperty.getName())
                                         .build(), links)))
                 .collectList()
                 .flatMap(entities ->
                         linkTo(
-                                methodOn(EnteController.class).getById(id))
+                                methodOn(EnteController.class).getById(spaceId, enteId))
                                 .withRel(EnteModelAssembler.ENTE_REL_NAME).toMono()
                                 .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
     }

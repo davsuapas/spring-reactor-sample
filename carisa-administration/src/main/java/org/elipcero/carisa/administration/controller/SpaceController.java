@@ -119,7 +119,10 @@ public class SpaceController {
                 .flatMap(spaceEnte ->
                         Flux.concat(
                                 linkTo(
-                                        methodOn(EnteController.class).getById(spaceEnte.getEnteId().toString()))
+                                        methodOn(EnteController.class)
+                                                .getById(
+                                                        spaceEnte.getSpaceId().toString(),
+                                                        spaceEnte.getEnteId().toString()))
                                         .withRel(EnteModelAssembler.ENTE_REL_NAME).toMono())
                                 .map(links -> new EntityModel<>(EnteName
                                         .builder()

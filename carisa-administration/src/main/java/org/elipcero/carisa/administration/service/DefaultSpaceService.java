@@ -19,12 +19,14 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
-import org.elipcero.carisa.administration.domain.Instance;
+import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteSpaceName;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
-import org.elipcero.carisa.core.reactive.data.DependencyRelation;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
+import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -42,10 +44,10 @@ public class DefaultSpaceService implements SpaceService {
     private final SpaceRepository spaceRepository;
 
     @NonNull
-    private final DependencyRelation<Instance, Space> instanceSpaceService;
+    private final MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService;
 
     @NonNull
-    private final DependencyRelation<Space, Ente> spaceEnteService;
+    private final EmbeddedDependencyRelation<Ente> spaceEnteService;
 
     /**
      * @see SpaceService
@@ -61,7 +63,19 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public Mono<Space> create(final Space space) {
         return this.instanceSpaceService.create(
-                (Space)space.tryInitId(), "The instance: %s doesn't exist");
+                new DependencyRelationCreateCommand<Space, InstanceSpace>() {
+                    @Override
+                    public Space getChild() {
+                        return space;
+                    }
+
+                    @Override
+                    public InstanceSpace getRelation() {
+                        return InstanceSpace.builder()
+                                .instanceId(space.getInstanceId())
+                                .spaceId(space.getId()).build();
+                    }
+                }, "The instance: %s doesn't exist");
     }
 
     /**
@@ -81,8 +95,7 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Flux<EnteSpaceName> getEntesBySpace(final UUID spaceId) {
-
-        return this.spaceEnteService.getChildrenByParent(spaceId)
+        return this.spaceEnteService.getRelationsByParent(spaceId)
                 .map(ente -> EnteSpaceName
                         .builder()
                             .spaceId(spaceId)

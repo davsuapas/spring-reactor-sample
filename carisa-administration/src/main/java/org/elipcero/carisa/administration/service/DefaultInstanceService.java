@@ -16,15 +16,16 @@
 
 package org.elipcero.carisa.administration.service;
 
+import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.Instance;
+import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.KubernetesDeployer;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.SpaceInstanceName;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
-import org.elipcero.carisa.core.data.Relation;
-import org.elipcero.carisa.core.reactive.data.DependencyRelation;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -45,24 +46,19 @@ public class DefaultInstanceService implements InstanceService {
 
     private final InstanceRepository instanceRepository;
     private final DataLockController dataLockController;
-    private final DependencyRelation<Instance, TRelation extends Relation<ID>, ID> dependencyRelationService;
+    private final MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService;
 
     private final WebClient webClient;
 
     public DefaultInstanceService(
-            final InstanceRepository instanceRepository,
-            final ServiceProperties serviceProperties,
-            final DataLockController dataLockController,
-            final DependencyRelation<Instance, Space> dependencyRelationService) {
-
-        Assert.notNull(instanceRepository, "The instanceRepository can not be null");
-        Assert.notNull(serviceProperties, "The serviceProperties can not be null");
-        Assert.notNull(dataLockController, "The serviceProperties can not be null");
-        Assert.notNull(dependencyRelationService, "The dependencyRelationRepository can not be null");
+            @NonNull final InstanceRepository instanceRepository,
+            @NonNull final ServiceProperties serviceProperties,
+            @NonNull final DataLockController dataLockController,
+            @NonNull final MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService) {
 
         this.instanceRepository = instanceRepository;
         this.dataLockController = dataLockController;
-        this.dependencyRelationService = dependencyRelationService;
+        this.instanceSpaceService = instanceSpaceService;
 
         ServiceProperties.Skipper skipper = serviceProperties.getSkipper();
         Assert.notNull(skipper, "The skipper configuration can not be null");
@@ -87,7 +83,7 @@ public class DefaultInstanceService implements InstanceService {
      */
     @Override
     public Flux<SpaceInstanceName> getSpacesByInstance(final UUID instanceId) {
-        return this.dependencyRelationService.getChildrenByParent(instanceId)
+        return this.instanceSpaceService.getChildrenByParent(instanceId)
                 .map(space -> SpaceInstanceName
                         .builder()
                             .instanceId(instanceId)

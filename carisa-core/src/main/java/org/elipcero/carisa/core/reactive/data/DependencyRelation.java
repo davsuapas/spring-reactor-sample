@@ -16,52 +16,30 @@
 
 package org.elipcero.carisa.core.reactive.data;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.Relation;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
+import java.util.Map;
+import java.util.function.Consumer;
 
-/**
- * Manage dependency relations operations
- *
- * @author David Suárez
- */
-@RequiredArgsConstructor
-public abstract class DependencyRelation<TParent, TRelation extends Relation, TRelationID> {
-
-    @NonNull
-    private final ReactiveCrudRepository<TParent, UUID> parentRepository;
-
-    @NonNull
-    protected final DependencyRelationRepository<TRelation, TRelationID> relationRepository;
+public interface DependencyRelation<TRelation extends Relation> {
 
     /**
-     * Create the relation. If the parent doesn't exist throw exception
-     * @param relationEntity relation to create
-     * @param errorMessage error message for user
-     * @return the create relation
+     * Ger relation by identifier
+     * @param id identifier to found
+     * @return relations
      */
-    protected Mono<TRelation> create(final TRelation relationEntity, final String errorMessage) {
-        return this.parentRepository.findById(relationEntity.getParentId())
-                .flatMap(__ -> relationRepository.save(relationEntity))
-                .switchIfEmpty(Mono.error(
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                String.format(errorMessage, relationEntity.getParentId()))));
-    }
+    Mono<TRelation> getById(final Map<String, Object> id);
 
     /**
-     * Get children by parent.
-     *
-     * @param parentId parent identifier
-     * @return
+     * It update or create the relation depending if it exists
+     * @param relation relation to update
+     * @param updateChange If exists it update changes
+     * @param monoEntityCreated If not exist relation to create
+     * @return relation updated or created
      */
-    public Flux<TRelation> getRelationsByParent(UUID parentId) {
-        return this.relationRepository.findAllByParentId(parentId);
-    }
+    Mono<EntityDataState<TRelation>> updateOrCreate(
+            final TRelation relation,
+            final Consumer<TRelation> updateChange, final Mono<TRelation> monoEntityCreated);
 }

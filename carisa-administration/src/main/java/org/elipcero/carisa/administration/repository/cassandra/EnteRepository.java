@@ -14,17 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
+package org.elipcero.carisa.administration.repository.cassandra;
 
 import org.elipcero.carisa.administration.domain.Ente;
-import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
-
-import java.util.UUID;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
+import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
  * Repository for Ente
  *
  * @author David Suárez
  */
-public interface EnteRepository extends CustomizedReactiveCrudRepository<Ente, UUID> {
+public interface EnteRepository extends DependencyRelationRepository<Ente, MapId> {
 }

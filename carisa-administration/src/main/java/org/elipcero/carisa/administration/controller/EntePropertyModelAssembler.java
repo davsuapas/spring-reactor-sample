@@ -42,16 +42,18 @@ public class EntePropertyModelAssembler implements BasicReactiveRepresentationMo
 
         WebFluxLinkBuilder.WebFluxLink self = linkTo(
                 methodOn(EntePropertyController.class)
-                        .getById(enteProperty.getEnteId().toString(), enteProperty.getPropertyId().toString()))
+                        .getById(enteProperty.getEnteId().toString(), enteProperty.getId().toString()))
                 .withSelfRel()
                 .andAffordance(methodOn(EntePropertyController.class)
                         .updateOrCreate(
+                                enteProperty.getSpaceId().toString(),
                                 enteProperty.getEnteId().toString(),
-                                enteProperty.getPropertyId().toString(),
+                                enteProperty.getId().toString(),
                                 enteProperty));
 
         WebFluxLinkBuilder.WebFluxLink entes = linkTo(
-                methodOn(EnteController.class).getById(enteProperty.getEnteId().toString()))
+                methodOn(EnteController.class)
+                        .getById(enteProperty.getEnteId().toString(), enteProperty.getId().toString()))
                 .withRel(EnteModelAssembler.ENTE_REL_NAME);
 
         return Flux.concat(self.toMono(), entes.toMono());

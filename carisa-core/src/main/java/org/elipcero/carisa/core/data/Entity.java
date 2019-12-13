@@ -31,7 +31,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public abstract class Entity {
+public abstract class Entity implements EntityInitializer<Entity> {
 
     @Id
     private UUID id;

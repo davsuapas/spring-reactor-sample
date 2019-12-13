@@ -14,27 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
+package org.elipcero.carisa.administration.repository.cassandra;
 
-import org.elipcero.carisa.administration.domain.EnteProperty;
-import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
+import org.elipcero.carisa.administration.domain.InstanceSpace;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
 import org.springframework.data.cassandra.core.mapping.MapId;
-import reactor.core.publisher.Flux;
-
-import java.util.UUID;
 
 /**
- * Relations between Ente property and Ente repository
+ * Repository for relation between instance and space
  *
  * @author David Suárez
  */
-public interface EntePropertyRepository extends CustomizedReactiveCrudRepository<EnteProperty, MapId> {
-
-    /**
-     * Find all Ente properties by Ente
-     *
-     * @param enteId The ente id to find
-     * @return EnteEnteProperty
-     */
-    Flux<EnteProperty> findAllByEnteId(UUID enteId);
+public interface InstanceSpaceRepository extends DependencyRelationRepository<InstanceSpace, MapId> {
 }
