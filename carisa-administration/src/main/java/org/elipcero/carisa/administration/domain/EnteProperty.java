@@ -17,6 +17,8 @@
 package org.elipcero.carisa.administration.domain;
 
 import com.datastax.driver.core.DataType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +26,6 @@ import org.elipcero.carisa.core.data.EntityInitializer;
 import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.CassandraType;
-import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -42,12 +43,11 @@ import java.util.UUID;
 @Setter
 public class EnteProperty implements Relation, EntityInitializer<EnteProperty> {
 
-    public static String ENTEID_COLUMN_NAME = "enteId";
+    public static String ENTEID_COLUMN_NAME = "parentId";
     public static String ID_COLUMN_NAME = "id";
 
-    @Column("parentId")
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private UUID enteId;
+    private UUID parentId; // ente identifier
 
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
     private UUID id;
@@ -57,27 +57,35 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty> {
     private String name;
 
     @Builder
-    public EnteProperty(UUID id, UUID enteId, UUID spaceId, String name, EnteProperty.Type type) {
+    public EnteProperty(UUID id, UUID parentId, UUID spaceId, String name, EnteProperty.Type type) {
         this.id = id;
-        this.enteId = enteId;
+        this.parentId = parentId;
         this.name = name;
         this.type = type;
         this.spaceId = spaceId;
     }
 
     @Override
+    @JsonIgnore
     public UUID getParentId() {
-        return this.enteId;
+        return this.parentId;
+    }
+
+    // To work Affordance with a new name. Not work JsonProperty
+    @JsonSetter("enteId")
+    public void setParentId(UUID value) {
+        this.parentId = value;
+    }
+
+    // To work Affordance with a new name. Not work JsonProperty
+    public UUID getEnteId() {
+        return this.getParentId();
     }
 
     @Override
+    @JsonIgnore
     public UUID getChildId() {
         return this.id;
-    }
-
-    @Override
-    public void setParentId(UUID value) {
-        this.enteId = value;
     }
 
     public enum Type {

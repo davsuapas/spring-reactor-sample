@@ -48,9 +48,10 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 @SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_enteproperty_controller" })
 public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
-    public static final String ENTE_PROPERTY_NAME = "Ente property name"; // Look at ente-property-controller.cql
-    public static final String ENTE_PROPERTY_ID = "c0838415-6ae2-4914-b202-f1b3adbf0353";
+    private static final String ENTE_PROPERTY_NAME = "Ente property name"; // Look at ente-property-controller.cql
+    private static final String ENTE_PROPERTY_ID = "c0838415-6ae2-4914-b202-f1b3adbf0353";
     private static final String ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller.cql
+    private static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
 
     private static boolean beforeOnce;
 
@@ -68,19 +69,21 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/entes/{enteId}/properties/{propertyId}", ENTE_ID, ENTE_PROPERTY_ID)
+                .uri("/api/spaces/{spaceId}/entes/{enteId}/properties/{propertyId}",
+                        SPACE_ID, ENTE_ID, ENTE_PROPERTY_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.enteId").isEqualTo(ENTE_ID)
-                    .jsonPath("$.propertyId").isEqualTo(ENTE_PROPERTY_ID)
+                    .jsonPath("$.id").isEqualTo(ENTE_PROPERTY_ID)
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.Integer.toString())
                     .jsonPath("$._links.ente.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("enteproperties-get",
-                        commonPathParamters(),
+                        commonPathParameters(),
                         commonResponseFields()));
     }
 
@@ -96,15 +99,16 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
                 .expectStatus().isCreated()
                 .expectBody()
                     .jsonPath("$.enteId").isEqualTo(ENTE_ID)
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.Boolean.toString())
                     .jsonPath("$._links.ente.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("enteproperties-post",
                         commonRequestFields(
-                                Arrays.asList(
-                                        fieldWithPath("enteId")
-                                                .description("Ente identifier (UUID) for this ente property"))),
+                           Arrays.asList(
+                              fieldWithPath("enteId").description("Ente identifier (UUID) for this ente property"),
+                              fieldWithPath("spaceId").description("Space identifier (UUID) for this ente property"))),
                         commonResponseFields()));
     }
 
@@ -116,7 +120,8 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
                 .uri("/api/enteproperties").contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(EnteProperty.builder()
-                        .enteId(UUID.randomUUID())
+                        .parentId(UUID.randomUUID())
+                        .spaceId(UUID.fromString(SPACE_ID))
                         .build()), EnteProperty.class)
                 .exchange()
                 .expectStatus().isNotFound()
@@ -131,7 +136,7 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/entes/{enteId}/properties/{propertyId}", ENTE_ID, propertyId)
+                .uri("/api/spaces/{spaceId}/entes/{enteId}/properties/{propertyId}", SPACE_ID, ENTE_ID, propertyId)
                     .contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(createEnteProperty()), EnteProperty.class)
@@ -139,14 +144,17 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
                 .expectStatus().isCreated()
                 .expectBody()
                     .jsonPath("$.enteId").isEqualTo(ENTE_ID)
-                    .jsonPath("$.propertyId").isEqualTo(propertyId)
+                    .jsonPath("$.id").isEqualTo(propertyId)
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.Boolean.toString())
                     .jsonPath("$._links.ente.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("enteproperties-put",
-                        commonPathParamters(),
-                        commonRequestFields(Arrays.asList(fieldWithPath("enteId").ignored())),
+                        commonPathParameters(),
+                        commonRequestFields(Arrays.asList(
+                                fieldWithPath("enteId").ignored(),
+                                fieldWithPath("spaceId").ignored())),
                         commonResponseFields()));
     }
 
@@ -166,7 +174,7 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/entes/{enteId}/properties/{propertyId}", ENTE_ID, propertyId)
+                .uri("/api/spaces/{spaceId}/entes/{enteId}/properties/{propertyId}", SPACE_ID, ENTE_ID, propertyId)
                     .contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(entePropertyUpdated), EnteProperty.class)
@@ -174,7 +182,8 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.enteId").isEqualTo(ENTE_ID)
-                    .jsonPath("$.propertyId").isEqualTo(propertyId)
+                    .jsonPath("$.id").isEqualTo(propertyId)
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.DateTime.toString())
                     .jsonPath("$._links.ente.href").hasJsonPath()
@@ -186,7 +195,8 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/entes/{enteId}/properties/{propertyId}", ENTE_ID, ENTE_PROPERTY_ID)
+                .uri("/api/spaces/{spaceId}/entes/{enteId}/properties/{propertyId}",
+                        SPACE_ID, ENTE_ID, ENTE_PROPERTY_ID)
                 .accept(MediaTypes.HAL_FORMS_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -215,24 +225,25 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
-        fieldDescriptor.add(fieldWithPath("propertyId").ignored());
+        fieldDescriptor.add(fieldWithPath("id").ignored());
         fieldDescriptor.add(fieldWithPath("name").description("Ente property name"));
         fieldDescriptor.add(fieldWithPath("type")
                 .description("Ente property type (Integer, Decimal, Boolean, DateTime)"));
         return requestFields(fieldDescriptor);
     }
 
-    private static PathParametersSnippet commonPathParamters() {
+    private static PathParametersSnippet commonPathParameters() {
         return pathParameters(
-                parameterWithName("enteId").description("Ente id (UUID string format)"),
-                parameterWithName("propertyId").description("Ente property id (UUID string format)")
-        );
+                parameterWithName("spaceId").description("Space id (UUID string format)"),
+                parameterWithName("enteId").description("Ente identifier (UUID string format)"),
+                parameterWithName("propertyId").description("Ente property identifier (UUID string format)"));
     }
 
     private static ResponseFieldsSnippet commonResponseFields() {
         return responseFields(
                 fieldWithPath("enteId").description("Ente identifier (UUID) for this ente property"),
-                fieldWithPath("propertyId").description("Ente property identifier (UUID)"),
+                fieldWithPath("id").description("Ente property identifier (UUID)"),
+                fieldWithPath("spaceId").description("Space identifier (UUID) for this ente property"),
                 fieldWithPath("name").description("Ente property name"),
                 fieldWithPath("type").description("Ente property type (Integer, Decimal, Boolean, DateTime)"),
                 subsectionWithPath("_links")
@@ -242,7 +253,8 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
     private static EnteProperty createEnteProperty() {
         return EnteProperty.builder()
                     .name(ENTE_PROPERTY_NAME)
-                    .enteId(UUID.fromString(ENTE_ID))
+                    .spaceId(UUID.fromString(SPACE_ID))
+                    .parentId(UUID.fromString(ENTE_ID))
                     .type(EnteProperty.Type.Boolean)
                 .build();
     }

@@ -23,7 +23,6 @@
 		<dependency>
 			<groupId>org.springframework.hateoas</groupId>
 			<artifactId>spring-hateoas</artifactId>
-			<version>${spring-hateoas-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>

@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.convert.cassandra;
 
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
+import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;
 
 import java.util.Map;
@@ -31,17 +32,17 @@ import java.util.UUID;
 public class DependencyRelationEnteIdentifierConvert implements DependencyRelationIdentifierConvert<Ente, MapId, UUID> {
 
     @Override
-    public MapId convert(Ente ente) {
-        return this.convertFromDictionary(Ente.GetMapId(ente.getSpaceId(), ente.getId()));
+    public MapId convert(final Ente ente) {
+        return this.convertFromDictionary(Ente.GetMapId(ente.getParentId(), ente.getId()));
     }
 
     @Override
-    public MapId convertFromDictionary(Map<String, Object> id) {
-        return (MapId)id;
+    public MapId convertFromDictionary(final Map<String, Object> id) {
+        return new BasicMapId(id);
     }
 
     @Override
-    public UUID convertForParent(Ente ente) {
-        return ente.getSpaceId();
+    public UUID convertForParent(final Ente ente) {
+        return ente.getParentId();
     }
 }

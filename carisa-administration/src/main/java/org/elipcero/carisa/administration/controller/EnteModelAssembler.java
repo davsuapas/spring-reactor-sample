@@ -41,13 +41,13 @@ public class EnteModelAssembler implements BasicReactiveRepresentationModelAssem
     public Flux<Link> addLinks(Ente ente, ServerWebExchange exchange) {
 
         WebFluxLinkBuilder.WebFluxLink self = linkTo(
-                methodOn(EnteController.class).getById(ente.getSpaceId().toString(), ente.getId().toString()))
+                methodOn(EnteController.class).getById(ente.getParentId().toString(), ente.getId().toString()))
                 .withSelfRel()
                 .andAffordance(methodOn(EnteController.class)
-                        .updateOrCreate(ente.getSpaceId().toString(), ente.getId().toString(), ente));
+                        .updateOrCreate(ente.getParentId().toString(), ente.getId().toString(), ente));
 
         WebFluxLinkBuilder.WebFluxLink spaces = linkTo(
-                methodOn(SpaceController.class).getById(ente.getSpaceId().toString()))
+                methodOn(SpaceController.class).getById(ente.getParentId().toString()))
                 .withRel(SpaceModelAssembler.SPACE_REL_NAME);
 
         return Flux.concat(self.toMono(), spaces.toMono());

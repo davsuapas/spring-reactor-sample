@@ -64,6 +64,8 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
 
     private static final String INSTANCE_NAME = "Instance name";
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
+    private static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
+    private static final String SPACE_NAME = "Space name"; // Look at space-controller
 
     @Autowired
     private DataLockController dataLockController;
@@ -111,9 +113,9 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')].name", SpaceControllerTest.SPACE_ID)
-                        .isEqualTo(SpaceControllerTest.SPACE_NAME)
-                    .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')]._links.space.href", SpaceControllerTest.SPACE_ID)
+                    .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')].name", SPACE_ID)
+                        .isEqualTo(SPACE_NAME)
+                    .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')]._links.space.href", SPACE_ID)
                         .hasJsonPath()
                     .jsonPath("$._embedded.spaceNameList.length()").isEqualTo(1)
                     .jsonPath("$._links.instance.href").hasJsonPath()

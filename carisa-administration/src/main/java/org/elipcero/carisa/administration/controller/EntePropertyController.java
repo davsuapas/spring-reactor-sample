@@ -74,12 +74,14 @@ public class EntePropertyController {
 
     /**
      * Get ente property by id
+     * @param spaceId the ente identifier (UUID string). Is only necessary to Affordance
      * @param enteId the ente identifier (UUID string)
      * @param propertyId the property identifier (UUID string)
      * @return ente property entity
      */
-    @GetMapping("/entes/{enteId}/properties/{propertyId}")
+    @GetMapping("spaces/{spaceId}/entes/{enteId}/properties/{propertyId}")
     public Publisher<EntityModel<EnteProperty>> getById(
+            final @PathVariable("spaceId") String spaceId,
             final @PathVariable("enteId") String enteId,
             final @PathVariable("propertyId") String propertyId) {
 
@@ -113,7 +115,7 @@ public class EntePropertyController {
             final @RequestBody EnteProperty enteProperty) {
 
         enteProperty.setSpaceId(UUID.fromString(spaceId));
-        enteProperty.setEnteId(UUID.fromString(enteId));
+        enteProperty.setParentId(UUID.fromString(enteId));
         enteProperty.setId(UUID.fromString(propertyId));
 
         return this.crudHypermediaController.updateOrCreate(this.entePropertyService.updateOrCreate(enteProperty));

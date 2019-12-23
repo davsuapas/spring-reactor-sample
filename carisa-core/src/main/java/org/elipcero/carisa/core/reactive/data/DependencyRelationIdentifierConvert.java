@@ -15,7 +15,7 @@ public interface DependencyRelationIdentifierConvert<TRelation, TRelationID, TPa
      * @param relation relation
      * @return platform identifier
      */
-    TRelationID convert(TRelation relation);
+    TRelationID convert(final TRelation relation);
 
     /**
      * Convert from map to platform identifier
@@ -23,7 +23,7 @@ public interface DependencyRelationIdentifierConvert<TRelation, TRelationID, TPa
      * @param id identifier like generic map
      * @return platform identifier
      */
-    TRelationID convertFromDictionary(Map<String, Object> id);
+    TRelationID convertFromDictionary(final Map<String, Object> id);
 
     /**
      * Convert the foreign key of relation to parent platform identifier
@@ -31,5 +31,5 @@ public interface DependencyRelationIdentifierConvert<TRelation, TRelationID, TPa
      * @param relation
      * @return parent identifier
      */
-    TParentID convertForParent(TRelation relation);
+    TParentID convertForParent(final TRelation relation);
 }

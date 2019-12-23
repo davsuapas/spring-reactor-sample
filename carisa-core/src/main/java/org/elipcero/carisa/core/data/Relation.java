@@ -20,11 +20,4 @@ public interface Relation {
      * @return identifier
      */
     UUID getChildId();
-
-    /**
-     * Setting parent identifier
-     *
-     * @param value identifier
-     */
-    void setParentId(UUID value);
 }

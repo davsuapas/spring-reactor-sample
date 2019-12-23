@@ -110,7 +110,7 @@ public class EnteController {
             final @PathVariable("enteId") String enteId,
             final @RequestBody Ente ente) {
 
-        ente.setSpaceId(UUID.fromString(spaceId));
+        ente.setParentId(UUID.fromString(spaceId));
         ente.setId(UUID.fromString(enteId));
 
         return this.crudHypermediaController.updateOrCreate(this.enteService.updateOrCreate(ente));
@@ -133,7 +133,8 @@ public class EnteController {
                                 linkTo(
                                         methodOn(EntePropertyController.class)
                                                 .getById(
-                                                        enteProperty.getEnteId().toString(),
+                                                        enteProperty.getSpaceId().toString(),
+                                                        enteProperty.getParentId().toString(),
                                                         enteProperty.getId().toString()))
                                         .withRel(EntePropertyModelAssembler.PROPERTY_REL_NAME).toMono())
                                 .map(links -> new EntityModel<>(EntePropertyName

@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
  * @author David Suárez
  */
 @EnableHypermediaSupport(type = {
-        EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS })
+        EnableHypermediaSupport.HypermediaType.HAL,
+        EnableHypermediaSupport.HypermediaType.HAL_FORMS })
 @Configuration
 public class WebConfiguration {
 

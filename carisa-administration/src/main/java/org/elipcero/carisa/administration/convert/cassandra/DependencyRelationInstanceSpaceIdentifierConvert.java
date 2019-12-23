@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.convert.cassandra;
 
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
+import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;
 
 import java.util.Map;
@@ -32,18 +33,18 @@ public class DependencyRelationInstanceSpaceIdentifierConvert
         implements DependencyRelationIdentifierConvert<InstanceSpace, MapId, UUID> {
 
     @Override
-    public MapId convert(InstanceSpace instanceSpace) {
+    public MapId convert(final InstanceSpace instanceSpace) {
         return this.convertFromDictionary(
-                InstanceSpace.GetMapId(instanceSpace.getInstanceId(), instanceSpace.getSpaceId()));
+                InstanceSpace.GetMapId(instanceSpace.getParentId(), instanceSpace.getSpaceId()));
     }
 
     @Override
-    public MapId convertFromDictionary(Map<String, Object> id) {
-        return (MapId)id;
+    public MapId convertFromDictionary(final Map<String, Object> id) {
+        return new BasicMapId(id);
     }
 
     @Override
-    public UUID convertForParent(InstanceSpace instanceSpace) {
-        return instanceSpace.getInstanceId();
+    public UUID convertForParent(final InstanceSpace instanceSpace) {
+        return instanceSpace.getParentId();
     }
 }

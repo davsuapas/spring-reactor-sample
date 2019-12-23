@@ -60,20 +60,20 @@ public class CassandraServiceConfiguration {
     private EntePropertyRepository entePropertyRepository;
 
     @Bean
-    public MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService() {
+    public MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceRelationService() {
         return new MultiplyDependencyRelationImpl<>(
                 instanceRepository, spaceRepository, instanceSpaceRepository,
                 new DependencyRelationInstanceSpaceIdentifierConvert());
     }
 
     @Bean
-    public EmbeddedDependencyRelation<Ente> enteService() {
+    public EmbeddedDependencyRelation<Ente> spaceEnteRelationService() {
         return new EmbeddedDependencyRelationImpl<>(
                 spaceRepository, enteRepository, new DependencyRelationEnteIdentifierConvert());
     }
 
     @Bean
-    public EmbeddedDependencyRelation<EnteProperty> entePropertyService() {
+    public EmbeddedDependencyRelation<EnteProperty> entePropertyRelationService() {
         return new EmbeddedDependencyRelationImpl<>(
                 enteRepository, entePropertyRepository, new DependencyRelationEntePropertyIdentifierConvert());
     }

@@ -52,9 +52,11 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 @SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_space_controller" })
 public class SpaceControllerTest extends DataAbstractControllerTest {
 
-    public static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
+    private static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
-    public static final String SPACE_NAME = "Space name"; // Look at space-controller
+    private static final String SPACE_NAME = "Space name"; // Look at space-controller
+    private static final String ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller
+    private static final String ENTE_NAME = "Ente name";
 
     private static boolean beforeOnce;
 
@@ -65,7 +67,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
             this.executeCommands("space-controller.cql");
             this.executeCommands("ente-controller.cql");
             this.executeCommands("instance-space-controller.cql");
-            this.executeCommands("space-ente-controller.cql", false);
+            this.executeCommands("space-ente-controller.cql");
             beforeOnce = true;
         }
     }
@@ -216,7 +218,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_entes_from_space_should_return_ok_and_entes_entity_and_entes_no_exist_purged() {
+    public void find_entes_from_space_should_return_ok_and_entes_entity() {
 
         this.testClient
                 .get()
@@ -225,11 +227,11 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')].name", EnteControllerTest.ENTE_ID)
-                        .isEqualTo(EnteControllerTest.ENTE_NAME)
-                    .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')]._links.ente.href", EnteControllerTest.ENTE_ID)
+                    .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')].name", ENTE_ID)
+                        .isEqualTo(ENTE_NAME)
+                    .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')]._links.ente.href", ENTE_ID)
                         .hasJsonPath()
-                    .jsonPath("$._embedded.enteNameList.length()").isEqualTo(1)
+                    .jsonPath("$._embedded.enteNameList.length()").isEqualTo(2)
                     .jsonPath("$._links.space.href").hasJsonPath()
                 .consumeWith(document("space-entes-get",
                         spaceLink(),

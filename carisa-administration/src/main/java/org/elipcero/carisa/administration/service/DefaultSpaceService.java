@@ -72,7 +72,7 @@ public class DefaultSpaceService implements SpaceService {
                     @Override
                     public InstanceSpace getRelation() {
                         return InstanceSpace.builder()
-                                .instanceId(space.getInstanceId())
+                                .parentId(space.getInstanceId())
                                 .spaceId(space.getId()).build();
                     }
                 }, "The instance: %s doesn't exist");

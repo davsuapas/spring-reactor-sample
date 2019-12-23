@@ -21,7 +21,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
-		<spring-hateoas-version>1.0.0.M2</spring-hateoas-version>
+		<spring-hateoas.version>1.0.0.M2</spring-hateoas.version>
 		<spring-plugin-version>2.0.0.M1</spring-plugin-version>
         <checkstyle.config.location>src/checkstyle/checkstyle-definition.xml</checkstyle.config.location>
 		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
