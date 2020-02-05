@@ -14,17 +14,20 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
+package org.elipcero.carisa.core.reactive.data;
 
-import org.elipcero.carisa.administration.domain.EnteCategory;
-import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
-
-import java.util.UUID;
+import lombok.Builder;
+import lombok.Getter;
+import org.elipcero.carisa.core.data.Relation;
 
 /**
- * Repository for ente category
+ * Multiple dependency child info
  *
  * @author David Suárez
  */
-public interface EnteCategoryRepository extends CustomizedReactiveCrudRepository<EnteCategory, UUID> {
+@Builder
+@Getter
+public class MultiplyDependencyChildInfo<TRelation extends Relation, TChild> {
+    private TRelation relation;
+    private TChild child;
 }

@@ -14,17 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.repository;
-
-import org.elipcero.carisa.administration.domain.EnteCategory;
-import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
-
-import java.util.UUID;
+package org.elipcero.carisa.core.reactive.data;
 
 /**
- * Repository for ente category
+ * Parent not found exception
  *
  * @author David Suárez
  */
-public interface EnteCategoryRepository extends CustomizedReactiveCrudRepository<EnteCategory, UUID> {
+public class MultiplyDependencyParentNotFoundException extends RuntimeException {
+
+    public MultiplyDependencyParentNotFoundException(String s) {
+        super(s);
+    }
 }

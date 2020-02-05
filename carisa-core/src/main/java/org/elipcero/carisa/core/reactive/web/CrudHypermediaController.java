@@ -20,10 +20,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyChildNotFoundException;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyParentNotFoundException;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 /**
@@ -81,6 +85,19 @@ public class CrudHypermediaController<T> {
                                         ResponseEntity.ok();
                                 return builder.body(resource);
                             }));
+    }
+
+    public Publisher<ResponseEntity<EntityModel<T>>> connectToParent(Mono<T> entity) {
+        return entity
+                .flatMap(child -> this.assembler.toModel(child, null))
+                .map(ResponseEntity::ok)
+                .onErrorResume(error -> {
+                    if (error instanceof MultiplyDependencyChildNotFoundException ||
+                            error instanceof MultiplyDependencyParentNotFoundException) {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage());
+                    }
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+                });
     }
 }
 

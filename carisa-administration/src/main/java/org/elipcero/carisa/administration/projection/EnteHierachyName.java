@@ -14,39 +14,23 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.administration.projection;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import org.elipcero.carisa.core.data.Entity;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
 
 /**
- * Ente categories. Each category can has categories or entes wrapped.
- * Each category references to ente properties or properties of other categories.
- * If it is root, the parent is a space,
+ * Ente hierarchy name projection
  *
  * @author David Suárez
  */
-@Table("carisa_ente_category")
+@Builder
 @Getter
-public class EnteCategory extends Entity {
-
-    @Transient
+public class EnteHierachyName {
     private UUID parentId;
-
-    @Setter
-    private String name;
-
-    @Builder
-    public EnteCategory(UUID id, UUID parentId, String name) {
-        super(id);
-        this.parentId = parentId;
-        this.name = name;
-    }
+    private UUID childId;
+    private String childName;
+    private boolean category;
 }
-

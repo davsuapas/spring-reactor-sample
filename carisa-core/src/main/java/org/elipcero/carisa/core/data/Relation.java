@@ -12,7 +12,7 @@ public interface Relation {
      *
      * @return identifier
      */
-    UUID getParentId();
+    Object getParentId();
 
     /**
      * Getting child identifier

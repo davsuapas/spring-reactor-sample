@@ -17,15 +17,20 @@
 package org.elipcero.carisa.administration.configuration;
 
 import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.administration.domain.EnteCategory;
+import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.service.DefaultEnteCategoryService;
 import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
+import org.elipcero.carisa.administration.service.EnteCategoryService;
 import org.elipcero.carisa.administration.service.EntePropertyService;
 import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
@@ -65,6 +70,9 @@ public class HorizontalServiceConfiguration {
     @Autowired
     private EmbeddedDependencyRelation<EnteProperty> entePropertyService;
 
+    @Autowired
+    private MultiplyDependencyRelation<EnteCategory, EnteHierarchy> enteHirarchyService;
+
     // Instance configuration
 
     @Autowired
@@ -98,5 +106,15 @@ public class HorizontalServiceConfiguration {
     @Bean
     public EntePropertyService entePropertyService() {
         return new DefaultEntePropertyService(entePropertyService);
+    }
+
+    // Ente category configuration
+
+    @Autowired
+    private EnteCategoryRepository enteCategoryRepository;
+
+    @Bean
+    public EnteCategoryService enteCategoryService() {
+        return new DefaultEnteCategoryService(enteCategoryRepository, enteHirarchyService);
     }
 }

@@ -40,7 +40,7 @@ public abstract class DependencyRelationImpl<TParent, TRelation extends Relation
         implements DependencyRelation<TRelation> {
 
     @NonNull
-    private final ReactiveCrudRepository<TParent, TParentID> parentRepository;
+    protected final ReactiveCrudRepository<TParent, TParentID> parentRepository;
 
     @NonNull
     protected final DependencyRelationRepository<TRelation, TRelationID> relationRepository;

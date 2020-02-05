@@ -17,7 +17,7 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.EnteCategory;
-import org.elipcero.carisa.administration.projection.EnteCategoryName;
+import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -55,9 +55,17 @@ public interface EnteCategoryService {
     Mono<EntityDataState<EnteCategory>> updateOrCreate(final UUID id, final EnteCategory enteCategory);
 
     /**
-     * Get children of the category. If the child doesn't exist is removed automatically (purge)
-     * @param parentEnteCategoryId the parentEnteCategoryId to find
-     * @return the ente category view
+     * Get children (Ente category or ente)
+     * @param enteCategoryId ente category identifier
+     * @return ente category projection
      */
-    Flux<EnteCategoryName> getEnteCategoriesByParent(final UUID parentEnteCategoryId);
+    Flux<EnteHierachyName> getChildren(final UUID enteCategoryId);
+
+    /**
+     * Connect the child category to the parent category
+     * @param childId the child category
+     * @param parentId the parent category
+     * @return child
+     */
+    Mono<EnteCategory> connectToParent(UUID childId, UUID parentId);
 }

@@ -87,8 +87,8 @@ public class DefaultInstanceService implements InstanceService {
                 .map(space -> SpaceInstanceName
                         .builder()
                             .instanceId(instanceId)
-                            .spaceId(space.getId())
-                            .SpaceName(space.getName())
+                            .spaceId(space.getChild().getId())
+                            .SpaceName(space.getChild().getName())
                         .build());
     }
 

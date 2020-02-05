@@ -12,7 +12,8 @@ import java.util.UUID;
  * @param <TChild> Many relation
  * @param <TRelation> Intermediate relation
  */
-public interface MultiplyDependencyRelation<TChild, TRelation extends Relation> extends DependencyRelation<TRelation> {
+public interface MultiplyDependencyRelation<TChild, TRelation extends Relation>
+        extends DependencyRelation<TRelation> {
 
     /**
      * Create the child and the relation referencing to the parent.
@@ -32,5 +33,12 @@ public interface MultiplyDependencyRelation<TChild, TRelation extends Relation> 
      * @param parentId parent identifier
      * @return may relations
      */
-    Flux<TChild> getChildrenByParent(UUID parentId);
+    Flux<MultiplyDependencyChildInfo<TRelation, TChild>> getChildrenByParent(UUID parentId);
+
+    /**
+     * Connect child to parent
+     * @param relation the relation
+     * @return the child
+     */
+    Mono<TChild> connectToParent(TRelation relation);
 }

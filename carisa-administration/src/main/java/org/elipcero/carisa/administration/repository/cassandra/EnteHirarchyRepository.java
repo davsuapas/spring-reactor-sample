@@ -14,22 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.administration.repository.cassandra;
 
-import lombok.Builder;
-import lombok.Getter;
-
-import java.util.UUID;
+import org.elipcero.carisa.administration.domain.EnteHierarchy;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
+import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
- * EnteCategory name projection
+ * Repository for relation between ente hirarchy
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class EnteCategoryName {
-    private UUID parentId;
-    private UUID childId;
-    private String childEnteCategoryName;
+public interface EnteHirarchyRepository extends DependencyRelationRepository<EnteHierarchy, MapId> {
 }
