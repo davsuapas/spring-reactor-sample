@@ -56,7 +56,7 @@ public class EntePropertyController {
         Assert.notNull(entePropertyModelAssembler, "The entePropertyModelAssembler can not be null");
         Assert.notNull(entePropertyService, "The entePropertyService can not be null");
         this.entePropertyService = entePropertyService;
-        this.crudHypermediaController = new CrudHypermediaController(entePropertyModelAssembler);
+        this.crudHypermediaController = new CrudHypermediaController<>(entePropertyModelAssembler);
     }
 
     /**

@@ -59,7 +59,7 @@ public class InstanceController {
         Assert.notNull(instanceModelAssembler, "The instanceModelAssembler can not be null");
         this.instanceService = instanceService;
         this.instanceModelAssembler = instanceModelAssembler;
-        this.crudHypermediaController = new CrudHypermediaController(instanceModelAssembler);
+        this.crudHypermediaController = new CrudHypermediaController<>(instanceModelAssembler);
     }
 
     /**

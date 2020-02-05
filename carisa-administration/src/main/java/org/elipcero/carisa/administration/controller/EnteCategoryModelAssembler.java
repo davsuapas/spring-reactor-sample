@@ -46,6 +46,10 @@ public class EnteCategoryModelAssembler implements BasicReactiveRepresentationMo
                 .andAffordance(methodOn(EnteCategoryController.class)
                         .updateOrCreate(enteCategory.getId().toString(), enteCategory));
 
-        return Flux.concat(self.toMono());
+        WebFluxLinkBuilder.WebFluxLink children = linkTo(
+                methodOn(EnteCategoryController.class).getChildren(enteCategory.getId().toString()))
+                .withRel("children");
+
+        return Flux.concat(self.toMono(), children.toMono());
     }
 }

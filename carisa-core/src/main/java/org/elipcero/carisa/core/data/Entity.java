@@ -18,6 +18,7 @@ package org.elipcero.carisa.core.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
@@ -31,6 +32,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
 public abstract class Entity implements EntityInitializer<Entity> {
 
     @Id

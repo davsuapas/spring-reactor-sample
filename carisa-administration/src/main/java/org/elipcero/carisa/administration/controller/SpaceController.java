@@ -58,7 +58,7 @@ public class SpaceController {
         Assert.notNull(spaceModelAssembler, "The spaceModelAssembler can not be null");
         Assert.notNull(spaceService, "The spaceService can not be null");
         this.spaceService = spaceService;
-        this.crudHypermediaController = new CrudHypermediaController(spaceModelAssembler);
+        this.crudHypermediaController = new CrudHypermediaController<>(spaceModelAssembler);
     }
 
     /**

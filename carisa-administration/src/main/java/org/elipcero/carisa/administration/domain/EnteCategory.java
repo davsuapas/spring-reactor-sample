@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.elipcero.carisa.core.data.Entity;
 import org.springframework.data.annotation.Transient;
@@ -34,6 +35,7 @@ import java.util.UUID;
  */
 @Table("carisa_ente_category")
 @Getter
+@NoArgsConstructor
 public class EnteCategory extends Entity {
 
     @Transient

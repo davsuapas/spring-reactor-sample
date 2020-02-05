@@ -59,7 +59,7 @@ public class EnteCategoryController {
         Assert.notNull(enteCategoryModelAssembler, "The enteCategoryModelAssembler can not be null");
         Assert.notNull(enteCategoryService, "The enteCategoryService can not be null");
         this.enteCategoryService = enteCategoryService;
-        this.crudHypermediaController = new CrudHypermediaController(enteCategoryModelAssembler);
+        this.crudHypermediaController = new CrudHypermediaController<>(enteCategoryModelAssembler);
     }
 
     /**
@@ -72,6 +72,8 @@ public class EnteCategoryController {
                 methodOn(EnteCategoryController.class).getMetadata())
                 .withSelfRel()
                 .andAffordance(methodOn(EnteCategoryController.class).create(null))
+                .andAffordance(methodOn(EnteCategoryController.class).updateOrCreate(null, null))
+                .andAffordance(methodOn(EnteCategoryController.class).connectToParent(null, null))
                 .toMono().map(link -> new EntityModel<>(StringResource.METADATA_INFORMATION, link));
     }
 
