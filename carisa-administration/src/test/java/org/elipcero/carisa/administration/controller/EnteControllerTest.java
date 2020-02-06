@@ -30,7 +30,6 @@ import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,7 +60,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
     private static boolean beforeOnce;
 
     @Before
-    public void prepareData() throws IOException {
+    public void prepareData() {
         if (!beforeOnce) {
             this.executeCommands("space-controller.cql");
             this.executeCommands("ente-controller.cql");

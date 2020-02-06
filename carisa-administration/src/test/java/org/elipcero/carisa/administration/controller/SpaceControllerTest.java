@@ -30,7 +30,6 @@ import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,13 +60,13 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     private static boolean beforeOnce;
 
     @Before
-    public void prepareData() throws IOException {
+    public void prepareData() {
         if (!beforeOnce) {
             this.executeCommands("instance-controller.cql");
             this.executeCommands("space-controller.cql");
             this.executeCommands("ente-controller.cql");
             this.executeCommands("instance-space-controller.cql");
-            this.executeCommands("space-ente-controller.cql");
+            //this.executeCommands("space-ente-controller.cql");
             beforeOnce = true;
         }
     }
@@ -85,6 +84,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(SPACE_NAME)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$._links.entes.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-get",
                         commonPathParamters(),
@@ -105,6 +105,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(SPACE_NAME)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$._links.entes.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-post",
                         commonRequestFields(
@@ -147,6 +148,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(SPACE_NAME)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$._links.entes.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-put",
                         commonPathParamters(),
@@ -184,6 +186,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
+                    .jsonPath("$._links.entes.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 

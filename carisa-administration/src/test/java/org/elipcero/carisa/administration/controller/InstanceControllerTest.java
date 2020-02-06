@@ -35,7 +35,6 @@ import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -73,7 +72,7 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
     private static boolean beforeOnce;
 
     @Before
-    public void prepareData() throws IOException {
+    public void prepareData() {
         if (!beforeOnce) {
             this.executeCommands("instance-controller.cql");
             this.executeCommands("instance-space-controller.cql");
@@ -329,7 +328,7 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
         return links(
                 linkWithRel("self").description("Resource instance"),
                 linkWithRel("deploy").description("Deploy instance into platform"),
-                linkWithRel("spaces").description("Spaces list by instance"));
+                linkWithRel(SpaceModelAssembler.SPACES_REL_NAME).description("Spaces list by instance"));
     }
 
     private LinksSnippet instanceLink() {
