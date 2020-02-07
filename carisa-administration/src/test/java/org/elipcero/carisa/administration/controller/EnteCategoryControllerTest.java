@@ -16,20 +16,25 @@
 
 package org.elipcero.carisa.administration.controller;
 
+import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -44,6 +49,8 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
 
     // Look at entecategory-controller
     private static final String ENTECATEGORY_ID = "83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+    // Look at entecategory-controller
+    private static final String ENTECATEGORY_PARENTID = "63ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
     private static final String ENTECATEGORY_NAME = "Ente Category name"; // Look at entecategory-controller
 
     private static boolean beforeOnce;
@@ -52,6 +59,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     public void prepareData() {
         if (!beforeOnce) {
             this.executeCommands("ente-category-controller.cql");
+            this.executeCommands("ente-hierarchy-controller.cql");
             beforeOnce = true;
         }
     }
@@ -74,6 +82,92 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                         commonResponseFields()));
     }
 
+    @Test
+    public void create_entecategory_using_post_should_return_created_and_entecategory_entity() {
+
+        this.testClient
+                .post()
+                .uri("/api/entecategories").contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(createEnteCategory()), EnteCategory.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                    .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                .consumeWith(document("entecategories-post",
+                        commonRequestFields(),
+                        commonResponseFields()));
+    }
+
+    @Test
+    public void create_entecategory_where_parent_category_no_exist_using_post_should_return_not_found_and_error() {
+
+        this.testClient
+                .post()
+                .uri("/api/entecategories").contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(EnteCategory.builder()
+                            .name(ENTECATEGORY_NAME)
+                            .parentId(UUID.randomUUID())
+                        .build()), EnteCategory.class)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                    .jsonPath("$.message").hasJsonPath();
+    }
+
+    @Test
+    public void create_entecategory_using_put_should_return_created_and_entecategory_entity() {
+
+        String id = "53ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+
+        this.testClient
+                .put()
+                .uri("/api/entecategories/{id}", id).contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(createEnteCategory()), EnteCategory.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                    .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                .consumeWith(document("entecategory-put",
+                        commonPathParameters(),
+                        commonRequestFields(),
+                        commonResponseFields()));
+    }
+
+    @Test
+    public void update_entecategory_using_put_should_return_ok_and_entecategory_entity() {
+
+        String id = "73ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676"; // Look at entecategory-controller
+        String newName = "Ente Category updated";
+
+        EnteCategory enteCategoryUpdated = EnteCategory
+                .builder()
+                    .id(UUID.fromString(id))
+                    .name(newName)
+                    .parentId(UUID.randomUUID())
+                .build();
+
+        enteCategoryUpdated.setName(newName);
+
+        this.testClient
+                .put()
+                .uri("/api/entecategories/{id}", id).contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(enteCategoryUpdated), EnteCategory.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.name").isEqualTo(newName)
+                    .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath();
+    }
+
     private static PathParametersSnippet commonPathParameters() {
         return commonPathParameters(new ArrayList<>());
     }
@@ -82,6 +176,14 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
         List<ParameterDescriptor> paramDescriptor = new ArrayList<>(params);
         paramDescriptor.add(parameterWithName("id").description("Ente category id (UUID string format)"));
         return pathParameters(paramDescriptor);
+    }
+
+    private static RequestFieldsSnippet commonRequestFields() {
+        List<FieldDescriptor> fieldDescriptor = new ArrayList<>();
+        fieldDescriptor.add(fieldWithPath("id").ignored());
+        fieldDescriptor.add(fieldWithPath("name").description("Ente category name"));
+        fieldDescriptor.add(fieldWithPath("parentId").description("Ente category parent to connect"));
+        return requestFields(fieldDescriptor);
     }
 
     private static ResponseFieldsSnippet commonResponseFields() {
@@ -95,5 +197,12 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     private static FieldDescriptor generalLink() {
         return subsectionWithPath("_links")
                 .description("The instance links. " + StringResource.METADATA_INFORMATION);
+    }
+
+    private static EnteCategory createEnteCategory() {
+        return EnteCategory.builder()
+                .name(ENTECATEGORY_NAME)
+                .parentId(UUID.fromString(ENTECATEGORY_PARENTID))
+                .build();
     }
 }
