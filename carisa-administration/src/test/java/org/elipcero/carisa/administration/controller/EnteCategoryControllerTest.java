@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.restdocs.hypermedia.LinksSnippet;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -49,9 +52,8 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
 
     // Look at entecategory-controller
     private static final String ENTECATEGORY_ID = "83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
-    // Look at entecategory-controller
     private static final String ENTECATEGORY_PARENTID = "63ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
-    private static final String ENTECATEGORY_NAME = "Ente Category name"; // Look at entecategory-controller
+    private static final String ENTECATEGORY_NAME = "Ente Category name";
 
     private static boolean beforeOnce;
 
@@ -166,6 +168,63 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$._links.children.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
+    }
+
+    @Test
+    public void find_entes_from_space_should_return_ok_and_entes_entity() {
+
+        String childId = "53ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+
+        this.testClient
+                .get()
+                .uri("/api/entecategories/{id}/children", ENTECATEGORY_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')].name", childId)
+                        .isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')]._links.category.href", childId)
+                        .hasJsonPath()
+                    .jsonPath("$._embedded.enteCategoryChildNameList.length()").isEqualTo(1)
+                    .jsonPath("$._links.category.href").hasJsonPath()
+                .consumeWith(document("entecategory-children-get",
+                        categoryLink(),
+                        commonPathParameters(),
+                        responseFields(
+                                fieldWithPath("_embedded.enteCategoryChildNameList[].id")
+                                        .description("Category identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.enteCategoryChildNameList[].name").description("Ente name"),
+                                fieldWithPath("_embedded.enteCategoryChildNameList[]._links.category.href")
+                                        .description("Category information"),
+                                subsectionWithPath("_links").description("View links section"))));
+    }
+
+    @Test
+    public void connect_entecategory_child_with_parent_using_put_should_return_ok_and_entecategory_child() {
+
+        String childId = "43ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+
+        this.testClient
+                .put()
+                .uri("/api/entecategories/{childId}/connectparent/{parentId}", childId, ENTECATEGORY_ID)
+                    .contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                .consumeWith(document("entecategory-connectparent-put",
+                        pathParameters(
+                                parameterWithName("childId").description("Ente category child to connect"),
+                                parameterWithName("parentId").description("Ente category parent connected")),
+                        commonResponseFields()));
+    }
+
+    private LinksSnippet categoryLink() {
+        return links(linkWithRel("category").description("Space"));
     }
 
     private static PathParametersSnippet commonPathParameters() {

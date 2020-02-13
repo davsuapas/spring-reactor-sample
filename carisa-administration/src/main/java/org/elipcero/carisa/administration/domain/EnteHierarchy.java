@@ -34,7 +34,7 @@ import java.util.UUID;
 public class EnteHierarchy implements Relation {
 
     public static String COLUMN_NAME_PARENTID = "parentId";
-    public static String COLUMN_NAME_CHILDID = "childId";
+    public static String COLUMN_NAME_CHILDID = "id";
 
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private UUID parentId; // Ente category

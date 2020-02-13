@@ -87,7 +87,7 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
     }
 
     /**
-     * @see SpaceService
+     * @see EnteCategoryService
      */
     @Override
     public Flux<EnteHierachyName> getChildren(final UUID enteCategoryId) {
@@ -101,6 +101,9 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
                         .build());
     }
 
+    /**
+     * @see EnteCategoryService
+     */
     @Override
     public Mono<EnteCategory> connectToParent(UUID childId, UUID parentId) {
         return this.enteCategoryHierarchyService.connectToParent(

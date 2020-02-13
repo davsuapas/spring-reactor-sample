@@ -111,6 +111,12 @@ public class EnteCategoryController {
                 .updateOrCreate(this.enteCategoryService.updateOrCreate(UUID.fromString(id), enteCategory));
     }
 
+    /**
+     * Connect the child category to the parent category
+     * @param childId child to connect
+     * @param parentId parent connected
+     * @return
+     */
     @PutMapping("/{childId}/connectparent/{parentId}")
     public Publisher<ResponseEntity<EntityModel<EnteCategory>>> connectToParent(
             @PathVariable("childId") String childId, @PathVariable("parentId") String parentId) {
