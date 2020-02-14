@@ -72,8 +72,6 @@ public class EnteCategoryController {
                 methodOn(EnteCategoryController.class).getMetadata())
                 .withSelfRel()
                 .andAffordance(methodOn(EnteCategoryController.class).create(null))
-                .andAffordance(methodOn(EnteCategoryController.class).updateOrCreate(null, null))
-                .andAffordance(methodOn(EnteCategoryController.class).connectToParent(null, null))
                 .toMono().map(link -> new EntityModel<>(StringResource.METADATA_INFORMATION, link));
     }
 

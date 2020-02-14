@@ -123,7 +123,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     @Test
     public void create_entecategory_using_put_should_return_created_and_entecategory_entity() {
 
-        String id = "53ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+        String id = "51ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
 
         this.testClient
                 .put()
@@ -168,6 +168,35 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$._links.children.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
+    }
+
+    @Test
+    public void get_metadata_should_return_ok_and_affordance() {
+
+        this.testClient
+                .get()
+                .uri("/api/entecategories")
+                .accept(MediaTypes.HAL_FORMS_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
+                    .jsonPath("$._templates.default.method").isEqualTo("post");
+    }
+
+    @Test
+    public void find_space_should_return_affordance() {
+
+        this.testClient
+                .get()
+                .uri("/api/entecategories/" + ENTECATEGORY_ID)
+                .accept(MediaTypes.HAL_FORMS_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._templates.default.method").isEqualTo("put")
+                    .jsonPath("$._templates.default.properties[?(@.name=='name')].name").isEqualTo("name");
     }
 
     @Test
