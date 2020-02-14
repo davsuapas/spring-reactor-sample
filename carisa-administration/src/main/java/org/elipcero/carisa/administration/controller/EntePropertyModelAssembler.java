@@ -36,6 +36,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 public class EntePropertyModelAssembler implements BasicReactiveRepresentationModelAssembler<EnteProperty> {
 
     public static final String PROPERTY_REL_NAME = "property";
+    public static final String PROPERTIES_REL_NAME = "enteProperties";
 
     @Override
     public Flux<Link> addLinks(EnteProperty enteProperty, ServerWebExchange exchange) {

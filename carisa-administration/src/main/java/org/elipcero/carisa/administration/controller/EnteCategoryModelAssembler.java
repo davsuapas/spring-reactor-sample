@@ -36,6 +36,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 public class EnteCategoryModelAssembler implements BasicReactiveRepresentationModelAssembler<EnteCategory> {
 
     public static final String CATEGORY_REL_NAME = "category";
+    public static final String CATEGORIES_REL_NAME = "enteCategories";
 
     @Override
     public Flux<Link> addLinks(EnteCategory enteCategory, ServerWebExchange exchange) {

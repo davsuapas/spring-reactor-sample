@@ -50,7 +50,9 @@ public class IndexController {
                 linkTo(methodOn(EnteController.class).getMetadata())
                         .withRel(EnteModelAssembler.ENTES_REL_NAME).toMono(),
                 linkTo(methodOn(EntePropertyController.class)
-                        .getMetadata()).withRel("enteProperties").toMono())
+                        .getMetadata()).withRel(EntePropertyModelAssembler.PROPERTIES_REL_NAME).toMono(),
+                linkTo(methodOn(EnteCategoryController.class)
+                    .getMetadata()).withRel(EnteCategoryModelAssembler.CATEGORIES_REL_NAME).toMono())
                 .collectList().map(links -> new EntityModel<>(new Index(), links));
     }
 }
