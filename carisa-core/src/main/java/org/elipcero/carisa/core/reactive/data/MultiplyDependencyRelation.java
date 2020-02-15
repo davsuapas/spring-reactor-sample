@@ -9,10 +9,11 @@ import java.util.UUID;
 /**
  * Manage dependency relations operations. It control the relation intermediate
  * between the one relation and many relations
+ * @param <TParent> One relation. Used to injection in the interface
  * @param <TChild> Many relation
  * @param <TRelation> Intermediate relation
  */
-public interface MultiplyDependencyRelation<TChild, TRelation extends Relation>
+public interface MultiplyDependencyRelation<TParent, TChild, TRelation extends Relation>
         extends DependencyRelation<TRelation> {
 
     /**

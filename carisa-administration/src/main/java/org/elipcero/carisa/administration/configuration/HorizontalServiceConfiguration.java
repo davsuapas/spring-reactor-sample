@@ -20,6 +20,7 @@ import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
@@ -62,7 +63,7 @@ public class HorizontalServiceConfiguration {
     // Relations
 
     @Autowired
-    private MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService;
+    private MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceService;
 
     @Autowired
     private EmbeddedDependencyRelation<Ente> spaceEnteService;
@@ -71,7 +72,10 @@ public class HorizontalServiceConfiguration {
     private EmbeddedDependencyRelation<EnteProperty> entePropertyService;
 
     @Autowired
-    private MultiplyDependencyRelation<EnteCategory, EnteHierarchy> enteHirarchyService;
+    private MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHirarchyService;
+
+    @Autowired
+    private MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyService;
 
     // Instance configuration
 
@@ -115,6 +119,7 @@ public class HorizontalServiceConfiguration {
 
     @Bean
     public EnteCategoryService enteCategoryService() {
-        return new DefaultEnteCategoryService(enteCategoryRepository, enteHirarchyService);
+        return new DefaultEnteCategoryService(
+                enteCategoryRepository, enteCategoryHirarchyService, spaceHirarchyService);
     }
 }

@@ -36,10 +36,7 @@ import java.util.UUID;
 
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
@@ -62,6 +59,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
         if (!beforeOnce) {
             this.executeCommands("ente-category-controller.cql");
             this.executeCommands("ente-hierarchy-controller.cql");
+            this.executeCommands("space-controller.cql");
             beforeOnce = true;
         }
     }
@@ -91,16 +89,41 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                 .post()
                 .uri("/api/entecategories").contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(createEnteCategory()), EnteCategory.class)
+                .body(Mono.just(createEnteCategory(false)), EnteCategory.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$.root").isEqualTo(false)
                     .jsonPath("$._links.children.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entecategories-post",
                         commonRequestFields(),
                         commonResponseFields()));
+    }
+
+    @Test
+    public void create_entecategory_with_root_using_post_should_return_created_and_entecategory_entity() {
+
+        String spaceId = "52107f03-cf1b-4760-b2c2-4273482f0f7a";
+
+        this.testClient
+                .post()
+                .uri("/api/entecategories").contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(EnteCategory.builder()
+                        .name(ENTECATEGORY_NAME)
+                        .parentId(UUID.fromString(spaceId))
+                        .root(true)
+                        .build()), EnteCategory.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                    .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$.root").isEqualTo(true)
+                    .jsonPath("$.parentId").isEqualTo(spaceId)
+                    .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath();
     }
 
     @Test
@@ -129,11 +152,12 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                 .put()
                 .uri("/api/entecategories/{id}", id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(createEnteCategory()), EnteCategory.class)
+                .body(Mono.just(createEnteCategory(false)), EnteCategory.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$.root").isEqualTo(false)
                     .jsonPath("$._links.children.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entecategory-put",
@@ -166,6 +190,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(newName)
+                    .jsonPath("$.root").isEqualTo(false)
                     .jsonPath("$._links.children.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
@@ -243,6 +268,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$.root").isEqualTo(false)
                     .jsonPath("$._links.children.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entecategory-connectparent-put",
@@ -270,7 +296,11 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>();
         fieldDescriptor.add(fieldWithPath("id").ignored());
         fieldDescriptor.add(fieldWithPath("name").description("Ente category name"));
-        fieldDescriptor.add(fieldWithPath("parentId").description("Ente category parent to connect"));
+        fieldDescriptor.add(fieldWithPath("root")
+                .description("If root is true then the parent belong to space otherwise belong to ente category. " +
+                        "When is used to update, this property is not used"));
+        fieldDescriptor.add(fieldWithPath("parentId")
+                .description("Ente category parent to connect. When is used to update, this property is not used"));
         return requestFields(fieldDescriptor);
     }
 
@@ -278,6 +308,8 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
         return responseFields(
                 fieldWithPath("id").description("Ente category identifier (UUID)"),
                 fieldWithPath("name").description("Ente category name"),
+                fieldWithPath("root")
+                    .description("If root is true then the parent belong to space otherwise belong to ente category"),
                 fieldWithPath("parentId").ignored(),
                 generalLink());
     }
@@ -287,10 +319,11 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                 .description("The instance links. " + StringResource.METADATA_INFORMATION);
     }
 
-    private static EnteCategory createEnteCategory() {
+    private static EnteCategory createEnteCategory(boolean root) {
         return EnteCategory.builder()
-                .name(ENTECATEGORY_NAME)
-                .parentId(UUID.fromString(ENTECATEGORY_PARENTID))
+                    .name(ENTECATEGORY_NAME)
+                    .parentId(UUID.fromString(ENTECATEGORY_PARENTID))
+                    .root(root)
                 .build();
     }
 }

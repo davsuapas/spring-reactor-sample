@@ -46,7 +46,7 @@ public class DefaultInstanceService implements InstanceService {
 
     private final InstanceRepository instanceRepository;
     private final DataLockController dataLockController;
-    private final MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService;
+    private final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceService;
 
     private final WebClient webClient;
 
@@ -54,7 +54,7 @@ public class DefaultInstanceService implements InstanceService {
             @NonNull final InstanceRepository instanceRepository,
             @NonNull final ServiceProperties serviceProperties,
             @NonNull final DataLockController dataLockController,
-            @NonNull final MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService) {
+            @NonNull final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceService) {
 
         this.instanceRepository = instanceRepository;
         this.dataLockController = dataLockController;

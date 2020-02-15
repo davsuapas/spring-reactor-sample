@@ -20,6 +20,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
+import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
@@ -42,7 +43,11 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
     private final EnteCategoryRepository enteCategoryRepository;
 
     @NonNull
-    private final MultiplyDependencyRelation<EnteCategory, EnteHierarchy> enteCategoryHierarchyService;
+    private final MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHierarchyService;
+
+    // The parent is the space
+    @NonNull
+    private final MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHierarchyService;
 
     /**
      * @see EnteCategoryService
@@ -57,7 +62,7 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
      */
     @Override
     public Mono<EnteCategory> create(final EnteCategory enteCategory) {
-        return this.enteCategoryHierarchyService.create(
+        DependencyRelationCreateCommand<EnteCategory, EnteHierarchy> commandCreate =
                 new DependencyRelationCreateCommand<EnteCategory, EnteHierarchy>() {
                     @Override
                     public EnteCategory getChild() {
@@ -71,7 +76,18 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
                                 .id(enteCategory.getId())
                                 .category(true).build();
                     }
-                }, "The parent ente category: %s doesn't exist");
+                };
+
+        if (enteCategory.isRoot()) {
+            return this.spaceHierarchyService.create(
+                    commandCreate,
+                    "The parent space: %s doesn't exist");
+        }
+        else {
+            return this.enteCategoryHierarchyService.create(
+                    commandCreate,
+                    "The parent ente category: %s doesn't exist");
+        }
     }
 
     /**

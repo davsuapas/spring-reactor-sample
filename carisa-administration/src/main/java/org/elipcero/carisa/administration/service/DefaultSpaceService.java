@@ -19,6 +19,7 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteSpaceName;
@@ -44,7 +45,7 @@ public class DefaultSpaceService implements SpaceService {
     private final SpaceRepository spaceRepository;
 
     @NonNull
-    private final MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceService;
+    private final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceService;
 
     @NonNull
     private final EmbeddedDependencyRelation<Ente> spaceEnteService;

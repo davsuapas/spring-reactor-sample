@@ -44,11 +44,14 @@ public class EnteCategory extends Entity {
     @Setter
     private String name;
 
+    private boolean root;
+
     @Builder
-    public EnteCategory(UUID id, UUID parentId, String name) {
+    public EnteCategory(UUID id, UUID parentId, String name, boolean root) {
         super(id);
         this.parentId = parentId;
         this.name = name;
+        this.root = root;
     }
 }
 

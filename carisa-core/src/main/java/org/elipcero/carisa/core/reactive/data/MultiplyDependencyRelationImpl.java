@@ -20,7 +20,7 @@ import java.util.UUID;
 public class MultiplyDependencyRelationImpl<TParent, TChild,
             TRelation extends Relation, TRelationID, TParentID>
         extends DependencyRelationImpl<TParent, TRelation, TRelationID, TParentID>
-        implements MultiplyDependencyRelation<TChild, TRelation> {
+        implements MultiplyDependencyRelation<TParent, TChild, TRelation> {
 
     private final ReactiveCrudRepository<TChild, UUID> childRepository;
 

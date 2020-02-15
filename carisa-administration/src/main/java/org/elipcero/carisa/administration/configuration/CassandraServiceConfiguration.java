@@ -24,6 +24,7 @@ import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
@@ -71,7 +72,7 @@ public class CassandraServiceConfiguration {
     private EnteHirarchyRepository enteHirarchyRepository;
 
     @Bean
-    public MultiplyDependencyRelation<Space, InstanceSpace> instanceSpaceRelationService() {
+    public MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelationService() {
         return new MultiplyDependencyRelationImpl<>(
                 instanceRepository, spaceRepository, instanceSpaceRepository,
                 new DependencyRelationInstanceSpaceIdentifierConvert());
@@ -90,9 +91,16 @@ public class CassandraServiceConfiguration {
     }
 
     @Bean
-    public MultiplyDependencyRelation<EnteCategory, EnteHierarchy> enteHirarchyRelationService() {
+    public MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHirarchyRelationService() {
         return new MultiplyDependencyRelationImpl<>(
                 enteCategoryRepository, enteCategoryRepository, enteHirarchyRepository,
+                new DependencyRelationEnteHirarchyIdentifierConvert());
+    }
+
+    @Bean
+    public MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyRelationService() {
+        return new MultiplyDependencyRelationImpl<>(
+                spaceRepository, enteCategoryRepository, enteHirarchyRepository,
                 new DependencyRelationEnteHirarchyIdentifierConvert());
     }
 }
