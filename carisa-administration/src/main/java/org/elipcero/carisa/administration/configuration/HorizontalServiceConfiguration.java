@@ -95,7 +95,7 @@ public class HorizontalServiceConfiguration {
 
     @Bean
     public SpaceService spaceService() {
-        return new DefaultSpaceService(spaceRepository, instanceSpaceService, spaceEnteService);
+        return new DefaultSpaceService(spaceRepository, instanceSpaceService, spaceEnteService, spaceHirarchyService);
     }
 
     // Ente configuration

@@ -55,6 +55,10 @@ public class SpaceModelAssembler implements BasicReactiveRepresentationModelAsse
                 methodOn(SpaceController.class).getEntes(space.getId().toString()))
                 .withRel(EnteModelAssembler.ENTES_REL_NAME);
 
-        return Flux.concat(self.toMono(), instances.toMono(), entes.toMono());
+        WebFluxLinkBuilder.WebFluxLink enteCategories = linkTo(
+                methodOn(SpaceController.class).getEnteCategories(space.getId().toString()))
+                .withRel(EnteCategoryModelAssembler.CATEGORIES_REL_NAME);
+
+        return Flux.concat(self.toMono(), instances.toMono(), entes.toMono(), enteCategories.toMono());
     }
 }

@@ -19,10 +19,12 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.administration.domain.EnteCategory;
+import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.projection.EnteSpaceName;
+import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
@@ -49,6 +51,9 @@ public class DefaultSpaceService implements SpaceService {
 
     @NonNull
     private final EmbeddedDependencyRelation<Ente> spaceEnteService;
+
+    @NonNull
+    private final MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyService;
 
     /**
      * @see SpaceService
@@ -95,13 +100,27 @@ public class DefaultSpaceService implements SpaceService {
      * @see SpaceService
      */
     @Override
-    public Flux<EnteSpaceName> getEntesBySpace(final UUID spaceId) {
+    public Flux<ParentChildName> getEntesBySpace(final UUID spaceId) {
         return this.spaceEnteService.getRelationsByParent(spaceId)
-                .map(ente -> EnteSpaceName
+                .map(ente -> ParentChildName
                         .builder()
-                            .spaceId(spaceId)
-                            .enteId(ente.getId())
-                            .EnteName(ente.getName())
+                            .parentId(spaceId)
+                            .childId(ente.getId())
+                            .name(ente.getName())
+                        .build());
+    }
+
+    /**
+     * @see SpaceService
+     */
+    @Override
+    public Flux<ParentChildName> getEnteCategoriesBySpace(UUID spaceId) {
+        return this.spaceHirarchyService.getChildrenByParent(spaceId)
+                .map(enteCategory -> ParentChildName
+                        .builder()
+                            .parentId(spaceId)
+                            .childId(enteCategory.getChild().getId())
+                            .name(enteCategory.getChild().getName())
                         .build());
     }
 }

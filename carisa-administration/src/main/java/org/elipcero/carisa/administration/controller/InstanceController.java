@@ -96,12 +96,12 @@ public class InstanceController {
                     .flatMap(instanceSpace ->
                             Flux.concat(
                                 linkTo(
-                                    methodOn(SpaceController.class).getById(instanceSpace.getSpaceId().toString()))
+                                    methodOn(SpaceController.class).getById(instanceSpace.getChildId().toString()))
                                     .withRel(SpaceModelAssembler.SPACE_REL_NAME).toMono())
                             .map(links -> new EntityModel<>(SpaceName
                                     .builder()
-                                        .spaceId(instanceSpace.getSpaceId())
-                                        .name(instanceSpace.getSpaceName())
+                                        .spaceId(instanceSpace.getChildId())
+                                        .name(instanceSpace.getName())
                                     .build(), links)))
                     .collectList()
                     .flatMap(entities ->

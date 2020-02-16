@@ -42,7 +42,8 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.lin
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
- * Ente category controller. @see EnteCategory domain
+ * Ente category controller.
+ * @see EnteCategory domain
  *
  * @author David Suárez
  */

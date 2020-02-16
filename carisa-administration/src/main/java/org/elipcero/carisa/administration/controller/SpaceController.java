@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.general.StringResource;
+import org.elipcero.carisa.administration.projection.EnteCategoryChildName;
 import org.elipcero.carisa.administration.projection.EnteName;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
@@ -121,13 +122,42 @@ public class SpaceController {
                                 linkTo(
                                         methodOn(EnteController.class)
                                                 .getById(
-                                                        spaceEnte.getSpaceId().toString(),
-                                                        spaceEnte.getEnteId().toString()))
+                                                        spaceEnte.getParentId().toString(),
+                                                        spaceEnte.getChildId().toString()))
                                         .withRel(EnteModelAssembler.ENTE_REL_NAME).toMono())
                                 .map(links -> new EntityModel<>(EnteName
                                         .builder()
-                                            .enteId(spaceEnte.getEnteId())
-                                            .name(spaceEnte.getEnteName())
+                                            .enteId(spaceEnte.getChildId())
+                                            .name(spaceEnte.getName())
+                                        .build(), links)))
+                .collectList()
+                .flatMap(entities ->
+                        linkTo(
+                                methodOn(SpaceController.class).getById(id))
+                                .withRel(SpaceModelAssembler.SPACE_REL_NAME).toMono()
+                                .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
+    }
+
+    /**
+     * Get ente categories by spaceId
+     * @param id the spaceId
+     * @return Ente category collections with links
+     */
+    @GetMapping("/{id}/entecategories")
+    public Publisher<CollectionModel<EntityModel<EnteCategoryChildName>>> getEnteCategories(
+            final @PathVariable("id") String id) {
+
+        return this.spaceService.getEnteCategoriesBySpace(UUID.fromString(id))
+                .flatMap(spaceEnteCategory ->
+                        Flux.concat(
+                                linkTo(
+                                        methodOn(EnteCategoryController.class)
+                                                .getById(spaceEnteCategory.getChildId().toString()))
+                                        .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME).toMono())
+                                .map(links -> new EntityModel<>(EnteCategoryChildName
+                                        .builder()
+                                            .id(spaceEnteCategory.getChildId())
+                                            .name(spaceEnteCategory.getName())
                                         .build(), links)))
                 .collectList()
                 .flatMap(entities ->

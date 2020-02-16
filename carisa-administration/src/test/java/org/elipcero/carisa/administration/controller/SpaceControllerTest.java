@@ -55,7 +55,10 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     private static final String INSTANCE_ID = "5b6962dd-3f90-4c93-8f61-eabfa4a803e2"; // Look at instance-controller
     private static final String SPACE_NAME = "Space name"; // Look at space-controller
     private static final String ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller
-    private static final String ENTE_NAME = "Ente name";
+    private static final String ENTE_NAME = "Ente name"; // Look at ente-controller
+    // Look at ente-category-controller
+    private static final String ENTECATEGORY_ID = "83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+    private static final String ENTECATEGORY_NAME = "Ente Category name"; // Look at ente-category-controller
 
     private static boolean beforeOnce;
 
@@ -66,7 +69,8 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
             this.executeCommands("space-controller.cql");
             this.executeCommands("ente-controller.cql");
             this.executeCommands("instance-space-controller.cql");
-            //this.executeCommands("space-ente-controller.cql");
+            this.executeCommands("ente-hierarchy-controller.cql");
+            this.executeCommands("ente-category-controller.cql");
             beforeOnce = true;
         }
     }
@@ -85,6 +89,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.entes.href").hasJsonPath()
+                    .jsonPath("$._links.enteCategories.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-get",
                         commonPathParamters(),
@@ -106,6 +111,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.entes.href").hasJsonPath()
+                    .jsonPath("$._links.enteCategories.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-post",
                         commonRequestFields(
@@ -149,6 +155,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.entes.href").hasJsonPath()
+                    .jsonPath("$._links.enteCategories.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("spaces-put",
                         commonPathParamters(),
@@ -187,6 +194,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                     .jsonPath("$._links.entes.href").hasJsonPath()
+                    .jsonPath("$._links.enteCategories.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 
@@ -244,6 +252,35 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                                         .description("Ente identifier. (UUID string format)"),
                                 fieldWithPath("_embedded.enteNameList[].name").description("Ente name"),
                                 fieldWithPath("_embedded.enteNameList[]._links.ente.href").description("Ente information"),
+                                subsectionWithPath("_links").description("View links section"))));
+    }
+
+    @Test
+    public void find_entecategories_from_space_should_return_ok_and_ente_categories_entity() {
+
+        this.testClient
+                .get()
+                .uri("/api/spaces/{id}/entecategories", SPACE_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')].name", ENTECATEGORY_ID)
+                        .isEqualTo(ENTECATEGORY_NAME)
+                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')]._links.category.href",
+                            ENTECATEGORY_ID).hasJsonPath()
+                    .jsonPath("$._embedded.enteCategoryChildNameList.length()").isEqualTo(1)
+                    .jsonPath("$._links.space.href").hasJsonPath()
+                .consumeWith(document("space-enteCategories-get",
+                        spaceLink(),
+                        commonPathParamters(),
+                        responseFields(
+                                fieldWithPath("_embedded.enteCategoryChildNameList[].id")
+                                        .description("Ente category identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.enteCategoryChildNameList[].name")
+                                        .description("Ente category name"),
+                                fieldWithPath("_embedded.enteCategoryChildNameList[]._links.category.href")
+                                        .description("Ente category information"),
                                 subsectionWithPath("_links").description("View links section"))));
     }
 

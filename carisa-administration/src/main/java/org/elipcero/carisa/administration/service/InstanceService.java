@@ -17,7 +17,7 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.administration.projection.SpaceInstanceName;
+import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -43,7 +43,7 @@ public interface InstanceService {
      * @param instanceId the instanceId to find
      * @return the space view
      */
-    Flux<SpaceInstanceName> getSpacesByInstance(final UUID instanceId);
+    Flux<ParentChildName> getSpacesByInstance(final UUID instanceId);
 
     /**
      * Create the instance

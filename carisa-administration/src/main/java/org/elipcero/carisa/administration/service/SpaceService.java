@@ -17,7 +17,7 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.projection.EnteSpaceName;
+import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -55,10 +55,17 @@ public interface SpaceService {
     Mono<EntityDataState<Space>> updateOrCreate(final UUID id, final Space space);
 
     /**
-     * Get entes by space id. If the ente doesn't exist the relation between space and ente
-     * is removed automatically (purge)
+     * Get entes by space id.
      * @param spaceId the spaceId to find
      * @return the ente view
      */
-    Flux<EnteSpaceName> getEntesBySpace(final UUID spaceId);
+    Flux<ParentChildName> getEntesBySpace(final UUID spaceId);
+
+    /**
+     * Get ente categories by space id. If the ente category doesn't exist the relation between space and ente
+     * category is removed automatically (purge)
+     * @param spaceId the spaceId to find
+     * @return the ente category view
+     */
+    Flux<ParentChildName> getEnteCategoriesBySpace(final UUID spaceId);
 }

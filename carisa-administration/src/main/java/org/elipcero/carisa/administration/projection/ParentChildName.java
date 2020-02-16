@@ -22,14 +22,14 @@ import lombok.Getter;
 import java.util.UUID;
 
 /**
- * Space-Instance name projection
+ * Parent-Child name projection
  *
  * @author David Suárez
  */
 @Builder
 @Getter
-public class SpaceInstanceName {
-    private UUID instanceId;
-    private UUID spaceId;
-    private String SpaceName;
+public class ParentChildName {
+    private UUID parentId;
+    private UUID childId;
+    private String name;
 }

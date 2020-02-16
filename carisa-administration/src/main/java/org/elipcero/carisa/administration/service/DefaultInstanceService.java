@@ -21,7 +21,7 @@ import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.KubernetesDeployer;
 import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.projection.SpaceInstanceName;
+import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
@@ -82,13 +82,13 @@ public class DefaultInstanceService implements InstanceService {
      * @see InstanceService
      */
     @Override
-    public Flux<SpaceInstanceName> getSpacesByInstance(final UUID instanceId) {
+    public Flux<ParentChildName> getSpacesByInstance(final UUID instanceId) {
         return this.instanceSpaceService.getChildrenByParent(instanceId)
-                .map(space -> SpaceInstanceName
+                .map(space -> ParentChildName
                         .builder()
-                            .instanceId(instanceId)
-                            .spaceId(space.getChild().getId())
-                            .SpaceName(space.getChild().getName())
+                            .parentId(instanceId)
+                            .childId(space.getChild().getId())
+                            .name(space.getChild().getName())
                         .build());
     }
 
