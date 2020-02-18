@@ -36,10 +36,10 @@ public interface DependencyRelation<TRelation extends Relation> {
      * It update or create the relation depending if it exists
      * @param relation relation to update
      * @param updateChange If exists it update changes
-     * @param monoEntityCreated If not exist relation to create
+     * @param monoCreatedEntity If not exist relation to create
      * @return relation updated or created
      */
     Mono<EntityDataState<TRelation>> updateOrCreate(
             final TRelation relation,
-            final Consumer<TRelation> updateChange, final Mono<TRelation> monoEntityCreated);
+            final Consumer<TRelation> updateChange, final Mono<TRelation> monoCreatedEntity);
 }

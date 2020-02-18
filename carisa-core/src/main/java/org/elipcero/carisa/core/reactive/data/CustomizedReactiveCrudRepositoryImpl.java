@@ -45,7 +45,7 @@ public class CustomizedReactiveCrudRepositoryImpl<T, ID>
      */
     @Override
     public Mono<EntityDataState<T>> updateCreate(
-            final ID id, final Consumer<T> updateChange, final Mono<T> monoEntityCreated) {
+            final ID id, final Consumer<T> updateChange, final Mono<T> monoCreatedEntity) {
 
         return this
                 .findById(id)
@@ -61,7 +61,7 @@ public class CustomizedReactiveCrudRepositoryImpl<T, ID>
 
                 })
                 .switchIfEmpty(
-                        monoEntityCreated.map(
+                        monoCreatedEntity.map(
                                 entityCreated ->
                                     EntityDataState.<T>
                                         builder()

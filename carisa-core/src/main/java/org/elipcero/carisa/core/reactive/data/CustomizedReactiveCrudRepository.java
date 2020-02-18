@@ -38,9 +38,9 @@ public interface CustomizedReactiveCrudRepository<T, ID>
      *
      * @param id id for finding
      * @param updateChange predicate for updating entity
-     * @param monoEntityCreated entity inserted
+     * @param monoCreatedEntity entity inserted
      * @return Mono<EntityDataState<T>> the entity with state
      */
     Mono<EntityDataState<T>> updateCreate(final ID id, final Consumer<T> updateChange,
-                                          final Mono<T> monoEntityCreated);
+                                          final Mono<T> monoCreatedEntity);
 }
