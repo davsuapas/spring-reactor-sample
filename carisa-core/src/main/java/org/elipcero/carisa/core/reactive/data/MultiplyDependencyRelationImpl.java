@@ -94,7 +94,6 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
     }
 
     private Mono<MultiplyDependencyChildInfo<TRelation, TChild>> purge(TRelation relation) {
-        return this.relationRepository
-                .deleteById(this.convertRelationId.convert(relation)).then(Mono.empty());
+        return this.relationRepository.deleteById(this.convertRelationId.convert(relation)).then(Mono.empty());
     }
 }

@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -36,6 +37,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author David Suárez
@@ -124,6 +128,7 @@ public class MultiDependencyRelationTest {
                         getCreateCommand(relationEntity, child), ""))
                 .expectNextMatches(result -> {
                     assertThat(result.getId()).isEqualTo(child.getId()).as("Check child");
+                    verify(this.childRepository, times(1)).save(child);
                     return true;
                 })
                 .verifyComplete();
@@ -142,6 +147,65 @@ public class MultiDependencyRelationTest {
                         getCreateCommand(relationEntity, child), "Error: %s"))
                 .expectErrorMessage(String.format("404 NOT_FOUND \"Error: %s\"", relationEntity.getParentId()))
                 .verify();
+    }
+
+    @Test
+    public void getChildrenByParent_should_return_children() {
+
+        RelationEntity relationEntity = getRelationEntity();
+        Entity child = new Entity(relationEntity.getChildId());
+
+        Mockito.when(this.relationRepository.findAllByParentId(relationEntity.getParentId()))
+                .thenReturn(Flux.just(relationEntity));
+        Mockito.when(this.childRepository.findById(child.getId())).thenReturn(Mono.just(child));
+        Mockito.when(this.relationRepository.deleteById(anyMap())).thenReturn(Mono.empty());
+
+        StepVerifier
+                .create(multiplyDependencyRelation.getChildrenByParent(relationEntity.getParentId()))
+                .expectNextMatches(result -> {
+                    assertThat(result.getRelation()).isEqualTo(relationEntity).as("Check relation");
+                    assertThat(result.getChild()).isEqualTo(child).as("Check child");
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void getChildrenByParent_the_child_not_exist_should_return_empty() {
+
+        RelationEntity relationEntity = getRelationEntity();
+        Entity child = new Entity(relationEntity.getChildId());
+
+        Mockito.when(this.relationRepository.findAllByParentId(relationEntity.getParentId()))
+                .thenReturn(Flux.just(relationEntity));
+        Mockito.when(this.childRepository.findById(child.getId())).thenReturn(Mono.empty());
+        Mockito.when(this.relationRepository.deleteById(anyMap())).thenReturn(Mono.empty());
+
+        StepVerifier
+                .create(multiplyDependencyRelation.getChildrenByParent(relationEntity.getParentId()))
+                .expectNextCount(0)
+                .verifyComplete();
+    }
+
+    @Test
+    public void conectToParent_create_relation_should_return_child() {
+
+        RelationEntity relationEntity = getRelationEntity();
+        Entity child = new Entity(relationEntity.getChildId());
+
+        Mockito.when(this.parentRepository.existsById(relationEntity.getParentId())).thenReturn(Mono.just(true));
+        Mockito.when(this.childRepository.findById(relationEntity.getChildId())).thenReturn(Mono.just(child));
+        Mockito.when(this.relationRepository.existsById(anyMap())).thenReturn(Mono.just(false));
+        Mockito.when(this.relationRepository.save(relationEntity)).thenReturn(Mono.just(relationEntity));
+
+        StepVerifier
+                .create(multiplyDependencyRelation.connectToParent(relationEntity))
+                .expectNextMatches(result -> {
+                    assertThat(result.getId()).isEqualTo(child.getId()).as("Check child");
+                    verify(this.relationRepository, times(1)).save(relationEntity);
+                    return true;
+                })
+                .verifyComplete();
     }
 
     private DependencyRelationCreateCommand<Entity, RelationEntity> getCreateCommand(
