@@ -18,6 +18,8 @@ package org.elipcero.carisa.core.reactive.web;
 
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyChildNotFoundException;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyParentNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.hateoas.Link;
@@ -104,6 +106,49 @@ public class CrudHypermediaControllerTest {
                     return true;
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    public void controller_connectToParent_should_return_status_200_and_entity_and_link() {
+
+        StepVerifier
+                .create(crudHypermediaController.connectToParent(Mono.just(ENTITY)))
+                .expectNextMatches(result -> {
+                    assertThat(result.getStatusCodeValue()).isEqualTo(200).as("Check code status is 200");
+                    assertThat(result.getBody().getContent()).isEqualTo(ENTITY).as("Check the body is ok");
+                    assertThat(result.getBody().hasLinks()).isTrue().as("Check the resource has link");
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void controller_connectToParent_child_not_found_should_return_status_204() {
+
+        StepVerifier
+                .create(crudHypermediaController.connectToParent(
+                        Mono.error(new MultiplyDependencyChildNotFoundException("error"))))
+                .expectErrorMessage("404 NOT_FOUND \"error\"")
+                .verify();
+    }
+
+    @Test
+    public void controller_connectToParent_parent_not_found_should_return_status_204() {
+
+        StepVerifier
+                .create(crudHypermediaController.connectToParent(
+                        Mono.error(new MultiplyDependencyParentNotFoundException("error"))))
+                .expectErrorMessage("404 NOT_FOUND \"error\"")
+                .verify();
+    }
+
+    @Test
+    public void controller_connectToParent_any_exception_should_return_status_204() {
+
+        StepVerifier
+                .create(crudHypermediaController.connectToParent(Mono.error(new ArithmeticException())))
+                .expectErrorMessage("500 INTERNAL_SERVER_ERROR")
+                .verify();
     }
 
     private static class Test1BasicReactiveRepresentationModelAssembler

@@ -54,7 +54,7 @@ public class MultiDependencyRelationTest {
     private ReactiveCrudRepository<Entity, UUID> childRepository;
 
     @Mock
-    DependencyRelationRepository<RelationEntity, Map<String, UUID>> relationRepository;
+    private DependencyRelationRepository<RelationEntity, Map<String, UUID>> relationRepository;
 
     private MultiplyDependencyRelation<Entity, Entity, RelationEntity> multiplyDependencyRelation;
 

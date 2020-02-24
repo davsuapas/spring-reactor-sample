@@ -87,6 +87,11 @@ public class CrudHypermediaController<T> {
                             }));
     }
 
+    /**
+     * Hypermedia resource when is connected a child with a parent in a relation.
+     * @param entity relation entity
+     * @return model representation
+     */
     public Publisher<ResponseEntity<EntityModel<T>>> connectToParent(Mono<T> entity) {
         return entity
                 .flatMap(child -> this.assembler.toModel(child, null))
