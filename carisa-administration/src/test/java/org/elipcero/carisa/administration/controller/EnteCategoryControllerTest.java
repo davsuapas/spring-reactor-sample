@@ -130,23 +130,6 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void create_entecategory_where_parent_category_no_exist_using_post_should_return_not_found_and_error() {
-
-        this.testClient
-                .post()
-                .uri("/api/entecategories").contentType(MediaTypes.HAL_JSON)
-                .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(EnteCategory.builder()
-                            .name(ENTECATEGORY_NAME)
-                            .parentId(UUID.randomUUID())
-                        .build()), EnteCategory.class)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody()
-                    .jsonPath("$.message").hasJsonPath();
-    }
-
-    @Test
     public void create_entecategory_using_put_should_return_created_and_entecategory_entity() {
 
         String id = "51ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";

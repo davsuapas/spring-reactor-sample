@@ -112,23 +112,6 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void create_enteproperty_where_ente_no_exist_using_post_should_return_not_found_and_error() {
-
-        this.testClient
-                .post()
-                .uri("/api/enteproperties").contentType(MediaTypes.HAL_JSON)
-                .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(EnteProperty.builder()
-                        .parentId(UUID.randomUUID())
-                        .spaceId(UUID.fromString(SPACE_ID))
-                        .build()), EnteProperty.class)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody()
-                    .jsonPath("$.message").hasJsonPath();
-    }
-
-    @Test
     public void create_enteproperty_using_put_should_return_created_and_enteproperty_entity() {
 
         String propertyId = "361370a0-e3e5-45e5-b675-a55fe923873f";

@@ -122,23 +122,6 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void create_space_where_instance_no_exist_using_post_should_return_not_found_and_error() {
-
-        this.testClient
-                .post()
-                .uri("/api/spaces").contentType(MediaTypes.HAL_JSON)
-                .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(Space.builder()
-                        .name(SPACE_NAME)
-                        .instanceId(UUID.randomUUID())
-                        .build()), Space.class)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody()
-                    .jsonPath("$.message").hasJsonPath();
-    }
-
-    @Test
     public void create_space_using_put_should_return_created_and_space_entity() {
 
         String id = "361370a0-e3e5-45e5-b675-a55fe923873f";
