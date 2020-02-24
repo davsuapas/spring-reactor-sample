@@ -27,5 +27,5 @@ public interface EmbeddedDependencyRelation<TRelation extends Relation> extends 
      * @param parentId parent identifier
      * @return the relations
      */
-    public Flux<TRelation> getRelationsByParent(UUID parentId);
+    Flux<TRelation> getRelationsByParent(UUID parentId);
 }

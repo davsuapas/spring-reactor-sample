@@ -278,7 +278,7 @@ public class MultiDependencyRelationTest {
 
     @AllArgsConstructor
     @Getter
-    public class Entity implements EntityInitializer<Entity> {
+    private class Entity implements EntityInitializer<Entity> {
         private UUID id;
 
         @Override
@@ -289,7 +289,7 @@ public class MultiDependencyRelationTest {
 
     @AllArgsConstructor
     @Getter
-    public static class RelationEntity implements Relation {
+    private static class RelationEntity implements Relation {
         private UUID parentId;
         private UUID childId;
 
@@ -305,7 +305,7 @@ public class MultiDependencyRelationTest {
         }
     }
 
-    public class Converter
+    private class Converter
             implements DependencyRelationIdentifierConvert<RelationEntity, Map<String, UUID>, UUID> {
 
         @Override
