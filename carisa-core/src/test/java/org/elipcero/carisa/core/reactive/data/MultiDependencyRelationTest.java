@@ -188,7 +188,7 @@ public class MultiDependencyRelationTest {
     }
 
     @Test
-    public void conectToParent_create_relation_should_return_child() {
+    public void connectToParent_create_relation_should_return_child() {
 
         RelationEntity relationEntity = getRelationEntity();
         Entity child = new Entity(relationEntity.getChildId());
@@ -206,6 +206,54 @@ public class MultiDependencyRelationTest {
                     return true;
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    public void connectToParent_relation_exists_not_create_relation_should_return_child() {
+
+        RelationEntity relationEntity = getRelationEntity();
+        Entity child = new Entity(relationEntity.getChildId());
+
+        Mockito.when(this.parentRepository.existsById(relationEntity.getParentId())).thenReturn(Mono.just(true));
+        Mockito.when(this.childRepository.findById(relationEntity.getChildId())).thenReturn(Mono.just(child));
+        Mockito.when(this.relationRepository.existsById(anyMap())).thenReturn(Mono.just(true));
+
+        StepVerifier
+                .create(multiplyDependencyRelation.connectToParent(relationEntity))
+                .expectNextMatches(result -> {
+                    assertThat(result.getId()).isEqualTo(child.getId()).as("Check child");
+                    verify(this.relationRepository, times(0)).save(relationEntity);
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void connectToParent_parent_not_exist_should_return_error() {
+
+        RelationEntity relationEntity = getRelationEntity();
+
+        Mockito.when(this.parentRepository.existsById(relationEntity.getParentId())).thenReturn(Mono.just(false));
+
+        StepVerifier
+                .create(multiplyDependencyRelation.connectToParent(relationEntity))
+                .expectErrorMessage(String.format("The ParentId: '%s' not found", relationEntity.getParentId()))
+                .verify();
+    }
+
+    @Test
+    public void connectToParent_child_not_exist_should_return_error() {
+
+        RelationEntity relationEntity = getRelationEntity();
+        Entity child = new Entity(relationEntity.getChildId());
+
+        Mockito.when(this.parentRepository.existsById(relationEntity.getParentId())).thenReturn(Mono.just(true));
+        Mockito.when(this.childRepository.findById(relationEntity.getChildId())).thenReturn(Mono.empty());
+
+        StepVerifier
+                .create(multiplyDependencyRelation.connectToParent(relationEntity))
+                .expectErrorMessage(String.format("The ChildId: '%s' not found", relationEntity.getChildId()))
+                .verify();
     }
 
     private DependencyRelationCreateCommand<Entity, RelationEntity> getCreateCommand(
