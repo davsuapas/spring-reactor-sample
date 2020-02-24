@@ -124,8 +124,7 @@ public class MultiDependencyRelationTest {
         Mockito.when(this.childRepository.save(child)).thenReturn(Mono.just(child));
 
         StepVerifier
-                .create(multiplyDependencyRelation.create(
-                        getCreateCommand(relationEntity, child), ""))
+                .create(multiplyDependencyRelation.create(getCreateCommand(relationEntity, child), ""))
                 .expectNextMatches(result -> {
                     assertThat(result.getId()).isEqualTo(child.getId()).as("Check child");
                     verify(this.childRepository, times(1)).save(child);
@@ -143,8 +142,7 @@ public class MultiDependencyRelationTest {
         Mockito.when(this.parentRepository.findById(relationEntity.getParentId())).thenReturn(Mono.empty());
 
         StepVerifier
-                .create(multiplyDependencyRelation.create(
-                        getCreateCommand(relationEntity, child), "Error: %s"))
+                .create(multiplyDependencyRelation.create(getCreateCommand(relationEntity, child), "Error: %s"))
                 .expectErrorMessage(String.format("404 NOT_FOUND \"Error: %s\"", relationEntity.getParentId()))
                 .verify();
     }
@@ -305,8 +303,7 @@ public class MultiDependencyRelationTest {
         }
     }
 
-    private class Converter
-            implements DependencyRelationIdentifierConvert<RelationEntity, Map<String, UUID>, UUID> {
+    private class Converter implements DependencyRelationIdentifierConvert<RelationEntity, Map<String, UUID>, UUID> {
 
         @Override
         public Map<String, UUID> convert(RelationEntity relationEntity) {
@@ -315,7 +312,7 @@ public class MultiDependencyRelationTest {
 
         @Override
         public Map<String, UUID> convertFromDictionary(Map<String, Object> id) {
-            return RelationEntity.getMapId((UUID) id.get("parentId"), (UUID) id.get("childId"));
+            return RelationEntity.getMapId((UUID)id.get("parentId"), (UUID)id.get("childId"));
         }
 
         @Override

@@ -9,6 +9,10 @@
     <module name="NewlineAtEndOfFile">
         <property name="lineSeparator" value="lf"/>
     </module>
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
     <module name="TreeWalker">
         <property name="tabWidth" value="4"/>
         <module name="AnnotationUseStyle">
@@ -28,10 +32,6 @@
         <module name="LeftCurly"/>
         <module name="RightCurly">
             <property name="option" value="alone"/>
-        </module>
-        <module name="LineLength">
-            <property name="max" value="120"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
         </module>
         <module name="NeedBraces"/>
         <module name="SeparatorWrap">

@@ -61,7 +61,7 @@
 				<configuration>
 					<excludes>
 						<exclude>**/org/elipcero/carisa/core/data/*</exclude>
-						<exclude>**/org/elipcero/carisa/core/reactive/data/*</exclude>
+						<exclude>**/org/elipcero/carisa/core/reactive/data/Customized*</exclude>
 						<exclude>**/org/elipcero/carisa/core/application/configuration/*</exclude>
 					</excludes>
 				</configuration>

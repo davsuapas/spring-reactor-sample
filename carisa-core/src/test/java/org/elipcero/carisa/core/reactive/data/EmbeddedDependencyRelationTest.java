@@ -150,7 +150,7 @@ public class EmbeddedDependencyRelationTest {
 
         @Override
         public Map<String, UUID> convertFromDictionary(Map<String, Object> id) {
-            return RelationEntity.getMapId((UUID) id.get("parentId"), (UUID) id.get("childId"));
+            return RelationEntity.getMapId((UUID)id.get("parentId"), (UUID)id.get("childId"));
         }
 
         @Override
