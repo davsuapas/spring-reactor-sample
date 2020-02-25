@@ -28,7 +28,7 @@ public class EmbeddedDependencyRelationImpl<TParent, TRelation extends Relation,
     * @see EmbeddedDependencyRelation
     */
    @Override
-   public Mono<TRelation> create(final TRelation relation, final String errorMessage) {
+   public Mono<TRelation> create(final TRelation relation) {
 
         if (relation instanceof EntityInitializer) {
             ((EntityInitializer)relation).tryInitId();
@@ -37,6 +37,6 @@ public class EmbeddedDependencyRelationImpl<TParent, TRelation extends Relation,
             throw new IllegalArgumentException("Relation must implement EntityInitializer interface");
         }
 
-        return this.createBasic(relation, errorMessage);
+        return this.createBasic(relation);
     }
 }

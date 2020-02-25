@@ -20,8 +20,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
-import org.elipcero.carisa.core.reactive.data.MultiplyDependencyChildNotFoundException;
-import org.elipcero.carisa.core.reactive.data.MultiplyDependencyParentNotFoundException;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationChildNotFoundException;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationParentNotFoundException;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -64,7 +64,13 @@ public class CrudHypermediaController<T> {
                 .map(resourceCreated ->
                         ResponseEntity
                                 .created(resourceCreated.getLink(IanaLinkRelations.SELF).get().toUri())
-                                .body(resourceCreated));
+                                .body(resourceCreated))
+                .onErrorResume(error -> {
+                    if (error instanceof DependencyRelationParentNotFoundException) {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage());
+                    }
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+                });
     }
 
     /**
@@ -97,8 +103,8 @@ public class CrudHypermediaController<T> {
                 .flatMap(child -> this.assembler.toModel(child, null))
                 .map(ResponseEntity::ok)
                 .onErrorResume(error -> {
-                    if (error instanceof MultiplyDependencyChildNotFoundException ||
-                            error instanceof MultiplyDependencyParentNotFoundException) {
+                    if (error instanceof DependencyRelationChildNotFoundException ||
+                            error instanceof DependencyRelationParentNotFoundException) {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage());
                     }
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);

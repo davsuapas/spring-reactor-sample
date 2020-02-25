@@ -39,8 +39,7 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
      */
     @Override
     public Mono<TChild> create(
-            final DependencyRelationCreateCommand<TChild, TRelation> createCommand,
-            final String errorMessage) {
+            final DependencyRelationCreateCommand<TChild, TRelation> createCommand) {
 
         if (createCommand.getChild() instanceof EntityInitializer) {
             ((EntityInitializer)createCommand.getChild()).tryInitId();
@@ -50,7 +49,7 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
         }
 
         return this
-                .createBasic(createCommand.getRelation(), errorMessage)
+                .createBasic(createCommand.getRelation())
                 .flatMap(__ -> this.childRepository.save(createCommand.getChild()));
     }
 
@@ -85,10 +84,10 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
                                                 }
                                                 return child;
                                             }))
-                                .switchIfEmpty(Mono.error(new MultiplyDependencyChildNotFoundException(
+                                .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
                                         String.format("The ChildId: '%s' not found", relation.getChildId()))));
                     }
-                    return Mono.error(new MultiplyDependencyParentNotFoundException(
+                    return Mono.error(new DependencyRelationParentNotFoundException(
                             String.format("The ParentId: '%s' not found", relation.getParentId())));
                 });
     }

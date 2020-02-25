@@ -21,9 +21,9 @@ package org.elipcero.carisa.core.reactive.data;
  *
  * @author David Suárez
  */
-public class MultiplyDependencyParentNotFoundException extends RuntimeException {
+public class DependencyRelationParentNotFoundException extends RuntimeException {
 
-    public MultiplyDependencyParentNotFoundException(String s) {
+    public DependencyRelationParentNotFoundException(String s) {
         super(s);
     }
 }

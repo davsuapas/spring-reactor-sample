@@ -79,14 +79,10 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
                 };
 
         if (enteCategory.isRoot()) {
-            return this.spaceHierarchyService.create(
-                    commandCreate,
-                    "The parent space: %s doesn't exist");
+            return this.spaceHierarchyService.create(commandCreate);
         }
         else {
-            return this.enteCategoryHierarchyService.create(
-                    commandCreate,
-                    "The parent ente category: %s doesn't exist");
+            return this.enteCategoryHierarchyService.create(commandCreate);
         }
     }
 

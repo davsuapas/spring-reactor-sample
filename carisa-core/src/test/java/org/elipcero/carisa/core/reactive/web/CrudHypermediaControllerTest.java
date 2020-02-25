@@ -18,8 +18,8 @@ package org.elipcero.carisa.core.reactive.web;
 
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
-import org.elipcero.carisa.core.reactive.data.MultiplyDependencyChildNotFoundException;
-import org.elipcero.carisa.core.reactive.data.MultiplyDependencyParentNotFoundException;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationChildNotFoundException;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationParentNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.hateoas.Link;
@@ -55,6 +55,26 @@ public class CrudHypermediaControllerTest {
                     return true;
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    public void controller_creation_operation_should_return_status_404() {
+
+        StepVerifier
+                .create(crudHypermediaController.create(
+                        Mono.error(new DependencyRelationParentNotFoundException("error"))))
+                .expectErrorMessage("404 NOT_FOUND \"error\"")
+                .verify();
+    }
+
+    @Test
+    public void controller_creation_operation_should_return_status_500() {
+
+        StepVerifier
+                .create(crudHypermediaController.create(
+                        Mono.error(new ArithmeticException())))
+                .expectErrorMessage("500 INTERNAL_SERVER_ERROR")
+                .verify();
     }
 
     @Test
@@ -127,23 +147,23 @@ public class CrudHypermediaControllerTest {
 
         StepVerifier
                 .create(crudHypermediaController.connectToParent(
-                        Mono.error(new MultiplyDependencyChildNotFoundException("error"))))
+                        Mono.error(new DependencyRelationChildNotFoundException("error"))))
                 .expectErrorMessage("404 NOT_FOUND \"error\"")
                 .verify();
     }
 
     @Test
-    public void controller_connectToParent_parent_not_found_should_return_status_204() {
+    public void controller_connectToParent_parent_not_found_should_return_status_404() {
 
         StepVerifier
                 .create(crudHypermediaController.connectToParent(
-                        Mono.error(new MultiplyDependencyParentNotFoundException("error"))))
+                        Mono.error(new DependencyRelationParentNotFoundException("error"))))
                 .expectErrorMessage("404 NOT_FOUND \"error\"")
                 .verify();
     }
 
     @Test
-    public void controller_connectToParent_any_exception_should_return_status_204() {
+    public void controller_connectToParent_any_exception_should_return_status_500() {
 
         StepVerifier
                 .create(crudHypermediaController.connectToParent(Mono.error(new ArithmeticException())))

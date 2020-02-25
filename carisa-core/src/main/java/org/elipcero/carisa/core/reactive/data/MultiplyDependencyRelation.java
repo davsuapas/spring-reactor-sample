@@ -21,12 +21,9 @@ public interface MultiplyDependencyRelation<TParent, TChild, TRelation extends R
      * If the parent doesn't exist throw exception.
      *
      * @param createCommand createCommand are the parameters to create
-     * @param errorMessage  error message for user If the parent doesn't exist
      * @return many relation
      */
-    Mono<TChild> create(
-            DependencyRelationCreateCommand<TChild, TRelation> createCommand,
-            String errorMessage);
+    Mono<TChild> create(DependencyRelationCreateCommand<TChild, TRelation> createCommand);
 
     /**
      * Get children by parent. If the child doesn't exist is removed

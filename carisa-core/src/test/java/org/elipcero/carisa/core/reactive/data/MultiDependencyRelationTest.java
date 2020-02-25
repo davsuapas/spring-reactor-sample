@@ -124,7 +124,7 @@ public class MultiDependencyRelationTest {
         Mockito.when(this.childRepository.save(child)).thenReturn(Mono.just(child));
 
         StepVerifier
-                .create(multiplyDependencyRelation.create(getCreateCommand(relationEntity, child), ""))
+                .create(multiplyDependencyRelation.create(getCreateCommand(relationEntity, child)))
                 .expectNextMatches(result -> {
                     assertThat(result.getId()).isEqualTo(child.getId()).as("Check child");
                     verify(this.childRepository, times(1)).save(child);
@@ -142,8 +142,8 @@ public class MultiDependencyRelationTest {
         Mockito.when(this.parentRepository.findById(relationEntity.getParentId())).thenReturn(Mono.empty());
 
         StepVerifier
-                .create(multiplyDependencyRelation.create(getCreateCommand(relationEntity, child), "Error: %s"))
-                .expectErrorMessage(String.format("404 NOT_FOUND \"Error: %s\"", relationEntity.getParentId()))
+                .create(multiplyDependencyRelation.create(getCreateCommand(relationEntity, child)))
+                .expectErrorMessage(String.format("The ParentId: '%s' not found", relationEntity.getParentId()))
                 .verify();
     }
 

@@ -67,7 +67,7 @@ public class EmbeddedDependencyRelationTest {
         Mockito.when(this.relationRepository.save(relationEntity)).thenReturn(Mono.just(relationEntity));
 
         StepVerifier
-                .create(embeddedDependencyRelation.create(relationEntity, ""))
+                .create(embeddedDependencyRelation.create(relationEntity))
                 .expectNextMatches(result -> {
                     assertThat(result.getChildId()).isEqualTo(relationEntity.getChildId()).as("Check child");
                     return true;
@@ -83,8 +83,8 @@ public class EmbeddedDependencyRelationTest {
         Mockito.when(this.parentRepository.findById(relationEntity.getParentId())).thenReturn(Mono.empty());
 
         StepVerifier
-                .create(embeddedDependencyRelation.create(relationEntity, "Error: %s"))
-                .expectErrorMessage(String.format("404 NOT_FOUND \"Error: %s\"", relationEntity.getParentId()))
+                .create(embeddedDependencyRelation.create(relationEntity))
+                .expectErrorMessage(String.format("The ParentId: '%s' not found", relationEntity.getParentId()))
                 .verify();
     }
 

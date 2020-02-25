@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -51,15 +49,13 @@ public abstract class DependencyRelationImpl<TParent, TRelation extends Relation
     /**
      * Create the relation. If the parent doesn't exist throw exception
      * @param relationEntity relation to create
-     * @param errorMessage error message for user
      * @return the create relation
      */
-    protected Mono<TRelation> createBasic(final TRelation relationEntity, final String errorMessage) {
+    protected Mono<TRelation> createBasic(final TRelation relationEntity) {
         return this.parentRepository.findById(this.convertRelationId.convertForParent(relationEntity))
                 .flatMap(__ -> relationRepository.save(relationEntity))
-                .switchIfEmpty(Mono.error(
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                String.format(errorMessage, relationEntity.getParentId()))));
+                .switchIfEmpty(Mono.error(new DependencyRelationParentNotFoundException(
+                        String.format("The ParentId: '%s' not found", relationEntity.getParentId()))));
     }
 
     /**

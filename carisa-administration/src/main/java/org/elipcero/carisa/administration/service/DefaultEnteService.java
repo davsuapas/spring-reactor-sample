@@ -55,7 +55,7 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Mono<Ente> create(final Ente ente) {
-        return spaceEnteService.create(ente, "The space: %s doesn't exist");
+        return spaceEnteService.create(ente);
     }
 
     /**

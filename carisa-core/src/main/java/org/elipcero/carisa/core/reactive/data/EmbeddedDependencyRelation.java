@@ -16,10 +16,9 @@ public interface EmbeddedDependencyRelation<TRelation extends Relation> extends 
      * Create the relation as child. If the parent doesn't exist throw exception
      *
      * @param relation relation to create
-     * @param errorMessage  error message for user If the parent doesn't exist
      * @return the relation created
      */
-    Mono<TRelation> create(TRelation relation, String errorMessage);
+    Mono<TRelation> create(TRelation relation);
 
     /**
      * Get children by parent.

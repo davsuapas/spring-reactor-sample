@@ -81,7 +81,7 @@ public class DefaultSpaceService implements SpaceService {
                                 .parentId(space.getInstanceId())
                                 .spaceId(space.getId()).build();
                     }
-                }, "The instance: %s doesn't exist");
+                });
     }
 
     /**

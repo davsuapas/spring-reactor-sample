@@ -49,7 +49,7 @@ public class DefaultEntePropertyService implements EntePropertyService {
      */
     @Override
     public Mono<EnteProperty> create(final EnteProperty enteProperty) {
-        return this.entePropertyService.create(enteProperty, "The Ente: %s doesn't exist");
+        return this.entePropertyService.create(enteProperty);
     }
 
     /**
