@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,6 +28,7 @@ import org.springframework.data.cassandra.config.AbstractReactiveCassandraConfig
  *
  * @author David Suárez
  */
+@Slf4j
 @EnableConfigurationProperties(CassandraProperties.class)
 @Configuration
 public class CassandraConfiguration extends AbstractReactiveCassandraConfiguration {
@@ -40,7 +42,8 @@ public class CassandraConfiguration extends AbstractReactiveCassandraConfigurati
         if (keyNamespace == null || keyNamespace.equals("")) {
             keyNamespace = "carisa_administration";
         }
-        return  keyNamespace;
+        log.info("Configured cassandra namespace: " + keyNamespace);
+        return keyNamespace;
     }
 
     @Override

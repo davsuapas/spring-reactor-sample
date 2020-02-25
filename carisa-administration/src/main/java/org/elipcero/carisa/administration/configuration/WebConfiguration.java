@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  *
  * @author David Suárez
  */
+@Slf4j
 @EnableHypermediaSupport(type = {
         EnableHypermediaSupport.HypermediaType.HAL,
         EnableHypermediaSupport.HypermediaType.HAL_FORMS })
@@ -64,6 +66,8 @@ public class WebConfiguration {
     @Bean
     @Order(-2)
     public ErrorWebExceptionHandler errorWebExceptionHandler() {
+        log.info("Exception custom handler has been configured to GlobalErrorWebExceptionHandler");
+
         GlobalErrorWebExceptionHandler exceptionHandler =
                 new GlobalErrorWebExceptionHandler(this.errorAttributes, this.resourceProperties,
                         this.serverProperties.getError(), this.applicationContext);

@@ -79,6 +79,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
                     .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.connect.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entecategories-get",
                         commonPathParameters(),
@@ -99,6 +100,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
                     .jsonPath("$.root").isEqualTo(false)
                     .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.connect.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entecategories-post",
                         commonRequestFields(),
@@ -126,6 +128,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.root").isEqualTo(true)
                     .jsonPath("$.parentId").isEqualTo(spaceId)
                     .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.connect.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 
@@ -145,6 +148,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
                     .jsonPath("$.root").isEqualTo(false)
                     .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.connect.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entecategory-put",
                         commonPathParameters(),
@@ -178,6 +182,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.root").isEqualTo(false)
                     .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.connect.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 
@@ -196,7 +201,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_space_should_return_affordance() {
+    public void find_entecategory_should_return_affordance() {
 
         this.testClient
                 .get()
@@ -211,7 +216,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_entes_from_space_should_return_ok_and_entes_entity() {
+    public void find_entecategory_from_entecategory_should_return_ok_and_entes_entity() {
 
         String childId = "53ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
 
@@ -256,6 +261,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(ENTECATEGORY_NAME)
                     .jsonPath("$.root").isEqualTo(false)
                     .jsonPath("$._links.children.href").hasJsonPath()
+                    .jsonPath("$._links.connect.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entecategory-connectparent-put",
                         pathParameters(

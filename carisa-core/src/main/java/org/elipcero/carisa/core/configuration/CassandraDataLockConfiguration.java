@@ -16,7 +16,6 @@
 
 package org.elipcero.carisa.core.configuration;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.elipcero.carisa.core.reactive.misc.CassandraDataLockController;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
@@ -45,23 +44,13 @@ public class CassandraDataLockConfiguration {
 
     @PostConstruct
     public void build() {
-        new DatalockSchema(this).BuildIfNecessary();
+        this.cqlTemplate.getCqlOperations()
+                .execute("CREATE TABLE IF NOT EXISTS data_lock (Id uuid PRIMARY KEY, DateExpired timestamp)");
+        log.info("Built datalock schema.");
     }
 
     @Bean
     public DataLockController dataLockController() {
         return new CassandraDataLockController(this.reactiveCqlTemplate);
-    }
-
-    @AllArgsConstructor
-    private static class DatalockSchema {
-
-        private CassandraDataLockConfiguration cassandraDataLockConfiguration;
-
-        public void BuildIfNecessary() {
-            this.cassandraDataLockConfiguration.cqlTemplate.getCqlOperations()
-                .execute("CREATE TABLE IF NOT EXISTS data_lock (Id uuid PRIMARY KEY, DateExpired timestamp)");
-            this.cassandraDataLockConfiguration.log.info("Built datalock schema.");
-        }
     }
 }
