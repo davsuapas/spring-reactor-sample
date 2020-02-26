@@ -16,14 +16,14 @@
 
 package org.elipcero.carisa.administration.repository.cassandra;
 
-import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
 import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
- * Repository for Ente
+ * Repository for relation between space and ente
  *
  * @author David Suárez
  */
-public interface EnteRepository extends DependencyRelationRepository<Ente, MapId> {
+public interface SpaceEnteRepository extends DependencyRelationRepository<SpaceEnte, MapId> {
 }

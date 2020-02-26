@@ -26,7 +26,6 @@ import org.springframework.restdocs.hypermedia.LinksSnippet;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
-import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
@@ -63,8 +62,11 @@ public class EnteControllerTest extends DataAbstractControllerTest {
     public void prepareData() {
         if (!beforeOnce) {
             this.executeCommands("space-controller.cql");
+            this.executeCommands("space-ente-controller.cql");
             this.executeCommands("ente-controller.cql");
             this.executeCommands("ente-property-controller.cql");
+            this.executeCommands("ente-category-controller.cql");
+            this.executeCommands("ente-hierarchy-controller.cql");
             beforeOnce = true;
         }
     }
@@ -74,13 +76,12 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/spaces/{spaceId}/entes/{enteId}", SPACE_ID, ENTE_ID)
+                .uri("/api/entes/{enteId}", ENTE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(ENTE_NAME)
-                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entes-get",
@@ -100,7 +101,6 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .expectStatus().isCreated()
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(ENTE_NAME)
-                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entes-post",
@@ -118,7 +118,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/spaces/{spaceId}/entes/{enteId}", SPACE_ID, id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes/{enteId}", id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(createEnte()), Ente.class)
                 .exchange()
@@ -148,14 +148,14 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .builder()
                     .id(UUID.fromString(id))
                     .name(newName)
-                    .parentId(UUID.fromString(SPACE_ID))
+                    .spaceId(UUID.fromString(SPACE_ID))
                 .build();
 
         enteUpdated.setName(newName);
 
         this.testClient
                 .put()
-                .uri("/api/spaces/{spaceId}/entes/{enteId}", SPACE_ID, id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes/{enteId}", id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(enteUpdated), Ente.class)
                 .exchange()
@@ -172,7 +172,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/spaces/{spaceId}/entes/{enteId}", SPACE_ID, ENTE_ID)
+                .uri("/api/entes/{enteId}", ENTE_ID)
                 .accept(MediaTypes.HAL_FORMS_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -204,7 +204,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/spaces/{spaceId}/entes/{enteId}/properties", SPACE_ID, ENTE_ID)
+                .uri("/api/entes/{enteId}/properties", ENTE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -228,14 +228,32 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                                 subsectionWithPath("_links").description("View links section"))));
     }
 
-    private LinksSnippet enteLink() {
-        return links(linkWithRel("ente").description("Ente"));
+    @Test
+    public void connect_ente_with_category_using_put_should_return_ok_and_ente() {
+
+        String categoryId = "83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+
+        this.testClient
+                .put()
+                .uri("/api/entes/{enteId}/connectcategory/{categoryId}", ENTE_ID, categoryId)
+                .contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.name").isEqualTo(ENTE_NAME)
+                    .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
+                    .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                .consumeWith(document("ente-connectcategory-put",
+                        pathParameters(
+                                parameterWithName("enteId").description("Ente identifier to connect"),
+                                parameterWithName("categoryId").description("Category identifier where is connected")),
+                        commonResponseFields()));
     }
 
-    private static PathParametersSnippet commonPathParamters(List<ParameterDescriptor> params) {
-        List<ParameterDescriptor> paramDescriptor = new ArrayList<>(params);
-        paramDescriptor.add(parameterWithName("id").description("Ente id (UUID string format)"));
-        return pathParameters(paramDescriptor);
+    private LinksSnippet enteLink() {
+        return links(linkWithRel("ente").description("Ente"));
     }
 
     private static FieldDescriptor generalLink() {
@@ -252,7 +270,6 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
     private static PathParametersSnippet commonPathParamters() {
         return pathParameters(
-                parameterWithName("spaceId").description("Space id (UUID string format)"),
                 parameterWithName("enteId").description("Ente id (UUID string format)")
         );
     }
@@ -268,8 +285,8 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
     private static Ente createEnte() {
         return Ente.builder()
-                .name(ENTE_NAME)
-                .parentId(UUID.fromString(SPACE_ID))
+                    .name(ENTE_NAME)
+                    .spaceId(UUID.fromString(SPACE_ID))
                 .build();
     }
 }

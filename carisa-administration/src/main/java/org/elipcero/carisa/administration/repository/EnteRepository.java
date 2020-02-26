@@ -14,35 +14,17 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.administration.repository;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import org.elipcero.carisa.core.data.Entity;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.elipcero.carisa.administration.domain.Ente;
+import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
 
 import java.util.UUID;
 
 /**
- * The thinks of space.
- * The ente are the items of spaces to trace, count, measure, etc.
+ * Repository for Ente
  *
  * @author David Suárez
  */
-@Table("carisa_ente")
-@Getter
-public class Ente extends Entity {
-
-    private UUID spaceId;
-
-    @Setter
-    private String name;
-
-    @Builder
-    public Ente(UUID id, UUID spaceId, String name) {
-        super(id);
-        this.name = name;
-        this.spaceId = spaceId;
-    }
+public interface EnteRepository extends CustomizedReactiveCrudRepository<Ente, UUID> {
 }

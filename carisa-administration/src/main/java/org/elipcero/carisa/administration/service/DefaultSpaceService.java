@@ -24,11 +24,11 @@ import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
-import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -50,7 +50,7 @@ public class DefaultSpaceService implements SpaceService {
     private final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceService;
 
     @NonNull
-    private final EmbeddedDependencyRelation<Ente> spaceEnteService;
+    private final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteService;
 
     @NonNull
     private final MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyService;
@@ -101,12 +101,12 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Flux<ParentChildName> getEntesBySpace(final UUID spaceId) {
-        return this.spaceEnteService.getRelationsByParent(spaceId)
+        return this.spaceEnteService.getChildrenByParent(spaceId)
                 .map(ente -> ParentChildName
                         .builder()
                             .parentId(spaceId)
-                            .childId(ente.getId())
-                            .name(ente.getName())
+                            .childId(ente.getChild().getId())
+                            .name(ente.getChild().getName())
                         .build());
     }
 

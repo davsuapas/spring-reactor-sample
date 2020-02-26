@@ -71,6 +71,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
             this.executeCommands("instance-space-controller.cql");
             this.executeCommands("ente-hierarchy-controller.cql");
             this.executeCommands("ente-category-controller.cql");
+            this.executeCommands("space-ente-controller.cql");
             beforeOnce = true;
         }
     }

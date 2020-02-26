@@ -16,13 +16,13 @@
 
 package org.elipcero.carisa.administration.convert.cassandra;
 
-import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
 import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Convert Ente property relation identifier to cassandra MapId
@@ -30,7 +30,7 @@ import java.util.Map;
  * @author David Suárez
  */
 public class DependencyRelationEntePropertyIdentifierConvert
-        implements DependencyRelationIdentifierConvert<EnteProperty, MapId, MapId> {
+        implements DependencyRelationIdentifierConvert<EnteProperty, MapId, UUID> {
 
     @Override
     public MapId convert(final EnteProperty enteProperty) {
@@ -43,7 +43,7 @@ public class DependencyRelationEntePropertyIdentifierConvert
     }
 
     @Override
-    public MapId convertForParent(final EnteProperty enteProperty) {
-        return new BasicMapId(Ente.GetMapId(enteProperty.getSpaceId(), enteProperty.getParentId()));
+    public UUID convertForParent(final EnteProperty enteProperty) {
+        return enteProperty.getParentId();
     }
 }

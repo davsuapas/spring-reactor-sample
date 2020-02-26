@@ -28,21 +28,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Table("carisa_ente_hierarchy")
+@Table("carisa_space_ente")
 @Builder
 @Getter
-public class EnteHierarchy implements Relation {
+public class SpaceEnte implements Relation {
 
-    public static String COLUMN_NAME_PARENTID = "parentId";
-    public static String COLUMN_NAME_CHILDID = "id";
+    public static String SPACEID_COLUMN_NAME = "parentId";
+    public static String ENTEID_COLUMN_NAME = "enteId";
 
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private UUID parentId; // Ente category
+    private UUID parentId; // space identifier
 
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    private UUID id; // Ente category or Ente
-
-    private boolean category;
+    private UUID enteId;
 
     @Override
     public UUID getParentId() {
@@ -52,13 +50,13 @@ public class EnteHierarchy implements Relation {
     @Override
     @JsonIgnore
     public UUID getChildId() {
-        return this.id;
+        return this.enteId;
     }
 
-    public static Map<String, Object> GetMapId(UUID parentId, UUID childId) {
+    public static Map<String, Object> GetMapId(UUID spaceId, UUID enteId) {
         return new HashMap<String, Object>() {{
-            put(COLUMN_NAME_PARENTID, parentId);
-            put(COLUMN_NAME_CHILDID, childId);
+            put(SPACEID_COLUMN_NAME, spaceId);
+            put(ENTEID_COLUMN_NAME, enteId);
         }};
     }
 }

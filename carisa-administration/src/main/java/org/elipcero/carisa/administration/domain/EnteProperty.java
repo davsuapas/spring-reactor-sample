@@ -52,17 +52,14 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty> {
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
     private UUID id;
 
-    private UUID spaceId; // Is necessary to find Ente
-
     private String name;
 
     @Builder
-    public EnteProperty(UUID id, UUID parentId, UUID spaceId, String name, EnteProperty.Type type) {
+    public EnteProperty(UUID id, UUID parentId, String name, EnteProperty.Type type) {
         this.id = id;
         this.parentId = parentId;
         this.name = name;
         this.type = type;
-        this.spaceId = spaceId;
     }
 
     @Override
