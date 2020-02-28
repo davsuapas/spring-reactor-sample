@@ -19,6 +19,7 @@ package org.elipcero.carisa.administration.controller;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.projection.EnteCategoryChildName;
+import org.elipcero.carisa.administration.projection.EnteCategoryPropertyName;
 import org.elipcero.carisa.administration.service.EnteCategoryService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
@@ -150,6 +151,37 @@ public class EnteCategoryController {
                 .flatMap(entities ->
                         linkTo(
                                 methodOn(EnteCategoryController.class).getById(id))
+                                .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME).toMono()
+                                .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
+    }
+
+    /**
+     * Get category properties by enteCategoryId
+     * @param enteCategoryId the ente category identifier (UUID string)
+     * @return the ente category property collections with links
+     */
+    @GetMapping("/{enteCategoryId}/properties")
+    public Publisher<CollectionModel<EntityModel<EnteCategoryPropertyName>>> getProperties(
+            final @PathVariable("enteCategoryId") String enteCategoryId) {
+
+        return this.enteCategoryService.getEnteCategoryPropertiesByEnteCategory(UUID.fromString(enteCategoryId))
+                .flatMap(enteCategoryProperty ->
+                        Flux.concat(
+                                linkTo(
+                                        methodOn(EnteCategoryPropertyController.class)
+                                                .getById(
+                                                        enteCategoryProperty.getParentId().toString(),
+                                                        enteCategoryProperty.getId().toString()))
+                                        .withRel(EnteCategoryPropertyModelAssembler.PROPERTY_REL_NAME).toMono())
+                                .map(links -> new EntityModel<>(EnteCategoryPropertyName
+                                        .builder()
+                                            .enteCategoryPropertyId(enteCategoryProperty.getId())
+                                            .name(enteCategoryProperty.getName())
+                                        .build(), links)))
+                .collectList()
+                .flatMap(entities ->
+                        linkTo(
+                                methodOn(EnteCategoryController.class).getById(enteCategoryId))
                                 .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME).toMono()
                                 .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
     }

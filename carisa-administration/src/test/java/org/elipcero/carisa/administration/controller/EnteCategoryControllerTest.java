@@ -26,7 +26,6 @@ import org.springframework.restdocs.hypermedia.LinksSnippet;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
-import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.PathParametersSnippet;
 import reactor.core.publisher.Mono;
 
@@ -50,10 +49,13 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 @SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_ente_category_controller" })
 public class EnteCategoryControllerTest extends DataAbstractControllerTest {
 
-    // Look at entecategory-controller
+    // Look at ente-category-controller
     private static final String ENTECATEGORY_ID = "83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
     private static final String ENTECATEGORY_PARENTID = "63ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
     private static final String ENTECATEGORY_NAME = "Ente Category name";
+    // Look at ente-category-property-controller
+    private static final String ENTE_CATEGORYPROPERTY_ID = "b9439ad1-4419-4765-acca-55ce69179c0f";
+    private static final String ENTE_CATEGORYPROPERTY_NAME = "Ente category property name";
 
     private static boolean beforeOnce;
 
@@ -63,6 +65,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
             this.executeCommands("ente-category-controller.cql");
             this.executeCommands("ente-hierarchy-controller.cql");
             this.executeCommands("space-controller.cql");
+            this.executeCommands("ente-category-property-controller.cql");
             beforeOnce = true;
         }
     }
@@ -216,7 +219,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_entecategory_from_entecategory_should_return_ok_and_entes_entity() {
+    public void find_children_from_entecategory_should_return_ok_and_entes_entity() {
 
         String childId = "53ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
 
@@ -243,6 +246,36 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                                 fieldWithPath("_embedded.enteCategoryChildNameList[]._links.category.href")
                                         .description("Category information"),
                                 subsectionWithPath("_links").description("View links section"))));
+    }
+
+    @Test
+    public void find_properties_from_entecategory_should_return_ok_and_properties_entity() {
+
+        this.testClient
+            .get()
+            .uri("/api/entecategories/{id}/properties", ENTECATEGORY_ID)
+            .accept(MediaTypes.HAL_JSON)
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$._embedded.enteCategoryPropertyNameList[?(@.enteCategoryPropertyId=='%s')].name",
+                    ENTE_CATEGORYPROPERTY_ID).isEqualTo(ENTE_CATEGORYPROPERTY_NAME)
+            .jsonPath(
+                "$._embedded.enteCategoryPropertyNameList[?(@.enteCategoryPropertyId=='%s')]._links.property.href",
+                ENTE_CATEGORYPROPERTY_ID)
+            .hasJsonPath()
+            .jsonPath("$._links.category.href").hasJsonPath()
+            .consumeWith(document("ente-entecategoryproperties-get",
+                    links(linkWithRel("category").description("Ente category")),
+                    commonPathParameters(),
+                    responseFields(
+                            fieldWithPath("_embedded.enteCategoryPropertyNameList[].enteCategoryPropertyId")
+                                    .description("Ente category property identifier. (UUID string format)"),
+                            fieldWithPath("_embedded.enteCategoryPropertyNameList[].name")
+                                    .description("Ente category property name"),
+                            fieldWithPath("_embedded.enteCategoryPropertyNameList[]._links.property.href")
+                                    .description("Ente category property information"),
+                            subsectionWithPath("_links").description("View links section"))));
     }
 
     @Test
@@ -275,13 +308,9 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     private static PathParametersSnippet commonPathParameters() {
-        return commonPathParameters(new ArrayList<>());
-    }
-
-    private static PathParametersSnippet commonPathParameters(List<ParameterDescriptor> params) {
-        List<ParameterDescriptor> paramDescriptor = new ArrayList<>(params);
-        paramDescriptor.add(parameterWithName("id").description("Ente category id (UUID string format)"));
-        return pathParameters(paramDescriptor);
+        return pathParameters(
+                parameterWithName("id").description("Ente category id (UUID string format)")
+        );
     }
 
     private static RequestFieldsSnippet commonRequestFields() {

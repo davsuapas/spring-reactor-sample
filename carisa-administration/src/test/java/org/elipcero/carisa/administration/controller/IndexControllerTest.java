@@ -50,7 +50,9 @@ public class IndexControllerTest extends AbstractControllerTest {
                     .jsonPath("$.links.[?(@.rel=='enteProperties')].href")
                         .isEqualTo("/api/enteproperties")
                     .jsonPath("$.links.[?(@.rel=='enteCategories')].href")
-                    .isEqualTo("/api/entecategories")
+                        .isEqualTo("/api/entecategories")
+                    .jsonPath("$.links.[?(@.rel=='enteCategoryProperties')].href")
+                        .isEqualTo("/api/entecategoryproperties")
                 .consumeWith(document("index",
                     responseFields(
                         fieldWithPath("version").description("Carisa API version (x.x.x)"),

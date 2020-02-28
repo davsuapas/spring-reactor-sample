@@ -19,12 +19,14 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.EnteCategory;
+import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
+import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -48,6 +50,9 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
     // The parent is the space
     @NonNull
     private final MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHierarchyService;
+
+    @NonNull
+    private final EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyService;
 
     /**
      * @see EnteCategoryService
@@ -125,5 +130,10 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
                     .category(true)
                 .build()
         );
+    }
+
+    @Override
+    public Flux<EnteCategoryProperty> getEnteCategoryPropertiesByEnteCategory(UUID enteCategoryId) {
+        return this.enteCategoryPropertyService.getRelationsByParent(enteCategoryId);
     }
 }

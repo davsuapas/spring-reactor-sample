@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.configuration;
 
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
+import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.domain.Instance;
@@ -28,11 +29,13 @@ import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.service.DefaultEnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteCategoryService;
 import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
+import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.EnteCategoryService;
 import org.elipcero.carisa.administration.service.EntePropertyService;
 import org.elipcero.carisa.administration.service.EnteService;
@@ -82,6 +85,9 @@ public class HorizontalServiceConfiguration {
     @Autowired
     private MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyService;
 
+    @Autowired
+    private EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyService;
+
     // Instance configuration
 
     @Autowired
@@ -129,6 +135,13 @@ public class HorizontalServiceConfiguration {
     @Bean
     public EnteCategoryService enteCategoryService() {
         return new DefaultEnteCategoryService(
-                enteCategoryRepository, enteCategoryHirarchyService, spaceHirarchyService);
+                enteCategoryRepository, enteCategoryHirarchyService, spaceHirarchyService, enteCategoryPropertyService);
+    }
+
+    // Ente Category property configuration
+
+    @Bean
+    public EnteCategoryPropertyService enteCategoryPropertyService() {
+        return new DefaultEnteCategoryPropertyService(enteCategoryPropertyService);
     }
 }

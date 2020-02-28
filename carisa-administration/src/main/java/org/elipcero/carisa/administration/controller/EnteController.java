@@ -76,12 +76,12 @@ public class EnteController {
 
     /**
      * Get Ente by id
-     * @param enteId the ente identifier (UUID string)
+     * @param id the ente identifier (UUID string)
      * @return ente entity
      */
-    @GetMapping("/{enteId}")
-    public Publisher<EntityModel<Ente>> getById(final @PathVariable("enteId") String enteId) {
-        return this.crudHypermediaController.get(this.enteService.getById(UUID.fromString(enteId)));
+    @GetMapping("/{id}")
+    public Publisher<EntityModel<Ente>> getById(final @PathVariable("id") String id) {
+        return this.crudHypermediaController.get(this.enteService.getById(UUID.fromString(id)));
     }
 
     /**
@@ -96,17 +96,16 @@ public class EnteController {
 
     /**
      * Update or create the Ente depending of the identifier if exists.
-     * @param enteId the ente identifier (UUID string)
+     * @param id the ente identifier (UUID string)
      * @param ente the ente (Id == null)
      * @return the ente
      */
-    @PutMapping("/{enteId}")
+    @PutMapping("/{id}")
     public Publisher<ResponseEntity<EntityModel<Ente>>> updateOrCreate(
-            final @PathVariable("enteId") String enteId,
+            final @PathVariable("id") String id,
             final @RequestBody Ente ente) {
 
-        return this.crudHypermediaController.updateOrCreate(
-                this.enteService.updateOrCreate(UUID.fromString(enteId), ente));
+        return this.crudHypermediaController.updateOrCreate(this.enteService.updateOrCreate(UUID.fromString(id), ente));
     }
 
     /**
@@ -127,14 +126,14 @@ public class EnteController {
 
     /**
      * Get ente properties by enteId
-     * @param enteId the ente identifier (UUID string)
+     * @param id the ente identifier (UUID string)
      * @return the ente property collections with links
      */
-    @GetMapping("/{enteId}/properties")
+    @GetMapping("/{id}/properties")
     public Publisher<CollectionModel<EntityModel<EntePropertyName>>> getProperties(
-            final @PathVariable("enteId") String enteId) {
+            final @PathVariable("id") String id) {
 
-        return this.enteService.getEntePropertiesByEnte(UUID.fromString(enteId))
+        return this.enteService.getEntePropertiesByEnte(UUID.fromString(id))
                 .flatMap(enteProperty ->
                         Flux.concat(
                                 linkTo(
@@ -151,7 +150,7 @@ public class EnteController {
                 .collectList()
                 .flatMap(entities ->
                         linkTo(
-                                methodOn(EnteController.class).getById(enteId))
+                                methodOn(EnteController.class).getById(id))
                                 .withRel(EnteModelAssembler.ENTE_REL_NAME).toMono()
                                 .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
     }

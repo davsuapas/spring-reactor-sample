@@ -16,12 +16,14 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEnteCategoryPropertyIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEnteHirarchyIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEntePropertyIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationInstanceSpaceIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationSpaceEnteIdentifierConvert;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
+import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.domain.Instance;
@@ -32,10 +34,12 @@ import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.repository.cassandra.EnteCategoryPropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteHirarchyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EntePropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.InstanceSpaceRepository;
 import org.elipcero.carisa.administration.repository.cassandra.SpaceEnteRepository;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelationImpl;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
@@ -43,6 +47,9 @@ import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelationImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.cassandra.core.mapping.MapId;
+
+import java.util.UUID;
 
 /**
  * Configure the cassandra specific services
@@ -51,6 +58,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class CassandraServiceConfiguration {
+
+    // Repositories
 
     @Autowired
     private InstanceRepository instanceRepository;
@@ -76,6 +85,16 @@ public class CassandraServiceConfiguration {
     @Autowired
     private EnteHirarchyRepository enteHirarchyRepository;
 
+    @Autowired
+    private EnteCategoryPropertyRepository enteCategoryPropertyRepository;
+
+    // Services
+
+    @Bean
+    public DependencyRelationIdentifierConvert<EnteHierarchy, MapId, UUID> enteHirarchyIdentifierConvert() {
+        return new DependencyRelationEnteHirarchyIdentifierConvert();
+    }
+
     @Bean
     public MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelationService() {
         return new MultiplyDependencyRelationImpl<>(
@@ -100,20 +119,27 @@ public class CassandraServiceConfiguration {
     public MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHirarchyRelationService() {
         return new MultiplyDependencyRelationImpl<>(
                 enteCategoryRepository, enteCategoryRepository, enteHirarchyRepository,
-                new DependencyRelationEnteHirarchyIdentifierConvert());
+                enteHirarchyIdentifierConvert());
     }
 
     @Bean
     public MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyRelationService() {
         return new MultiplyDependencyRelationImpl<>(
                 spaceRepository, enteCategoryRepository, enteHirarchyRepository,
-                new DependencyRelationEnteHirarchyIdentifierConvert());
+                enteHirarchyIdentifierConvert());
     }
 
     @Bean
     public MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHirarchyRelationService() {
         return new MultiplyDependencyRelationImpl<>(
                 enteCategoryRepository, enteRepository, enteHirarchyRepository,
-                new DependencyRelationEnteHirarchyIdentifierConvert());
+                enteHirarchyIdentifierConvert());
+    }
+
+    @Bean
+    public EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyRelationService() {
+        return new EmbeddedDependencyRelationImpl<>(
+                enteCategoryRepository, enteCategoryPropertyRepository,
+                new DependencyRelationEnteCategoryPropertyIdentifierConvert());
     }
 }

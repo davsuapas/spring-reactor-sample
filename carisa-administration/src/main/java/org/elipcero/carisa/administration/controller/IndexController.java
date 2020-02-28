@@ -43,16 +43,18 @@ public class IndexController {
     @GetMapping
     public Publisher<EntityModel<Index>> index() {
         return Flux.concat(
-                linkTo(methodOn(InstanceController.class).getMetadata())
-                        .withRel(InstanceModelAssembler.INSTANCES_REL_NAME).toMono(),
-                linkTo(methodOn(SpaceController.class).getMetadata())
-                        .withRel(SpaceModelAssembler.SPACES_REL_NAME).toMono(),
-                linkTo(methodOn(EnteController.class).getMetadata())
-                        .withRel(EnteModelAssembler.ENTES_REL_NAME).toMono(),
+                linkTo(methodOn(InstanceController.class)
+                        .getMetadata()).withRel(InstanceModelAssembler.INSTANCES_REL_NAME).toMono(),
+                linkTo(methodOn(SpaceController.class)
+                        .getMetadata()).withRel(SpaceModelAssembler.SPACES_REL_NAME).toMono(),
+                linkTo(methodOn(EnteController.class)
+                        .getMetadata()).withRel(EnteModelAssembler.ENTES_REL_NAME).toMono(),
                 linkTo(methodOn(EntePropertyController.class)
                         .getMetadata()).withRel(EntePropertyModelAssembler.PROPERTIES_REL_NAME).toMono(),
                 linkTo(methodOn(EnteCategoryController.class)
-                    .getMetadata()).withRel(EnteCategoryModelAssembler.CATEGORIES_REL_NAME).toMono())
+                        .getMetadata()).withRel(EnteCategoryModelAssembler.CATEGORIES_REL_NAME).toMono(),
+                linkTo(methodOn(EnteCategoryPropertyController.class)
+                        .getMetadata()).withRel(EnteCategoryPropertyModelAssembler.PROPERTIES_REL_NAME).toMono())
                 .collectList().map(links -> new EntityModel<>(new Index(), links));
     }
 }

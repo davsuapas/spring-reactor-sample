@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.restdocs.hypermedia.LinksSnippet;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
@@ -76,7 +75,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/entes/{enteId}", ENTE_ID)
+                .uri("/api/entes/{id}", ENTE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -85,7 +84,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entes-get",
-                        commonPathParamters(),
+                        commonPathParameters(),
                         commonResponseFields()));
     }
 
@@ -118,7 +117,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/entes/{enteId}", id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes/{id}", id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(createEnte()), Ente.class)
                 .exchange()
@@ -129,7 +128,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entes-put",
-                        commonPathParamters(),
+                        commonPathParameters(),
                         commonRequestFields(
                                 Arrays.asList(
                                     fieldWithPath("spaceId")
@@ -155,7 +154,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .put()
-                .uri("/api/entes/{enteId}", id).contentType(MediaTypes.HAL_JSON)
+                .uri("/api/entes/{id}", id).contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(enteUpdated), Ente.class)
                 .exchange()
@@ -172,7 +171,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/entes/{enteId}", ENTE_ID)
+                .uri("/api/entes/{id}", ENTE_ID)
                 .accept(MediaTypes.HAL_FORMS_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -204,7 +203,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
 
         this.testClient
                 .get()
-                .uri("/api/entes/{enteId}/properties", ENTE_ID)
+                .uri("/api/entes/{id}/properties", ENTE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -216,8 +215,8 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                         .hasJsonPath()
                     .jsonPath("$._links.ente.href").hasJsonPath()
                 .consumeWith(document("ente-enteproperties-get",
-                        enteLink(),
-                        commonPathParamters(),
+                        links(linkWithRel("ente").description("Ente")),
+                        commonPathParameters(),
                         responseFields(
                                 fieldWithPath("_embedded.entePropertyNameList[].entePropertyId")
                                         .description("Ente property identifier. (UUID string format)"),
@@ -252,15 +251,6 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                         commonResponseFields()));
     }
 
-    private LinksSnippet enteLink() {
-        return links(linkWithRel("ente").description("Ente"));
-    }
-
-    private static FieldDescriptor generalLink() {
-        return subsectionWithPath("_links")
-                .description("The instance links. " + StringResource.METADATA_INFORMATION);
-    }
-
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
         fieldDescriptor.add(fieldWithPath("id").ignored());
@@ -268,9 +258,9 @@ public class EnteControllerTest extends DataAbstractControllerTest {
         return requestFields(fieldDescriptor);
     }
 
-    private static PathParametersSnippet commonPathParamters() {
+    private static PathParametersSnippet commonPathParameters() {
         return pathParameters(
-                parameterWithName("enteId").description("Ente id (UUID string format)")
+                parameterWithName("id").description("Ente id (UUID string format)")
         );
     }
 

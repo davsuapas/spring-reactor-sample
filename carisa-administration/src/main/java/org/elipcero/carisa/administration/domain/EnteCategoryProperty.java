@@ -16,7 +16,6 @@
 
 package org.elipcero.carisa.administration.domain;
 
-import com.datastax.driver.core.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Builder;
@@ -25,7 +24,6 @@ import lombok.Setter;
 import org.elipcero.carisa.core.data.EntityInitializer;
 import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
-import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -34,16 +32,17 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Relation between Ente and Ente property
+ * Relation between ente category and Properties of ente category. Each property represents a generalization
+ * of the properties of the entes or of the properties of ente categories
  *
  * @author David Suárez
  */
-@Table("carisa_ente_property")
+@Table("carisa_ente_category_property")
 @Getter
 @Setter
-public class EnteProperty implements Relation, EntityInitializer<EnteProperty> {
+public class EnteCategoryProperty implements Relation, EntityInitializer<EnteCategoryProperty> {
 
-    public static String ENTEID_COLUMN_NAME = "parentId";
+    public static String ENTECATEGORYID_COLUMN_NAME = "parentId";
     public static String ID_COLUMN_NAME = "id";
 
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
@@ -54,23 +53,11 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty> {
 
     private String name;
 
-    public enum Type {
-        Integer,
-        Decimal,
-        Boolean,
-        DateTime
-    }
-
-    @CassandraType(type = DataType.Name.INT)
-    @Setter
-    private EnteProperty.Type type;
-
     @Builder
-    public EnteProperty(UUID id, UUID parentId, String name, EnteProperty.Type type) {
+    public EnteCategoryProperty(UUID id, UUID parentId, String name) {
         this.id = id;
         this.parentId = parentId;
         this.name = name;
-        this.type = type;
     }
 
     @Override
@@ -80,13 +67,13 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty> {
     }
 
     // To work Affordance with a new name. Not work JsonProperty
-    @JsonSetter("enteId")
+    @JsonSetter("enteCategoryId")
     public void setParentId(UUID value) {
         this.parentId = value;
     }
 
     // To work Affordance with a new name. Not work JsonProperty
-    public UUID getEnteId() {
+    public UUID getEnteCategoryId() {
         return this.getParentId();
     }
 
@@ -96,14 +83,14 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty> {
         return this.id;
     }
 
-    public static Map<String, Object> GetMapId(UUID enteId, UUID id) {
+    public static Map<String, Object> GetMapId(UUID enteCategoryId, UUID id) {
         return new HashMap<String, Object>() {{
-            put(ENTEID_COLUMN_NAME, enteId);
+            put(ENTECATEGORYID_COLUMN_NAME, enteCategoryId);
             put(ID_COLUMN_NAME, id);
         }};
     }
 
-    public EnteProperty tryInitId() {
+    public EnteCategoryProperty tryInitId() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
         }
