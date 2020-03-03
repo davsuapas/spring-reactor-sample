@@ -66,6 +66,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
             this.executeCommands("ente-hierarchy-controller.cql");
             this.executeCommands("space-controller.cql");
             this.executeCommands("ente-category-property-controller.cql");
+            this.executeCommands("ente-controller.cql");
             beforeOnce = true;
         }
     }
@@ -221,7 +222,9 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     @Test
     public void find_children_from_entecategory_should_return_ok_and_entes_entity() {
 
-        String childId = "53ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+        String categoryId = "53ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+        String enteId = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26";
+        String enteName = "Ente name";
 
         this.testClient
                 .get()
@@ -230,21 +233,27 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')].name", childId)
+                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')].name", categoryId)
                         .isEqualTo(ENTECATEGORY_NAME)
-                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')]._links.category.href", childId)
+                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')]._links.category.href", categoryId)
                         .hasJsonPath()
-                    .jsonPath("$._embedded.enteCategoryChildNameList.length()").isEqualTo(1)
+                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')].name", enteId)
+                        .isEqualTo(enteName)
+                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')]._links.ente.href", enteId)
+                .hasJsonPath()
+
+                    .jsonPath("$._embedded.enteCategoryChildNameList.length()").isEqualTo(2)
                     .jsonPath("$._links.category.href").hasJsonPath()
                 .consumeWith(document("entecategory-children-get",
                         categoryLink(),
                         commonPathParameters(),
                         responseFields(
                                 fieldWithPath("_embedded.enteCategoryChildNameList[].id")
-                                        .description("Category identifier. (UUID string format)"),
-                                fieldWithPath("_embedded.enteCategoryChildNameList[].name").description("Ente name"),
-                                fieldWithPath("_embedded.enteCategoryChildNameList[]._links.category.href")
-                                        .description("Category information"),
+                                        .description("Category or Ente identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.enteCategoryChildNameList[].name")
+                                        .description("Category or Ente name"),
+                                subsectionWithPath("_embedded.enteCategoryChildNameList[]._links")
+                                        .description("View child name links section"),
                                 subsectionWithPath("_links").description("View links section"))));
     }
 

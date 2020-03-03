@@ -135,7 +135,8 @@ public class HorizontalServiceConfiguration {
     @Bean
     public EnteCategoryService enteCategoryService() {
         return new DefaultEnteCategoryService(
-                enteCategoryRepository, enteCategoryHirarchyService, spaceHirarchyService, enteCategoryPropertyService);
+                enteCategoryRepository, enteRepository,
+                enteCategoryHirarchyService, spaceHirarchyService, enteCategoryPropertyService);
     }
 
     // Ente Category property configuration

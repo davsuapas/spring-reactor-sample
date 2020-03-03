@@ -32,7 +32,7 @@ import java.util.UUID;
  */
 @Table("carisa_ente")
 @Getter
-public class Ente extends Entity {
+public class Ente extends Entity implements Named {
 
     private UUID spaceId;
 

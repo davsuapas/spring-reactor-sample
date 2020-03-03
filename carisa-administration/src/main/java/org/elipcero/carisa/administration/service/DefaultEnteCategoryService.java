@@ -21,9 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
+import org.elipcero.carisa.administration.domain.Named;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
+import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
@@ -43,6 +45,9 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
 
     @NonNull
     private final EnteCategoryRepository enteCategoryRepository;
+
+    @NonNull
+    private final EnteRepository enteRepository;
 
     @NonNull
     private final MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHierarchyService;
@@ -108,11 +113,15 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
      */
     @Override
     public Flux<EnteHierachyName> getChildren(final UUID enteCategoryId) {
-        return this.enteCategoryHierarchyService.getChildrenByParent(enteCategoryId)
+        return this.enteCategoryHierarchyService.getChildrenByParent(
+                    enteCategoryId, (relation)
+                        -> relation.isCategory() ?
+                        this.enteCategoryRepository.findById(relation.getChildId()).cast(Named.class) :
+                        this.enteRepository.findById(relation.getChildId()).cast(Named.class))
                 .map(child -> EnteHierachyName
                         .builder()
-                            .parentId(child.getChild().getParentId())
-                            .childId(child.getChild().getId())
+                            .parentId(child.getRelation().getParentId())
+                            .childId(child.getRelation().getChildId())
                             .childName(child.getChild().getName())
                             .category(child.getRelation().isCategory())
                         .build());

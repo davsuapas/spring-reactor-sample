@@ -5,6 +5,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * Manage dependency relations operations. It control the relation intermediate
@@ -27,9 +28,19 @@ public interface MultiplyDependencyRelation<TParent, TChild, TRelation extends R
 
     /**
      * Get children by parent. If the child doesn't exist is removed
+     * @param parentId parent identifier
+     * @param overwriteFindChild customized function to find child
+     * @param <TOChild> the child type
+     * @return the relations and child
+     */
+    <TOChild> Flux<MultiplyDependencyChildInfo<TRelation, TOChild>> getChildrenByParent(
+            UUID parentId, Function<TRelation, Mono<TOChild>> overwriteFindChild);
+
+    /**
+     * Get children by parent. If the child doesn't exist is removed
      *
      * @param parentId parent identifier
-     * @return may relations
+     * @return the relations and child
      */
     Flux<MultiplyDependencyChildInfo<TRelation, TChild>> getChildrenByParent(UUID parentId);
 

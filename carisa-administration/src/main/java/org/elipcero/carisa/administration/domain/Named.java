@@ -16,17 +16,11 @@
 
 package org.elipcero.carisa.administration.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-
 /**
- * This contain all the information to create kubernetes deployer
+ * Nominative
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class KubernetesDeployer {
-    private String name;
-    private String namespace;
+public interface Named {
+    String getName();
 }

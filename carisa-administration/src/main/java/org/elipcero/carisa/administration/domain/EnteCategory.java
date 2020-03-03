@@ -36,7 +36,7 @@ import java.util.UUID;
 @Table("carisa_ente_category")
 @Getter
 @NoArgsConstructor
-public class EnteCategory extends Entity {
+public class EnteCategory extends Entity implements Named {
 
     @Transient
     private UUID parentId;

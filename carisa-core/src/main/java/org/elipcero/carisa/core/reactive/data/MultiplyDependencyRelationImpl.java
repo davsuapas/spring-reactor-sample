@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * Manage dependency relations operations. It control the relation intermediate
@@ -58,10 +59,18 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
      */
     @Override
     public Flux<MultiplyDependencyChildInfo<TRelation, TChild>> getChildrenByParent(UUID parentId) {
+        return this.getChildrenByParent(parentId, (relation) -> this.childRepository.findById(relation.getChildId()));
+    }
+
+    /**
+     * @see MultiplyDependencyRelation
+     */
+    @Override
+    public <TOChild> Flux<MultiplyDependencyChildInfo<TRelation, TOChild>> getChildrenByParent(
+            UUID parentId, Function<TRelation, Mono<TOChild>> overwriteFindChild) {
         return this.getRelationsByParent(parentId)
-                .flatMap(relation -> this.childRepository
-                        .findById(relation.getChildId())
-                            .map(child -> MultiplyDependencyChildInfo.<TRelation, TChild>builder()
+                .flatMap(relation -> overwriteFindChild.apply(relation)
+                            .map(child -> MultiplyDependencyChildInfo.<TRelation, TOChild>builder()
                                     .relation(relation).child(child).build())
                             .switchIfEmpty(this.purge(relation)));
     }
@@ -92,7 +101,7 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
                 });
     }
 
-    private Mono<MultiplyDependencyChildInfo<TRelation, TChild>> purge(TRelation relation) {
+    private <TOChild> Mono<MultiplyDependencyChildInfo<TRelation, TOChild>> purge(TRelation relation) {
         return this.relationRepository.deleteById(this.convertRelationId.convert(relation)).then(Mono.empty());
     }
 }

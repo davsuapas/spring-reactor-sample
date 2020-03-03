@@ -25,6 +25,7 @@ import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -136,17 +137,27 @@ public class EnteCategoryController {
             final @PathVariable("id") String id) {
 
         return this.enteCategoryService.getChildren(UUID.fromString(id))
-                .flatMap(child ->
-                        Flux.concat(
-                                linkTo(
-                                        methodOn(EnteCategoryController.class)
-                                                .getById(child.getChildId().toString()))
-                                        .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME).toMono())
+                .flatMap(child -> {
+                    WebFluxLinkBuilder.WebFluxLink link;
+                        if (child.isCategory()) { // Category
+                            link = linkTo(
+                                    methodOn(EnteCategoryController.class)
+                                            .getById(child.getChildId().toString()))
+                                    .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME);
+                        }
+                        else { // Ente
+                            link = linkTo(
+                                    methodOn(EnteController.class)
+                                            .getById(child.getChildId().toString()))
+                                    .withRel(EnteModelAssembler.ENTE_REL_NAME);
+                        }
+                        return Flux.concat(link.toMono())
                                 .map(links -> new EntityModel<>(EnteCategoryChildName
                                         .builder()
                                             .id(child.getChildId())
                                             .name(child.getChildName())
-                                        .build(), links)))
+                                        .build(), links));
+                        })
                 .collectList()
                 .flatMap(entities ->
                         linkTo(
