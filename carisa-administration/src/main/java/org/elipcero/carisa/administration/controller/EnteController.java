@@ -121,7 +121,6 @@ public class EnteController {
         return this.crudHypermediaController
                 .connectToParent(this.enteService
                         .connectToCategory(UUID.fromString(enteId), UUID.fromString(categoryId)));
-
     }
 
     /**

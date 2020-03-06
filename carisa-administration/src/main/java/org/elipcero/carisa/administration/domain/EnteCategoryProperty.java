@@ -46,7 +46,7 @@ public class EnteCategoryProperty implements Relation, EntityInitializer<EnteCat
     public static String ID_COLUMN_NAME = "id";
 
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private UUID parentId; // ente identifier
+    private UUID parentId; // ente category identifier
 
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
     private UUID id;

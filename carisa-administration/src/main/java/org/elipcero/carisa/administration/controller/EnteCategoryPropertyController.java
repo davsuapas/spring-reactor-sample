@@ -120,4 +120,19 @@ public class EnteCategoryPropertyController {
         return this.crudHypermediaController.updateOrCreate(
                 this.enteCategoryPropertyService.updateOrCreate(enteCategoryProperty));
     }
+
+    /**
+     * Connect the ente to ente category property
+     * @param enteId the ente identifier connected
+     * @param categoryPropertyId the ente category property identifier
+     * @return
+     */
+    @PutMapping("/entecategoryproperties/{categoryPropertyId}/connectente/{enteId}")
+    public Publisher<ResponseEntity<EntityModel<EnteCategoryProperty>>> connectToCategoryProperty(
+            @PathVariable("categoryPropertyId") String categoryPropertyId, @PathVariable("enteId") String enteId) {
+
+        return this.crudHypermediaController
+                .connectToParent(this.enteCategoryPropertyService
+                        .connectEnte(UUID.fromString(categoryPropertyId), UUID.fromString(enteId)));
+    }
 }

@@ -29,6 +29,7 @@ import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -132,13 +133,12 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
      */
     @Override
     public Mono<EnteCategory> connectToParent(UUID childId, UUID parentId) {
-        return this.enteCategoryHierarchyService.connectToParent(
+        return this.enteCategoryHierarchyService.connectTo(
                 EnteHierarchy.builder()
                     .parentId(parentId)
                     .id(childId)
                     .category(true)
-                .build()
-        );
+                .build()).map(MultiplyDependencyConnectionInfo::getChild);
     }
 
     @Override

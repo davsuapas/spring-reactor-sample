@@ -45,9 +45,20 @@ public interface MultiplyDependencyRelation<TParent, TChild, TRelation extends R
     Flux<MultiplyDependencyChildInfo<TRelation, TChild>> getChildrenByParent(UUID parentId);
 
     /**
-     * Connect child to parent
+     * Connect two entities
      * @param relation the relation
-     * @return the child
+     * @return the connection information
      */
-    Mono<TChild> connectToParent(TRelation relation);
+    Mono<MultiplyDependencyConnectionInfo<TParent, TChild>> connectTo(TRelation relation);
+
+    /**
+     * Connect two entities
+     * @param relation the relation
+     * @param overwriteFindChild customized function to find child
+     * @param <TOChild> the child type
+     * @return the connection information
+     */
+    <TOChild> Mono<MultiplyDependencyConnectionInfo<TParent, TOChild>> connectTo(
+            TRelation relation, Function<TRelation, Mono<TOChild>> overwriteFindChild);
+
 }

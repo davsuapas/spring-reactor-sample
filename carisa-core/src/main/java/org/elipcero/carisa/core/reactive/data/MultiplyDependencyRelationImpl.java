@@ -70,8 +70,7 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
             UUID parentId, Function<TRelation, Mono<TOChild>> overwriteFindChild) {
         return this.getRelationsByParent(parentId)
                 .flatMap(relation -> overwriteFindChild.apply(relation)
-                            .map(child -> MultiplyDependencyChildInfo.<TRelation, TOChild>builder()
-                                    .relation(relation).child(child).build())
+                            .map(child -> new MultiplyDependencyChildInfo<>(relation, child))
                             .switchIfEmpty(this.purge(relation)));
     }
 
@@ -79,29 +78,38 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
      * @see MultiplyDependencyRelation
      */
     @Override
-    public Mono<TChild> connectToParent(TRelation relation) {
+    public Mono<MultiplyDependencyConnectionInfo<TParent, TChild>> connectTo(TRelation relation) {
+        return this.connectTo(relation, rel -> this.childRepository.findById(rel.getChildId()));
+    }
+
+    /**
+     * @see MultiplyDependencyRelation
+     */
+    @Override
+    public <TOChild> Mono<MultiplyDependencyConnectionInfo<TParent, TOChild>> connectTo(
+            TRelation relation, Function<TRelation, Mono<TOChild>> overwriteFindChild) {
+
         return this.parentRepository
-                .existsById((TParentID)relation.getParentId())
-                .flatMap(existsParent -> {
-                    if (existsParent) {
-                        return this.childRepository.findById(relation.getChildId())
-                                .flatMap(child ->
-                                    this.relationRepository.existsById(this.convertRelationId.convert(relation))
-                                            .map(existsRelation -> {
-                                                if (!existsRelation) {
-                                                    this.relationRepository.save(relation);
-                                                }
-                                                return child;
-                                            }))
-                                .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
-                                        String.format("The ChildId: '%s' not found", relation.getChildId()))));
-                    }
-                    return Mono.error(new DependencyRelationParentNotFoundException(
-                            String.format("The ParentId: '%s' not found", relation.getParentId())));
-                });
+                .findById((TParentID)relation.getParentId())
+                .flatMap(parent ->
+                    overwriteFindChild.apply(relation)
+                            .flatMap(child ->
+                                this.relationRepository.existsById(this.convertRelationId.convert(relation))
+                                        .map(existsRelation -> {
+                                            if (!existsRelation) {
+                                                this.relationRepository.save(relation);
+                                            }
+                                            return new MultiplyDependencyConnectionInfo<>(parent, child);
+                                        }))
+                            .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
+                                    String.format("The ChildId: '%s' not found", relation.getChildId()))))
+                )
+                .switchIfEmpty(Mono.error(new DependencyRelationParentNotFoundException(
+                        String.format("The ParentId: '%s' not found", relation.getParentId()))));
     }
 
     private <TOChild> Mono<MultiplyDependencyChildInfo<TRelation, TOChild>> purge(TRelation relation) {
         return this.relationRepository.deleteById(this.convertRelationId.convert(relation)).then(Mono.empty());
     }
+
 }

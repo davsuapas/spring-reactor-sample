@@ -21,6 +21,7 @@ import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Operations for Ente category property
@@ -50,4 +51,13 @@ public interface EnteCategoryPropertyService {
      * @return Ente category property created or updated
      */
     Mono<EntityDataState<EnteCategoryProperty>> updateOrCreate(final EnteCategoryProperty enteCategoryProperty);
+
+    /**
+     * Connect category property to Ente
+     * @param categoryId category identifier
+     * @param categoryPropertyId the category property connected
+     * @param enteId the Ente identifier to connect
+     * @return the Ente category property connected
+     */
+    Mono<EnteCategoryProperty> connectEnte(UUID categoryId, UUID categoryPropertyId, UUID enteId);
 }

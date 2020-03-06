@@ -19,16 +19,15 @@ package org.elipcero.carisa.core.reactive.data;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.elipcero.carisa.core.data.Relation;
 
 /**
- * Multiple dependency child info
+ * Description
  *
  * @author David Suárez
  */
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-public class MultiplyDependencyChildInfo<TRelation extends Relation, TChild> {
-    private TRelation relation;
+public class MultiplyDependencyConnectionInfo<TParent, TChild> {
+    private TParent parent;
     private TChild child;
 }
