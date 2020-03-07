@@ -68,25 +68,25 @@ public class HorizontalServiceConfiguration {
     // Relations
 
     @Autowired
-    private MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceService;
+    private MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelation;
 
     @Autowired
-    private MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteService;
+    private MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation;
 
     @Autowired
-    private EmbeddedDependencyRelation<EnteProperty> entePropertyService;
+    private EmbeddedDependencyRelation<EnteProperty> entePropertyRelation;
 
     @Autowired
-    private MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHirarchyService;
+    private MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHirarchyRelation;
 
     @Autowired
-    MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyService;
+    MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation;
 
     @Autowired
-    private MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyService;
+    private MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyRelation;
 
     @Autowired
-    private EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyService;
+    private EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyRelation;
 
     // Instance configuration
 
@@ -96,7 +96,7 @@ public class HorizontalServiceConfiguration {
     @Bean
     public InstanceService instanceService() {
         return new DefaultInstanceService(
-                instanceRepository, serviceProperties, dataLockController, instanceSpaceService);
+                instanceRepository, serviceProperties, dataLockController, instanceSpaceRelation);
     }
 
     // Space configuration
@@ -106,7 +106,7 @@ public class HorizontalServiceConfiguration {
 
     @Bean
     public SpaceService spaceService() {
-        return new DefaultSpaceService(spaceRepository, instanceSpaceService, spaceEnteService, spaceHirarchyService);
+        return new DefaultSpaceService(spaceRepository, spaceEnteRelation, enteCategoryService(), instanceService());
     }
 
     // Ente configuration
@@ -117,14 +117,14 @@ public class HorizontalServiceConfiguration {
     @Bean
     public EnteService enteService() {
         return new DefaultEnteService(
-                enteRepository, spaceEnteService, entePropertyService, enteHierarchyService);
+                enteRepository, enteHierarchyRelation, entePropertyService(), spaceService());
     }
 
     // Ente property configuration
 
     @Bean
     public EntePropertyService entePropertyService() {
-        return new DefaultEntePropertyService(entePropertyService);
+        return new DefaultEntePropertyService(entePropertyRelation);
     }
 
     // Ente category configuration
@@ -135,14 +135,15 @@ public class HorizontalServiceConfiguration {
     @Bean
     public EnteCategoryService enteCategoryService() {
         return new DefaultEnteCategoryService(
-                enteCategoryRepository, enteRepository,
-                enteCategoryHirarchyService, spaceHirarchyService, enteCategoryPropertyService);
+                enteCategoryRepository, enteCategoryHirarchyRelation,
+                spaceHirarchyRelation, enteService(), enteCategoryPropertyService());
     }
 
     // Ente Category property configuration
 
     @Bean
     public EnteCategoryPropertyService enteCategoryPropertyService() {
-        return new DefaultEnteCategoryPropertyService(enteCategoryPropertyService);
+        return new DefaultEnteCategoryPropertyService(
+                enteCategoryRepository, enteCategoryPropertyRelation, );
     }
 }

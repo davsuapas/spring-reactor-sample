@@ -22,12 +22,8 @@ import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
-import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
-import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Flux;
@@ -47,13 +43,13 @@ public class DefaultEnteService implements EnteService {
     private final EnteRepository enteRepository;
 
     @NonNull
-    private final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteService;
+    private final MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation;
 
     @NonNull
-    private final EmbeddedDependencyRelation<EnteProperty> entePropertyService;
+    private final EntePropertyService entePropertyService;
 
     @NonNull
-    private final MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyService;
+    private final SpaceService spaceService;
 
     /**
      * @see EnteService
@@ -68,20 +64,7 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Mono<Ente> create(final Ente ente) {
-        return this.spaceEnteService.create(
-                new DependencyRelationCreateCommand<Ente, SpaceEnte>() {
-                    @Override
-                    public Ente getChild() {
-                        return ente;
-                    }
-
-                    @Override
-                    public SpaceEnte getRelation() {
-                        return SpaceEnte.builder()
-                                .parentId(ente.getSpaceId())
-                                .enteId(ente.getId()).build();
-                    }
-                });
+        return this.spaceService.AddEnteIntoSpace(ente);
     }
 
     /**
@@ -99,8 +82,8 @@ public class DefaultEnteService implements EnteService {
      * @see EnteService
      */
     @Override
-    public Flux<EnteProperty> getEntePropertiesByEnte(final UUID enteId) {
-        return this.entePropertyService.getRelationsByParent(enteId);
+    public Flux<EnteProperty> getEntePropertiesByEnteId(final UUID enteId) {
+        return this.entePropertyService.getEntePropertiesByEnteId(enteId);
     }
 
     /**
@@ -108,7 +91,7 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Mono<Ente> connectToCategory(UUID enteId, UUID categoryId) {
-        return this.enteHierarchyService.connectTo(
+        return this.enteHierarchyRelation.connectTo(
                 EnteHierarchy.builder()
                         .parentId(categoryId)
                         .id(enteId)

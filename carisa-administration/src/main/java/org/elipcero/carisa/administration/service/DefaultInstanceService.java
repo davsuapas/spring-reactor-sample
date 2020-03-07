@@ -25,6 +25,7 @@ import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import org.elipcero.carisa.core.reactive.misc.DataLockController;
 import org.springframework.http.HttpHeaders;
@@ -54,11 +55,11 @@ public class DefaultInstanceService implements InstanceService {
             @NonNull final InstanceRepository instanceRepository,
             @NonNull final ServiceProperties serviceProperties,
             @NonNull final DataLockController dataLockController,
-            @NonNull final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceService) {
+            @NonNull final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelation) {
 
         this.instanceRepository = instanceRepository;
         this.dataLockController = dataLockController;
-        this.instanceSpaceService = instanceSpaceService;
+        this.instanceSpaceService = instanceSpaceRelation;
 
         ServiceProperties.Skipper skipper = serviceProperties.getSkipper();
         Assert.notNull(skipper, "The skipper configuration can not be null");
@@ -144,5 +145,26 @@ public class DefaultInstanceService implements InstanceService {
             })
             .doFinally(__ -> this.dataLockController.unLock(id))
             .flatMap(__ -> this.instanceRepository.findById(id));
+    }
+
+    /**
+     * @see InstanceService
+     */
+    @Override
+    public Mono<Space> AddSpaceIntoInstance(Space space) {
+        return this.instanceSpaceService.create(
+                new DependencyRelationCreateCommand<Space, InstanceSpace>() {
+                    @Override
+                    public Space getChild() {
+                        return space;
+                    }
+
+                    @Override
+                    public InstanceSpace getRelation() {
+                        return InstanceSpace.builder()
+                                .parentId(space.getInstanceId())
+                                .spaceId(space.getId()).build();
+                    }
+                });
     }
 }

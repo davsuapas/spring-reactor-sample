@@ -18,9 +18,11 @@ package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.data.EntityDataState;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Operations for Ente property
@@ -50,4 +52,11 @@ public interface EntePropertyService {
      * @return Ente property created or updated
      */
     Mono<EntityDataState<EnteProperty>> updateOrCreate(final EnteProperty enteProperty);
+
+    /**
+     * Getting properties Ente by Ente identifier
+     * @param enteId ente identifier
+     * @return the Ente properties
+     */
+    Flux<EnteProperty> getEntePropertiesByEnteId(UUID enteId);
 }

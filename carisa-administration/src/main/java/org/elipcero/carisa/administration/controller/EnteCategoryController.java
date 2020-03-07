@@ -175,7 +175,7 @@ public class EnteCategoryController {
     public Publisher<CollectionModel<EntityModel<EnteCategoryPropertyName>>> getProperties(
             final @PathVariable("enteCategoryId") String enteCategoryId) {
 
-        return this.enteCategoryService.getEnteCategoryPropertiesByEnteCategory(UUID.fromString(enteCategoryId))
+        return this.enteCategoryService.getCategoryPropertiesByEnteCategoryId(UUID.fromString(enteCategoryId))
                 .flatMap(enteCategoryProperty ->
                         Flux.concat(
                                 linkTo(

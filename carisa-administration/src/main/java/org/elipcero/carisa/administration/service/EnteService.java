@@ -59,7 +59,7 @@ public interface EnteService {
      * @param enteId the enteId to find
      * @return the ente property view
      */
-    Flux<EnteProperty> getEntePropertiesByEnte(final UUID enteId);
+    Flux<EnteProperty> getEntePropertiesByEnteId(final UUID enteId);
 
     /**
      * Connect the ente with the category

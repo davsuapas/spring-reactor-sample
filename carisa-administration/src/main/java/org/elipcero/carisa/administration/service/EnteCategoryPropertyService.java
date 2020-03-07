@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.core.data.EntityDataState;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -60,4 +61,11 @@ public interface EnteCategoryPropertyService {
      * @return the Ente category property connected
      */
     Mono<EnteCategoryProperty> connectEnte(UUID categoryId, UUID categoryPropertyId, UUID enteId);
+
+    /**
+     * Getting properties by category
+     * @param enteCategoryId category identifier
+     * @return category properties
+     */
+    Flux<EnteCategoryProperty> getPropertiesByCategoryId(UUID enteCategoryId);
 }

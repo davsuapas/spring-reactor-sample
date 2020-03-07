@@ -132,7 +132,7 @@ public class EnteController {
     public Publisher<CollectionModel<EntityModel<EntePropertyName>>> getProperties(
             final @PathVariable("id") String id) {
 
-        return this.enteService.getEntePropertiesByEnte(UUID.fromString(id))
+        return this.enteService.getEntePropertiesByEnteId(UUID.fromString(id))
                 .flatMap(enteProperty ->
                         Flux.concat(
                                 linkTo(

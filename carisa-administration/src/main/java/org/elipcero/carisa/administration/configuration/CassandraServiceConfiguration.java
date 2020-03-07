@@ -88,56 +88,58 @@ public class CassandraServiceConfiguration {
     @Autowired
     private EnteCategoryPropertyRepository enteCategoryPropertyRepository;
 
-    // Services
+    // Converter
 
     @Bean
     public DependencyRelationIdentifierConvert<EnteHierarchy, MapId, UUID> enteHirarchyIdentifierConvert() {
         return new DependencyRelationEnteHirarchyIdentifierConvert();
     }
 
+    // Relations
+
     @Bean
-    public MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelationService() {
+    public MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelationRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 instanceRepository, spaceRepository, instanceSpaceRepository,
                 new DependencyRelationInstanceSpaceIdentifierConvert());
     }
 
     @Bean
-    public MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelationService() {
+    public MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelationRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 spaceRepository, enteRepository, spaceEnteRepository,
                 new DependencyRelationSpaceEnteIdentifierConvert());
     }
 
     @Bean
-    public EmbeddedDependencyRelation<EnteProperty> entePropertyRelationService() {
+    public EmbeddedDependencyRelation<EnteProperty> entePropertyRelationRelation() {
         return new EmbeddedDependencyRelationImpl<>(
                 enteRepository, entePropertyRepository, new DependencyRelationEntePropertyIdentifierConvert());
     }
 
     @Bean
-    public MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHirarchyRelationService() {
+    public MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHirarchyRelationRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 enteCategoryRepository, enteCategoryRepository, enteHirarchyRepository,
                 enteHirarchyIdentifierConvert());
     }
 
     @Bean
-    public MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyRelationService() {
+    public MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyRelationRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 spaceRepository, enteCategoryRepository, enteHirarchyRepository,
                 enteHirarchyIdentifierConvert());
     }
 
     @Bean
-    public MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHirarchyRelationService() {
+    public MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHirarchyRelationRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 enteCategoryRepository, enteRepository, enteHirarchyRepository,
                 enteHirarchyIdentifierConvert());
     }
 
     @Bean
-    public EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyRelationService() {
+    public EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyRelationRelation() {
         return new EmbeddedDependencyRelationImpl<>(
                 enteCategoryRepository, enteCategoryPropertyRepository,
                 new DependencyRelationEnteCategoryPropertyIdentifierConvert());

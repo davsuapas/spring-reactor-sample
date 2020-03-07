@@ -19,6 +19,7 @@ package org.elipcero.carisa.administration.service;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.projection.EnteHierachyName;
+import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -75,5 +76,12 @@ public interface EnteCategoryService {
      * @param enteCategoryId the enteId to find
      * @return the Ente category property view
      */
-    Flux<EnteCategoryProperty> getEnteCategoryPropertiesByEnteCategory(final UUID enteCategoryId);
+    Flux<EnteCategoryProperty> getCategoryPropertiesByEnteCategoryId(final UUID enteCategoryId);
+
+    /**
+     * Getting Ente categories by Space identifier
+     * @param spaceId the space identifier
+     * @return the Ente named categories
+     */
+    Flux<ParentChildName> getEnteCategoriesBySpaceId(UUID spaceId);
 }

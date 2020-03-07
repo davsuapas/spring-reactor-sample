@@ -21,9 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @see EntePropertyService
@@ -34,14 +36,14 @@ import java.util.Map;
 public class DefaultEntePropertyService implements EntePropertyService {
 
     @NonNull
-    private final EmbeddedDependencyRelation<EnteProperty> entePropertyService;
+    private final EmbeddedDependencyRelation<EnteProperty> entePropertyRelation;
 
     /**
      * @see EntePropertyService
      */
     @Override
     public Mono<EnteProperty> getById(final Map<String, Object> id) {
-        return this.entePropertyService.getById(id);
+        return this.entePropertyRelation.getById(id);
     }
 
     /**
@@ -49,7 +51,7 @@ public class DefaultEntePropertyService implements EntePropertyService {
      */
     @Override
     public Mono<EnteProperty> create(final EnteProperty enteProperty) {
-        return this.entePropertyService.create(enteProperty);
+        return this.entePropertyRelation.create(enteProperty);
     }
 
     /**
@@ -57,12 +59,20 @@ public class DefaultEntePropertyService implements EntePropertyService {
      */
     @Override
     public Mono<EntityDataState<EnteProperty>> updateOrCreate(final EnteProperty enteProperty) {
-        return this.entePropertyService
+        return this.entePropertyRelation
                 .updateOrCreate(enteProperty,
                         entePropertyForUpdating -> {
                             entePropertyForUpdating.setName(enteProperty.getName());
                             entePropertyForUpdating.setType(enteProperty.getType());
                         },
                         this.create(enteProperty));
+    }
+
+    /**
+     * @see EntePropertyService
+     */
+    @Override
+    public Flux<EnteProperty> getEntePropertiesByEnteId(UUID enteId) {
+        return this.entePropertyRelation.getRelationsByParent(enteId);
     }
 }

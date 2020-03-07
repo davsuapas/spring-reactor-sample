@@ -24,11 +24,10 @@ import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.Named;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.EnteHierachyName;
+import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
-import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
-import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Flux;
@@ -48,17 +47,16 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
     private final EnteCategoryRepository enteCategoryRepository;
 
     @NonNull
-    private final EnteRepository enteRepository;
+    private final MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHierarchyRelation;
 
     @NonNull
-    private final MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHierarchyService;
-
-    // The parent is the space
-    @NonNull
-    private final MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHierarchyService;
+    private final MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHierarchyRelation;
 
     @NonNull
-    private final EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyService;
+    private final EnteService enteService;
+
+    @NonNull
+    private final EnteCategoryPropertyService enteCategoryPropertyService;
 
     /**
      * @see EnteCategoryService
@@ -90,10 +88,10 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
                 };
 
         if (enteCategory.isRoot()) {
-            return this.spaceHierarchyService.create(commandCreate);
+            return this.spaceHierarchyRelation.create(commandCreate);
         }
         else {
-            return this.enteCategoryHierarchyService.create(commandCreate);
+            return this.enteCategoryHierarchyRelation.create(commandCreate);
         }
     }
 
@@ -114,11 +112,11 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
      */
     @Override
     public Flux<EnteHierachyName> getChildren(final UUID enteCategoryId) {
-        return this.enteCategoryHierarchyService.getChildrenByParent(
+        return this.enteCategoryHierarchyRelation.getChildrenByParent(
                     enteCategoryId, (relation)
                         -> relation.isCategory() ?
                         this.enteCategoryRepository.findById(relation.getChildId()).cast(Named.class) :
-                        this.enteRepository.findById(relation.getChildId()).cast(Named.class))
+                        this.enteService.getById(relation.getChildId()).cast(Named.class))
                 .map(child -> EnteHierachyName
                         .builder()
                             .parentId(child.getRelation().getParentId())
@@ -133,7 +131,7 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
      */
     @Override
     public Mono<EnteCategory> connectToParent(UUID childId, UUID parentId) {
-        return this.enteCategoryHierarchyService.connectTo(
+        return this.enteCategoryHierarchyRelation.connectTo(
                 EnteHierarchy.builder()
                     .parentId(parentId)
                     .id(childId)
@@ -141,8 +139,25 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
                 .build()).map(MultiplyDependencyConnectionInfo::getChild);
     }
 
+    /**
+     * @see EnteCategoryService
+     */
     @Override
-    public Flux<EnteCategoryProperty> getEnteCategoryPropertiesByEnteCategory(UUID enteCategoryId) {
-        return this.enteCategoryPropertyService.getRelationsByParent(enteCategoryId);
+    public Flux<EnteCategoryProperty> getCategoryPropertiesByEnteCategoryId(UUID enteCategoryId) {
+        return this.enteCategoryPropertyService.getPropertiesByCategoryId(enteCategoryId);
+    }
+
+    /**
+     * @see EnteCategoryService
+     */
+    @Override
+    public Flux<ParentChildName> getEnteCategoriesBySpaceId(UUID spaceId) {
+        return this.enteCategoryHierarchyRelation.getChildrenByParent(spaceId)
+                .map(enteCategory -> ParentChildName
+                        .builder()
+                            .parentId(spaceId)
+                            .childId(enteCategory.getChild().getId())
+                            .name(enteCategory.getChild().getName())
+                        .build());
     }
 }

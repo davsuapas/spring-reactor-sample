@@ -19,10 +19,6 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
-import org.elipcero.carisa.administration.domain.EnteCategory;
-import org.elipcero.carisa.administration.domain.EnteHierarchy;
-import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.projection.ParentChildName;
@@ -47,13 +43,13 @@ public class DefaultSpaceService implements SpaceService {
     private final SpaceRepository spaceRepository;
 
     @NonNull
-    private final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceService;
+    private final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation;
 
     @NonNull
-    private final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteService;
+    private final EnteCategoryService enteCategoryService;
 
     @NonNull
-    private final MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyService;
+    private final InstanceService instanceService;
 
     /**
      * @see SpaceService
@@ -68,20 +64,7 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Mono<Space> create(final Space space) {
-        return this.instanceSpaceService.create(
-                new DependencyRelationCreateCommand<Space, InstanceSpace>() {
-                    @Override
-                    public Space getChild() {
-                        return space;
-                    }
-
-                    @Override
-                    public InstanceSpace getRelation() {
-                        return InstanceSpace.builder()
-                                .parentId(space.getInstanceId())
-                                .spaceId(space.getId()).build();
-                    }
-                });
+        return this.instanceService.AddSpaceIntoInstance(space);
     }
 
     /**
@@ -101,7 +84,7 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Flux<ParentChildName> getEntesBySpace(final UUID spaceId) {
-        return this.spaceEnteService.getChildrenByParent(spaceId)
+        return this.spaceEnteRelation.getChildrenByParent(spaceId)
                 .map(ente -> ParentChildName
                         .builder()
                             .parentId(spaceId)
@@ -115,12 +98,27 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Flux<ParentChildName> getEnteCategoriesBySpace(UUID spaceId) {
-        return this.spaceHirarchyService.getChildrenByParent(spaceId)
-                .map(enteCategory -> ParentChildName
-                        .builder()
-                            .parentId(spaceId)
-                            .childId(enteCategory.getChild().getId())
-                            .name(enteCategory.getChild().getName())
-                        .build());
+        return this.enteCategoryService.getEnteCategoriesBySpaceId(spaceId);
+    }
+
+    /**
+     * @see SpaceService
+     */
+    @Override
+    public Mono<Ente> AddEnteIntoSpace(Ente ente) {
+        return this.spaceEnteRelation.create(
+                new DependencyRelationCreateCommand<Ente, SpaceEnte>() {
+                    @Override
+                    public Ente getChild() {
+                        return ente;
+                    }
+
+                    @Override
+                    public SpaceEnte getRelation() {
+                        return SpaceEnte.builder()
+                                .parentId(ente.getSpaceId())
+                                .enteId(ente.getId()).build();
+                    }
+                });
     }
 }
