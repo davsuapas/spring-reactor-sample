@@ -19,7 +19,6 @@ package org.elipcero.carisa.administration.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.EnteCategory;
-import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.Named;
 import org.elipcero.carisa.administration.domain.Space;
@@ -54,9 +53,6 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
 
     @NonNull
     private final EnteService enteService;
-
-    @NonNull
-    private final EnteCategoryPropertyService enteCategoryPropertyService;
 
     /**
      * @see EnteCategoryService
@@ -137,14 +133,6 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
                     .id(childId)
                     .category(true)
                 .build()).map(MultiplyDependencyConnectionInfo::getChild);
-    }
-
-    /**
-     * @see EnteCategoryService
-     */
-    @Override
-    public Flux<EnteCategoryProperty> getCategoryPropertiesByEnteCategoryId(UUID enteCategoryId) {
-        return this.enteCategoryPropertyService.getPropertiesByCategoryId(enteCategoryId);
     }
 
     /**

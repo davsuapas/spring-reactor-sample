@@ -136,7 +136,7 @@ public class HorizontalServiceConfiguration {
     public EnteCategoryService enteCategoryService() {
         return new DefaultEnteCategoryService(
                 enteCategoryRepository, enteCategoryHirarchyRelation,
-                spaceHirarchyRelation, enteService(), enteCategoryPropertyService());
+                spaceHirarchyRelation, enteService());
     }
 
     // Ente Category property configuration

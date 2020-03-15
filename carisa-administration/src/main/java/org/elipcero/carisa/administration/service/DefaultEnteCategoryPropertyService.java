@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
-import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
+import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
@@ -41,16 +41,16 @@ import java.util.UUID;
 public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyService {
 
     @NonNull
-    private final EnteCategoryRepository enteCategoryRepository;
-
-    @NonNull
     private final EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyRelation;
 
     @NonNull
     private final MultiplyDependencyRelation<EnteCategoryProperty, Ente, EnteCategoryLinkProperty> linkEnteRelation;
 
     @NonNull
-    private final EnteService enteService;
+    private final EnteCategoryService enteCategoryService;
+
+    @NonNull
+    private final EntePropertyService entePropertyService;
 
     /**
      * @see EnteCategoryPropertyService
@@ -86,25 +86,26 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
      * @see EnteCategoryPropertyService
      */
     @Override
-    public Mono<EnteCategoryProperty> connectEnte(UUID categoryId, UUID categoryPropertyId, UUID enteId) {
-
-        return this.enteCategoryRepository.findById(categoryId)
-                .flatMap(category -> this.linkEnteRelation.connectTo(
-                    EnteCategoryLinkProperty.builder()
-                                .category(false)
-                                .categoryId(category.getId())
-                                .linkId(enteId)
-                                .parentId(categoryPropertyId)
-                            .build(),
-                        rel -> this.enteService.getById(enteId)))
-                .map(MultiplyDependencyConnectionInfo::getParent);
+    public Flux<EnteCategoryProperty> getPropertiesByCategoryId(UUID enteCategoryId) {
+        return this.enteCategoryPropertyRelation.getRelationsByParent(enteCategoryId);
     }
 
     /**
      * @see EnteCategoryPropertyService
      */
     @Override
-    public Flux<EnteCategoryProperty> getPropertiesByCategoryId(UUID enteCategoryId) {
-        return this.enteCategoryPropertyRelation.getRelationsByParent(enteCategoryId);
+    public Mono<EnteCategoryProperty> connectEnte(UUID enteCategoryId, UUID categoryPropertyId,
+                                                  UUID enteId, UUID entePropertyId) {
+
+        return this.linkEnteRelation.connectTo(
+                EnteCategoryLinkProperty.builder()
+                            .parentCategoryId(enteCategoryId)
+                            .parentId(categoryPropertyId)
+                            .parentLinkId(enteId)
+                            .linkId(entePropertyId)
+                            .category(false)
+                        .build(),
+                    rel -> this.entePropertyService.getById(EnteProperty.GetMapId(enteId, entePropertyId)))
+                .map(MultiplyDependencyConnectionInfo::getParent);
     }
 }

@@ -54,13 +54,15 @@ public interface EnteCategoryPropertyService {
     Mono<EntityDataState<EnteCategoryProperty>> updateOrCreate(final EnteCategoryProperty enteCategoryProperty);
 
     /**
-     * Connect category property to Ente
-     * @param categoryId category identifier
+     * Connect category property to Ente as inheritence
+     * @param enteCategoryId the Ente category identifier
+     * @param entePropertyId the Ente property identifier
      * @param categoryPropertyId the category property connected
      * @param enteId the Ente identifier to connect
      * @return the Ente category property connected
      */
-    Mono<EnteCategoryProperty> connectEnte(UUID categoryId, UUID categoryPropertyId, UUID enteId);
+    Mono<EnteCategoryProperty> connectEnte(UUID enteCategoryId, UUID categoryPropertyId,
+            UUID enteId, UUID entePropertyId);
 
     /**
      * Getting properties by category

@@ -55,9 +55,11 @@ public class SpaceController {
     private final CrudHypermediaController<Space> crudHypermediaController;
     private final SpaceService spaceService;
 
-    public SpaceController(SpaceService spaceService, SpaceModelAssembler spaceModelAssembler) {
+    public SpaceController(final SpaceService spaceService, final SpaceModelAssembler spaceModelAssembler) {
+
         Assert.notNull(spaceModelAssembler, "The spaceModelAssembler can not be null");
         Assert.notNull(spaceService, "The spaceService can not be null");
+
         this.spaceService = spaceService;
         this.crudHypermediaController = new CrudHypermediaController<>(spaceModelAssembler);
     }

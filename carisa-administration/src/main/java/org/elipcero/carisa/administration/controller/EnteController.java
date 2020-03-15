@@ -54,9 +54,11 @@ public class EnteController {
     private final CrudHypermediaController<Ente> crudHypermediaController;
     private final EnteService enteService;
 
-    public EnteController(EnteService enteService, EnteModelAssembler enteModelAssembler) {
+    public EnteController(final EnteService enteService, final EnteModelAssembler enteModelAssembler) {
+
         Assert.notNull(enteModelAssembler, "The enteModelAssembler can not be null");
         Assert.notNull(enteService, "The enteService can not be null");
+
         this.enteService = enteService;
         this.crudHypermediaController = new CrudHypermediaController<>(enteModelAssembler);
     }

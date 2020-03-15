@@ -52,11 +52,13 @@ public class EnteCategoryPropertyController {
     private final CrudHypermediaController<EnteCategoryProperty> crudHypermediaController;
     private final EnteCategoryPropertyService enteCategoryPropertyService;
 
-    public EnteCategoryPropertyController(EnteCategoryPropertyService enteCategoryPropertyService,
-                                          EnteCategoryPropertyModelAssembler enteCategoryPropertyModelAssembler) {
+    public EnteCategoryPropertyController(final EnteCategoryPropertyService enteCategoryPropertyService,
+                                          final EnteCategoryPropertyModelAssembler enteCategoryPropertyModelAssembler) {
+
         Assert.notNull(enteCategoryPropertyModelAssembler,
                 "The enteCategoryPropertyModelAssembler can not be null");
         Assert.notNull(enteCategoryPropertyService, "The enteCategoryPropertyService can not be null");
+
         this.enteCategoryPropertyService = enteCategoryPropertyService;
         this.crudHypermediaController = new CrudHypermediaController<>(enteCategoryPropertyModelAssembler);
     }
@@ -122,17 +124,24 @@ public class EnteCategoryPropertyController {
     }
 
     /**
-     * Connect the ente to ente category property
-     * @param enteId the ente identifier connected
-     * @param categoryPropertyId the ente category property identifier
+     * Connect the Ente to Ente category property
+     * @param enteCategoryId the Ente category identifier
+     * @param categoryPropertyId the Ente category property identifier
+     * @param enteId the Ente identifier connected
+     * @param entePropertyId the Ente property identifier
      * @return
      */
-    @PutMapping("/entecategoryproperties/{categoryPropertyId}/connectente/{enteId}")
+    @PutMapping("/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
+            "/connectente/{enteId}/properties/{entePropertyId}")
     public Publisher<ResponseEntity<EntityModel<EnteCategoryProperty>>> connectToCategoryProperty(
-            @PathVariable("categoryPropertyId") String categoryPropertyId, @PathVariable("enteId") String enteId) {
+            @PathVariable("enteCategoryId") String enteCategoryId,
+            @PathVariable("categoryPropertyId") String categoryPropertyId, @PathVariable("enteId") String enteId,
+            @PathVariable("entePropertyId") String entePropertyId) {
 
         return this.crudHypermediaController
                 .connectToParent(this.enteCategoryPropertyService
-                        .connectEnte(UUID.fromString(categoryPropertyId), UUID.fromString(enteId)));
+                        .connectEnte(
+                                UUID.fromString(enteCategoryId), UUID.fromString(categoryPropertyId),
+                                UUID.fromString(enteId), UUID.fromString(entePropertyId)));
     }
 }

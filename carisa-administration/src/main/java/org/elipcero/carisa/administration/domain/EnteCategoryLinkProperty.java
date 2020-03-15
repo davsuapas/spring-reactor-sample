@@ -30,7 +30,7 @@ import java.util.UUID;
 /**
  * The category properties links with Ente properties or category properties. Each category properties can have
  * more than one link. Each one can link with properties of the down level in her hierarchy. All links have to be
- * of the same property type
+ * of the same property type (string, boolean)
  *
  * @author David Suárez
  */
@@ -47,21 +47,31 @@ public class EnteCategoryLinkProperty implements Relation {
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
     private UUID linkId; // Ente category or Ente identifier
 
-    private UUID categoryId;
+    private UUID parentCategoryId;
+    private UUID parentLinkId; // Identify the parent of link
 
     private boolean category;
 
     @Builder
-    public EnteCategoryLinkProperty(UUID linkId, UUID parentId, UUID categoryId, boolean category) {
+    public EnteCategoryLinkProperty(
+            UUID linkId, UUID parentId,
+            UUID parentCategoryId, UUID parentLinkId, boolean category) {
+
         this.linkId = linkId;
         this.parentId = parentId;
-        this.categoryId = categoryId;
+        this.parentCategoryId = parentCategoryId;
+        this.parentLinkId = parentLinkId;
         this.category = category;
     }
 
+    public UUID getRawParentId() {
+        return  this.parentId;
+    }
+
+    // As the parent is a embedded relation the identifier is divided in two properties
     @Override
-    public UUID getParentId() {
-        return this.parentId;
+    public Map<String, Object> getParentId() {
+        return EnteCategoryProperty.GetMapId(this.parentCategoryId, this.parentId);
     }
 
     @Override

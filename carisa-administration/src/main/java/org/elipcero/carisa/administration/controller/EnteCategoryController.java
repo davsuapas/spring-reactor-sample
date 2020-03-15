@@ -20,6 +20,7 @@ import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.projection.EnteCategoryChildName;
 import org.elipcero.carisa.administration.projection.EnteCategoryPropertyName;
+import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.EnteCategoryService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
@@ -55,14 +56,19 @@ public class EnteCategoryController {
 
     private final CrudHypermediaController<EnteCategory> crudHypermediaController;
     private final EnteCategoryService enteCategoryService;
+    private final EnteCategoryPropertyService enteCategoryPropertyService;
 
     public EnteCategoryController(
-            EnteCategoryService enteCategoryService, EnteCategoryModelAssembler enteCategoryModelAssembler) {
+            final EnteCategoryService enteCategoryService, final EnteCategoryModelAssembler enteCategoryModelAssembler,
+            final EnteCategoryPropertyService enteCategoryPropertyService) {
 
         Assert.notNull(enteCategoryModelAssembler, "The enteCategoryModelAssembler can not be null");
         Assert.notNull(enteCategoryService, "The enteCategoryService can not be null");
+        Assert.notNull(enteCategoryPropertyService, "The enteCategoryPropertyService can not be null");
+
         this.enteCategoryService = enteCategoryService;
         this.crudHypermediaController = new CrudHypermediaController<>(enteCategoryModelAssembler);
+        this.enteCategoryPropertyService = enteCategoryPropertyService;
     }
 
     /**
@@ -175,7 +181,7 @@ public class EnteCategoryController {
     public Publisher<CollectionModel<EntityModel<EnteCategoryPropertyName>>> getProperties(
             final @PathVariable("enteCategoryId") String enteCategoryId) {
 
-        return this.enteCategoryService.getCategoryPropertiesByEnteCategoryId(UUID.fromString(enteCategoryId))
+        return this.enteCategoryPropertyService.getPropertiesByCategoryId(UUID.fromString(enteCategoryId))
                 .flatMap(enteCategoryProperty ->
                         Flux.concat(
                                 linkTo(
