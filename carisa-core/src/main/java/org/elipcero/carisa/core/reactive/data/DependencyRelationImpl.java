@@ -59,7 +59,7 @@ public abstract class DependencyRelationImpl<TParent, TRelation extends Relation
     }
 
     /**
-     * @see EmbeddedDependencyRelation
+     * @see DependencyRelation
      */
     public Flux<TRelation> getRelationsByParent(UUID parentId) {
         return this.relationRepository.findAllByParentId(parentId);
@@ -71,6 +71,11 @@ public abstract class DependencyRelationImpl<TParent, TRelation extends Relation
     @Override
     public Mono<TRelation> getById(Map<String, Object> id) {
         return this.relationRepository.findById(this.convertRelationId.convertFromDictionary(id));
+    }
+
+    @Override
+    public Mono<Boolean> existsById(Map<String, Object> id) {
+        return this.relationRepository.existsById(this.convertRelationId.convertFromDictionary(id));
     }
 
     /**

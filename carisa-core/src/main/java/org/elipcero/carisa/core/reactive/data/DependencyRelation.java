@@ -18,19 +18,28 @@ package org.elipcero.carisa.core.reactive.data;
 
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.Relation;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public interface DependencyRelation<TRelation extends Relation> {
 
     /**
-     * Ger relation by identifier
+     * Get relation by identifier
      * @param id identifier to found
      * @return relations
      */
     Mono<TRelation> getById(final Map<String, Object> id);
+
+    /**
+     * Exists the relation by identifier
+     * @param id identifier to found
+     * @return if exists return true
+     */
+    Mono<Boolean> existsById(final Map<String, Object> id);
 
     /**
      * It update or create the relation depending if it exists
@@ -42,4 +51,11 @@ public interface DependencyRelation<TRelation extends Relation> {
     Mono<EntityDataState<TRelation>> updateOrCreate(
             final TRelation relation,
             final Consumer<TRelation> updateChange, final Mono<TRelation> monoCreatedEntity);
+
+    /**
+     * Get Children by parent identifier
+     * @param parentId the parent identifier
+     * @return the children
+     */
+    Flux<TRelation> getRelationsByParent(UUID parentId);
 }

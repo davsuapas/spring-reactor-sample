@@ -54,20 +54,35 @@ public interface EnteCategoryPropertyService {
     Mono<EntityDataState<EnteCategoryProperty>> updateOrCreate(final EnteCategoryProperty enteCategoryProperty);
 
     /**
-     * Connect category property to Ente as inheritence
+     * Getting properties by category
+     * @param enteCategoryId category identifier
+     * @return category properties
+     */
+    Flux<EnteCategoryProperty> getPropertiesByCategoryId(UUID enteCategoryId);
+
+    /**
+     * Connect category property to Ente as inheritance.
+     * Only properties of the children of the catalog can be referenced.
+     * Only properties referenced must be the same type
      * @param enteCategoryId the Ente category identifier
      * @param entePropertyId the Ente property identifier
      * @param categoryPropertyId the category property connected
      * @param enteId the Ente identifier to connect
      * @return the Ente category property connected
      */
-    Mono<EnteCategoryProperty> connectEnte(UUID enteCategoryId, UUID categoryPropertyId,
-            UUID enteId, UUID entePropertyId);
+    Mono<EnteCategoryProperty> connectToEnte(UUID enteCategoryId, UUID categoryPropertyId,
+                                             UUID enteId, UUID entePropertyId);
 
     /**
-     * Getting properties by category
-     * @param enteCategoryId category identifier
-     * @return category properties
+     * Connect category property to other property category as inheritance.
+     * Only properties of the children of the catalog can be referenced.
+     * Only properties referenced must be the same type
+     * @param enteCategoryId the Ente category identifier
+     * @param enteLinkedCategoryId the linked category property identifier
+     * @param categoryPropertyId the category property connected
+     * @param linkedCategoryPropertyId the linked category property identifier to connect
+     * @return the Ente category property connected
      */
-    Flux<EnteCategoryProperty> getPropertiesByCategoryId(UUID enteCategoryId);
+    Mono<EnteCategoryProperty> connectToCategoryProperty(UUID enteCategoryId, UUID categoryPropertyId,
+                                                         UUID enteLinkedCategoryId, UUID linkedCategoryPropertyId);
 }

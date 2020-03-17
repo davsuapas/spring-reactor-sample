@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.configuration;
 
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
+import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
@@ -88,6 +89,9 @@ public class HorizontalServiceConfiguration {
     @Autowired
     private EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyRelation;
 
+    @Autowired
+    private MultiplyDependencyRelation<EnteCategoryProperty, Ente, EnteCategoryLinkProperty> linkEnteRelation;
+
     // Instance configuration
 
     @Autowired
@@ -144,6 +148,6 @@ public class HorizontalServiceConfiguration {
     @Bean
     public EnteCategoryPropertyService enteCategoryPropertyService() {
         return new DefaultEnteCategoryPropertyService(
-                enteCategoryRepository, enteCategoryPropertyRelation, );
+                enteCategoryPropertyRelation, linkEnteRelation, enteHierarchyRelation, entePropertyService());
     }
 }

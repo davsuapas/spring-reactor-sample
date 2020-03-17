@@ -30,6 +30,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Consumer;
+
 /**
  * Crud operations for controller
  *
@@ -98,7 +100,19 @@ public class CrudHypermediaController<T> {
      * @param entity relation entity
      * @return model representation
      */
-    public Publisher<ResponseEntity<EntityModel<T>>> connectToParent(Mono<T> entity) {
+    public Publisher<ResponseEntity<EntityModel<T>>> connectToParent(final Mono<T> entity) {
+        return this.connectToParent(entity, null);
+    }
+
+    /**
+     * Hypermedia resource when is connected a child with a parent in a relation.
+     * @param entity relation entity
+     * @param onError customized error event
+     * @return model representation
+     */
+    public Publisher<ResponseEntity<EntityModel<T>>> connectToParent(
+            final Mono<T> entity, final Consumer<Throwable> onError) {
+
         return entity
                 .flatMap(child -> this.assembler.toModel(child, null))
                 .map(ResponseEntity::ok)
@@ -106,6 +120,9 @@ public class CrudHypermediaController<T> {
                     if (error instanceof DependencyRelationChildNotFoundException ||
                             error instanceof DependencyRelationParentNotFoundException) {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage());
+                    }
+                    if (onError != null) {
+                        onError.accept(error);
                     }
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
                 });

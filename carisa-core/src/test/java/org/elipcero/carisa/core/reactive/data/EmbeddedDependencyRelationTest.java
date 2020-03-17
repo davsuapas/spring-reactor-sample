@@ -123,10 +123,6 @@ public class EmbeddedDependencyRelationTest {
         private UUID parentId;
         private UUID childId;
 
-        public Map<String, UUID> getMapId() {
-            return getMapId(this.getParentId(), this.getChildId());
-        }
-
         public static Map<String, UUID> getMapId(UUID parentId, UUID childId) {
             Map<String, UUID> idToMap = new HashMap<>();
             idToMap.put("parentId", parentId);

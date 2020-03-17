@@ -23,7 +23,9 @@ import org.elipcero.carisa.core.reactive.data.DependencyRelationParentNotFoundEx
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -168,6 +170,19 @@ public class CrudHypermediaControllerTest {
         StepVerifier
                 .create(crudHypermediaController.connectToParent(Mono.error(new ArithmeticException())))
                 .expectErrorMessage("500 INTERNAL_SERVER_ERROR")
+                .verify();
+    }
+
+    @Test
+    public void controller_connectToParent_customized_exception_should_return_status_400() {
+
+        StepVerifier
+                .create(crudHypermediaController.connectToParent(
+                        Mono.error(new ArithmeticException()),
+                        e -> {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "error");
+                        }))
+                .expectErrorMessage("400 BAD_REQUEST \"error\"")
                 .verify();
     }
 

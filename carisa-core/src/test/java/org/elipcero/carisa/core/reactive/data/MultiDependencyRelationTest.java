@@ -85,6 +85,22 @@ public class MultiDependencyRelationTest {
     }
 
     @Test
+    public void existsById_should_return_true() {
+
+        RelationEntity relationEntity = getRelationEntity();
+
+        Mockito.when(this.relationRepository.existsById(relationEntity.getMapId())).thenReturn(Mono.just(true));
+
+        StepVerifier
+                .create(multiplyDependencyRelation.existsById(new HashMap<>(relationEntity.getMapId())))
+                .expectNextMatches(result -> {
+                    assertThat(result).isTrue();
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
     public void updateOrCreate_should_return_EntyDataState() {
 
         RelationEntity relationEntity = getRelationEntity();

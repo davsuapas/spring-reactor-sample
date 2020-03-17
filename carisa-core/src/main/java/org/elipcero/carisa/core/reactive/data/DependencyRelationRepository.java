@@ -2,6 +2,7 @@ package org.elipcero.carisa.core.reactive.data;
 
 import org.elipcero.carisa.core.data.Relation;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -15,4 +16,12 @@ public interface DependencyRelationRepository<TRelation extends Relation, ID>
      * @return dependency relations of the parent
      */
     Flux<TRelation> findAllByParentId(UUID parentId);
+
+    /**
+     * Find the first child by parent
+     *
+     * @param parentId The parent id to find
+     * @return dependency relations of the parent
+     */
+    Mono<TRelation> findFirstByParentId(UUID parentId);
 }

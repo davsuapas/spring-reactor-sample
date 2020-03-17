@@ -19,11 +19,13 @@ package org.elipcero.carisa.administration.controller;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.administration.exception.NotMatchingTypeException;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,8 +35,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
@@ -124,24 +128,59 @@ public class EnteCategoryPropertyController {
     }
 
     /**
-     * Connect the Ente to Ente category property
+     * Connect the Ente to Ente category property as inheritance.
      * @param enteCategoryId the Ente category identifier
      * @param categoryPropertyId the Ente category property identifier
-     * @param enteId the Ente identifier connected
-     * @param entePropertyId the Ente property identifier
+     * @param enteId the connected Ente identifier
+     * @param entePropertyId the connected Ente property identifier
+     * @return
+     */
+    @PutMapping("/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
+            "/connectente/{enteId}/properties/{entePropertyId}")
+    public Publisher<ResponseEntity<EntityModel<EnteCategoryProperty>>> connectToEnte(
+            final @PathVariable("enteCategoryId") String enteCategoryId,
+            final @PathVariable("categoryPropertyId") String categoryPropertyId,
+            final @PathVariable("enteId") String enteId,
+            final @PathVariable("entePropertyId") String entePropertyId) {
+
+        return this.crudHypermediaController
+                .connectToParent(this.enteCategoryPropertyService
+                        .connectToEnte(
+                                UUID.fromString(enteCategoryId), UUID.fromString(categoryPropertyId),
+                                UUID.fromString(enteId), UUID.fromString(entePropertyId)),
+                        tryThrowConflictException());
+    }
+
+    /**
+     * Connect the Ente category property to Ente category property as inheritance.
+     * @param enteCategoryId the Ente category identifier
+     * @param categoryPropertyId the Ente category property identifier
+     * @param enteLinkedCategoryId the connected Ente category identifier
+     * @param linkedCategoryPropertyId the connected Ente category property identifier
      * @return
      */
     @PutMapping("/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
             "/connectente/{enteId}/properties/{entePropertyId}")
     public Publisher<ResponseEntity<EntityModel<EnteCategoryProperty>>> connectToCategoryProperty(
-            @PathVariable("enteCategoryId") String enteCategoryId,
-            @PathVariable("categoryPropertyId") String categoryPropertyId, @PathVariable("enteId") String enteId,
-            @PathVariable("entePropertyId") String entePropertyId) {
+            final @PathVariable("enteCategoryId") String enteCategoryId,
+            final @PathVariable("categoryPropertyId") String categoryPropertyId,
+            final @PathVariable("enteLinkedCategoryId") String enteLinkedCategoryId,
+            final @PathVariable("linkedCategoryPropertyId") String linkedCategoryPropertyId) {
 
         return this.crudHypermediaController
                 .connectToParent(this.enteCategoryPropertyService
-                        .connectEnte(
-                                UUID.fromString(enteCategoryId), UUID.fromString(categoryPropertyId),
-                                UUID.fromString(enteId), UUID.fromString(entePropertyId)));
+                                .connectToCategoryProperty(
+                                        UUID.fromString(enteCategoryId), UUID.fromString(categoryPropertyId),
+                                        UUID.fromString(enteLinkedCategoryId),
+                                        UUID.fromString(linkedCategoryPropertyId)),
+                        tryThrowConflictException());
+    }
+
+    private static Consumer<Throwable> tryThrowConflictException() {
+        return e -> {
+            if (e instanceof NotMatchingTypeException) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+            }
+        };
     }
 }
