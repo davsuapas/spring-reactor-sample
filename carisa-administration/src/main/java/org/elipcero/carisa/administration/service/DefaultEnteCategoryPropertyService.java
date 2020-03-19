@@ -56,7 +56,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
     private final MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation;
 
     @NonNull
-    private final EntePropertyService entePropertyService;
+    private final EmbeddedDependencyRelation<EnteProperty> entePropertyRelation;
 
     /**
      * @see EnteCategoryPropertyService
@@ -78,12 +78,17 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
      * @see EnteCategoryPropertyService
      */
     @Override
-    public Mono<EntityDataState<EnteCategoryProperty>> updateOrCreate(final EnteCategoryProperty enteCategoryProperty) {
+    public Mono<EntityDataState<EnteCategoryProperty>> updateOrCreate(
+            final EnteCategoryProperty enteCategoryProperty,
+            final boolean updateType) {
 
         return this.enteCategoryPropertyRelation
                 .updateOrCreate(enteCategoryProperty,
                         enteCategoryPropertyForUpdating -> {
                             enteCategoryPropertyForUpdating.setName(enteCategoryProperty.getName());
+                            if (updateType) {
+                                enteCategoryPropertyForUpdating.setType(enteCategoryProperty.getType());
+                            }
                         },
                         this.create(enteCategoryProperty));
     }
@@ -106,8 +111,8 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
         return enteHierarchyRelation.existsById(EnteHierarchy.GetMapId(enteCategoryId, enteId)) // Look at children
                 .flatMap(exists -> {
                     if (exists) { // Only properties of the children of the actual catalog can be referenced
-                        return this.entePropertyService.getById(EnteProperty.GetMapId(enteId, entePropertyId))
-                                .map(setCategoryPropertyType(enteCategoryId, categoryPropertyId, entePropertyId))
+                        return this.entePropertyRelation.getById(EnteProperty.GetMapId(enteId, entePropertyId))
+                                .flatMap(setCategoryPropertyType(enteCategoryId, categoryPropertyId, entePropertyId))
                                 .flatMap(enteProp -> this.linkEnteRelation.connectTo(
                                         EnteCategoryLinkProperty.builder()
                                                 .parentCategoryId(enteCategoryId)
@@ -118,7 +123,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                                              .build(),
                                         rel -> Mono.just(enteProp)))
                                 .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
-                                        String.format("The ente property Id: '%s' not found", enteId))));
+                                        String.format("The ente property identifier: '%s' not found", enteId))));
                     }
                     else {
                         return monoErrorIncorrectReferenceToConnect(enteCategoryId);
@@ -140,7 +145,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                     if (exists) { // Only properties of the children of the actual catalog can be referenced
                         return this.getById(EnteCategoryProperty.GetMapId(
                                     enteLinkedCategoryId, linkedCategoryPropertyId))
-                                .map(setCategoryPropertyType(
+                                .flatMap(this.setCategoryPropertyType(
                                         enteCategoryId, categoryPropertyId, linkedCategoryPropertyId))
                                 .flatMap(categoryProp -> this.linkEnteRelation.connectTo(
                                         EnteCategoryLinkProperty.builder()
@@ -169,20 +174,22 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
 
         return enteProp -> this.getById(EnteCategoryProperty.GetMapId(enteCategoryId, categoryPropertyId))
             .flatMap(categoryProp -> {
-                if (enteProp.getType() == EnteProperty.Type.None) {
+                if (categoryProp.getType() == EnteProperty.Type.None) {
                     categoryProp.setType(enteProp.getType());
-                    return this.updateOrCreate(categoryProp).map(__ -> enteProp);
+                    return this.updateOrCreate(categoryProp, true).map(__ -> enteProp);
                 }
                 else {
                     if (enteProp.getType() != categoryProp.getType()) {
-                        return Mono.error(new NotMatchingTypeException(
+                        throw new NotMatchingTypeException(
                                 String.format(
                                  "The type of linked ente property: '{0}' must be: '{1}'",
-                                        linkedPropertyId, categoryProp.getType())));
+                                        linkedPropertyId, categoryProp.getType()));
                     }
                     return Mono.just(enteProp);
                 }
-            });
+            })
+            .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
+                     String.format("The category property identifier: '%s' not found", categoryPropertyId))));
     }
 
     private static Mono<? extends MultiplyDependencyConnectionInfo<EnteCategoryProperty, Mono<PropertyType>>>

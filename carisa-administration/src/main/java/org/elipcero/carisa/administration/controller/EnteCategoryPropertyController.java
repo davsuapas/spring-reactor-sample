@@ -93,7 +93,7 @@ public class EnteCategoryPropertyController {
 
         return this.crudHypermediaController.get(
                 this.enteCategoryPropertyService
-                        .getById(EnteProperty.GetMapId(UUID.fromString(enteCategoryId), UUID.fromString(propertyId))));
+                        .getById(EnteCategoryProperty.GetMapId(UUID.fromString(enteCategoryId), UUID.fromString(propertyId))));
     }
 
     /**
@@ -104,6 +104,8 @@ public class EnteCategoryPropertyController {
     @PostMapping("/entecategoryproperties")
     public Publisher<ResponseEntity<EntityModel<EnteCategoryProperty>>> create(
             final @RequestBody EnteCategoryProperty enteCategoryProperty) {
+
+        enteCategoryProperty.setType(EnteProperty.Type.None); // Only is updated from connect
         return this.crudHypermediaController.create(this.enteCategoryPropertyService.create(enteCategoryProperty));
     }
 
@@ -122,9 +124,10 @@ public class EnteCategoryPropertyController {
 
         enteCategoryProperty.setParentId(UUID.fromString(enteCategoryId));
         enteCategoryProperty.setId(UUID.fromString(propertyId));
+        enteCategoryProperty.setType(EnteProperty.Type.None); // Only is updated from connect
 
         return this.crudHypermediaController.updateOrCreate(
-                this.enteCategoryPropertyService.updateOrCreate(enteCategoryProperty));
+                this.enteCategoryPropertyService.updateOrCreate(enteCategoryProperty, false));
     }
 
     /**
@@ -160,7 +163,7 @@ public class EnteCategoryPropertyController {
      * @return
      */
     @PutMapping("/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
-            "/connectente/{enteId}/properties/{entePropertyId}")
+            "/connectpropertycategory/{enteId}/properties/{entePropertyId}")
     public Publisher<ResponseEntity<EntityModel<EnteCategoryProperty>>> connectToCategoryProperty(
             final @PathVariable("enteCategoryId") String enteCategoryId,
             final @PathVariable("categoryPropertyId") String categoryPropertyId,

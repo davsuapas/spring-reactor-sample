@@ -44,7 +44,7 @@ public class DependencyRelationInstanceSpaceIdentifierConvert
     }
 
     @Override
-    public UUID convertForParent(final InstanceSpace instanceSpace) {
+    public UUID convertToParent(final InstanceSpace instanceSpace) {
         return instanceSpace.getParentId();
     }
 }

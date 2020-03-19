@@ -50,7 +50,7 @@ public class EnteCategoryLinkProperty implements Relation {
     private UUID parentCategoryId;
     private UUID parentLinkId; // Identify the parent of link
 
-    private boolean category;
+    private boolean category; // true -> Is a category ; false -> Is a ente
 
     @Builder
     public EnteCategoryLinkProperty(

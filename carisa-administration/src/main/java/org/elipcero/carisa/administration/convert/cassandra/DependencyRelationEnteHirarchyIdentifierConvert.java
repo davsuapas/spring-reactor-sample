@@ -44,7 +44,7 @@ public class DependencyRelationEnteHirarchyIdentifierConvert
     }
 
     @Override
-    public UUID convertForParent(final EnteHierarchy enteHierarchy) {
+    public UUID convertToParent(final EnteHierarchy enteHierarchy) {
         return enteHierarchy.getParentId();
     }
 }

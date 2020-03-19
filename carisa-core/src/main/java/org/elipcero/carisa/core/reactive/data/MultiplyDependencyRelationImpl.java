@@ -90,16 +90,17 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
             TRelation relation, Function<TRelation, Mono<TOChild>> overwriteFindChild) {
 
         return this.parentRepository
-                .findById((TParentID)relation.getParentId())
+                .findById(this.convertRelationId.convertToParentFromObject(relation.getParentId()))
                 .flatMap(parent ->
                     overwriteFindChild.apply(relation)
                             .flatMap(child ->
                                 this.relationRepository.existsById(this.convertRelationId.convert(relation))
-                                        .map(existsRelation -> {
+                                        .flatMap(existsRelation -> {
                                             if (!existsRelation) {
-                                                this.relationRepository.save(relation);
+                                                return this.relationRepository.save(relation)
+                                                     .map(__ -> new MultiplyDependencyConnectionInfo<>(parent, child));
                                             }
-                                            return new MultiplyDependencyConnectionInfo<>(parent, child);
+                                            return Mono.just(new MultiplyDependencyConnectionInfo<>(parent, child));
                                         }))
                             .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
                                     String.format("The ChildId: '%s' not found", relation.getChildId()))))

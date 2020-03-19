@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS carisa_ente_category_property_link
+CREATE TABLE IF NOT EXISTS carisa_ente_category_property_link (parentId UUID, linkId UUID, parentCategoryId UUID, parentLinkId UUID, category boolean, PRIMARY KEY (parentId, linkId))

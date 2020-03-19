@@ -43,7 +43,7 @@ public class DependencyRelationSpaceEnteIdentifierConvert
     }
 
     @Override
-    public UUID convertForParent(final SpaceEnte spaceEnte) {
+    public UUID convertToParent(final SpaceEnte spaceEnte) {
         return spaceEnte.getParentId();
     }
 }

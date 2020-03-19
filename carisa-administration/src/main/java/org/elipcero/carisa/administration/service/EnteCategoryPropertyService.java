@@ -49,9 +49,12 @@ public interface EnteCategoryPropertyService {
      * Update or create the Ente category property. If the id exits is updated
      * otherwise is created. The EnteCategoryPropertyId can not be updated. To create @see create
      * @param enteCategoryProperty Ente category property for updating or creating
+     * @param updateType allow update type
      * @return Ente category property created or updated
      */
-    Mono<EntityDataState<EnteCategoryProperty>> updateOrCreate(final EnteCategoryProperty enteCategoryProperty);
+    Mono<EntityDataState<EnteCategoryProperty>> updateOrCreate(
+            final EnteCategoryProperty enteCategoryProperty,
+            final boolean updateType);
 
     /**
      * Getting properties by category

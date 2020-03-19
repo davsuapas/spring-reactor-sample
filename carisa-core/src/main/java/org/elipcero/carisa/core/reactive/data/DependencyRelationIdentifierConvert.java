@@ -31,5 +31,15 @@ public interface DependencyRelationIdentifierConvert<TRelation, TRelationID, TPa
      * @param relation
      * @return parent identifier
      */
-    TParentID convertForParent(final TRelation relation);
+    TParentID convertToParent(final TRelation relation);
+
+    /**
+     * Convert the foreign key of relation from object to parent platform identifier
+     *
+     * @param id the generic identifier
+     * @return parent identifier
+     */
+    default TParentID convertToParentFromObject(final Object id) {
+        return (TParentID)id;
+    }
 }

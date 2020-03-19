@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.administration.domain;
 
+import com.datastax.driver.core.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Builder;
@@ -24,6 +25,7 @@ import lombok.Setter;
 import org.elipcero.carisa.core.data.EntityInitializer;
 import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -52,6 +54,8 @@ public class EnteCategoryProperty implements Relation, EntityInitializer<EnteCat
     private UUID id;
 
     private String name;
+
+    @CassandraType(type = DataType.Name.INT)
     private EnteProperty.Type type;
 
     @Builder

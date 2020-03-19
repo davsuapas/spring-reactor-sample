@@ -44,7 +44,12 @@ public class DependencyRelationEnteCategoryPropertyLinkIdentifierConvert
     }
 
     @Override
-    public MapId convertForParent(final EnteCategoryLinkProperty enteCategoryLinkProperty) {
+    public MapId convertToParent(final EnteCategoryLinkProperty enteCategoryLinkProperty) {
         return this.convertFromDictionary(enteCategoryLinkProperty.getParentId());
+    }
+
+    @Override
+    public MapId convertToParentFromObject(final Object id) {
+        return this.convertFromDictionary((Map<String, Object>)id);
     }
 }

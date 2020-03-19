@@ -17,7 +17,6 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Instance;
-import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Flux;
@@ -68,11 +67,4 @@ public interface InstanceService {
      * @return instance deployed
      */
     Mono<Instance> deploy(final UUID id);
-
-    /**
-     * Adding space into instance
-     * @param space the space
-     * @return the space added
-     */
-    Mono<Space> AddSpaceIntoInstance(Space space);
 }

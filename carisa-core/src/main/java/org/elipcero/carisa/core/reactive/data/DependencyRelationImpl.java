@@ -52,7 +52,7 @@ public abstract class DependencyRelationImpl<TParent, TRelation extends Relation
      * @return the create relation
      */
     protected Mono<TRelation> createBasic(final TRelation relationEntity) {
-        return this.parentRepository.findById(this.convertRelationId.convertForParent(relationEntity))
+        return this.parentRepository.findById(this.convertRelationId.convertToParent(relationEntity))
                 .flatMap(__ -> relationRepository.save(relationEntity))
                 .switchIfEmpty(Mono.error(new DependencyRelationParentNotFoundException(
                         String.format("The ParentId: '%s' not found", relationEntity.getParentId()))));

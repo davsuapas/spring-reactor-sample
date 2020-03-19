@@ -16,7 +16,6 @@
 
 package org.elipcero.carisa.administration.service;
 
-import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
@@ -69,11 +68,4 @@ public interface SpaceService {
      * @return the ente category view
      */
     Flux<ParentChildName> getEnteCategoriesBySpace(final UUID spaceId);
-
-    /**
-     * Adding Ente into space
-     * @param ente the Ente
-     * @return The Ente added
-     */
-    Mono<Ente> AddEnteIntoSpace(Ente ente);
 }

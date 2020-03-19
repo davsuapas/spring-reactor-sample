@@ -110,7 +110,8 @@ public class HorizontalServiceConfiguration {
 
     @Bean
     public SpaceService spaceService() {
-        return new DefaultSpaceService(spaceRepository, spaceEnteRelation, enteCategoryService(), instanceService());
+        return new DefaultSpaceService(
+                spaceRepository, spaceEnteRelation, enteCategoryHirarchyRelation, instanceSpaceRelation);
     }
 
     // Ente configuration
@@ -121,7 +122,7 @@ public class HorizontalServiceConfiguration {
     @Bean
     public EnteService enteService() {
         return new DefaultEnteService(
-                enteRepository, enteHierarchyRelation, entePropertyService(), spaceService());
+                enteRepository, enteHierarchyRelation, entePropertyRelation, spaceEnteRelation);
     }
 
     // Ente property configuration
@@ -140,7 +141,7 @@ public class HorizontalServiceConfiguration {
     public EnteCategoryService enteCategoryService() {
         return new DefaultEnteCategoryService(
                 enteCategoryRepository, enteCategoryHirarchyRelation,
-                spaceHirarchyRelation, enteService());
+                spaceHirarchyRelation, enteRepository);
     }
 
     // Ente Category property configuration
@@ -148,6 +149,6 @@ public class HorizontalServiceConfiguration {
     @Bean
     public EnteCategoryPropertyService enteCategoryPropertyService() {
         return new DefaultEnteCategoryPropertyService(
-                enteCategoryPropertyRelation, linkEnteRelation, enteHierarchyRelation, entePropertyService());
+                enteCategoryPropertyRelation, linkEnteRelation, enteHierarchyRelation, entePropertyRelation);
     }
 }

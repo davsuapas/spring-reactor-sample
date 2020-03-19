@@ -21,11 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @see EntePropertyService
@@ -66,13 +64,5 @@ public class DefaultEntePropertyService implements EntePropertyService {
                             entePropertyForUpdating.setType(enteProperty.getType());
                         },
                         this.create(enteProperty));
-    }
-
-    /**
-     * @see EntePropertyService
-     */
-    @Override
-    public Flux<EnteProperty> getEntePropertiesByEnteId(UUID enteId) {
-        return this.entePropertyRelation.getRelationsByParent(enteId);
     }
 }

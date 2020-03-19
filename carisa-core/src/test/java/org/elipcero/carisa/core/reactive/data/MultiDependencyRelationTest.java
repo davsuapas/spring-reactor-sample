@@ -338,7 +338,7 @@ public class MultiDependencyRelationTest {
         }
 
         @Override
-        public UUID convertForParent(RelationEntity relationEntity) {
+        public UUID convertToParent(RelationEntity relationEntity) {
             return relationEntity.getParentId();
         }
     }

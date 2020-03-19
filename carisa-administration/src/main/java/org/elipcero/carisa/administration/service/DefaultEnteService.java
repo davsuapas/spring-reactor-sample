@@ -22,8 +22,12 @@ import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.administration.domain.Space;
+import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
+import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Flux;
@@ -46,10 +50,10 @@ public class DefaultEnteService implements EnteService {
     private final MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation;
 
     @NonNull
-    private final EntePropertyService entePropertyService;
+    private final EmbeddedDependencyRelation<EnteProperty> entePropertyRelation;
 
     @NonNull
-    private final SpaceService spaceService;
+    private final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation;
 
     /**
      * @see EnteService
@@ -64,7 +68,20 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Mono<Ente> create(final Ente ente) {
-        return this.spaceService.AddEnteIntoSpace(ente);
+        return this.spaceEnteRelation.create(
+                new DependencyRelationCreateCommand<Ente, SpaceEnte>() {
+                    @Override
+                    public Ente getChild() {
+                        return ente;
+                    }
+
+                    @Override
+                    public SpaceEnte getRelation() {
+                        return SpaceEnte.builder()
+                                .parentId(ente.getSpaceId())
+                                .enteId(ente.getId()).build();
+                    }
+                });
     }
 
     /**
@@ -83,7 +100,7 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Flux<EnteProperty> getEntePropertiesByEnteId(final UUID enteId) {
-        return this.entePropertyService.getEntePropertiesByEnteId(enteId);
+        return this.entePropertyRelation.getRelationsByParent(enteId);
     }
 
     /**

@@ -43,7 +43,7 @@ public class DependencyRelationEntePropertyIdentifierConvert
     }
 
     @Override
-    public UUID convertForParent(final EnteProperty enteProperty) {
+    public UUID convertToParent(final EnteProperty enteProperty) {
         return enteProperty.getParentId();
     }
 }
