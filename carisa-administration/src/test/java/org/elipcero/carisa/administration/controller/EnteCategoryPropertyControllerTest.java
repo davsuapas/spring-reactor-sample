@@ -55,10 +55,18 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     private static final String CATEGORY_PROPERTY_ID = "b9439ad1-4419-4765-acca-55ce69179c0f";
     // Look at ente-category-controller.cql
     private static final String ENTE_CATEGORY_ID = "83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+
     // Look at ente-controller.cql
     public static final String CONNECT_ENTE_ID = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26";
     // Look at ente-property-controller.cql
     public static final String CONNECT_ENTE_PROPERTY_ID = "c0838415-6ae2-4914-b202-f1b3adbf0353";
+
+    // Look at ente-category-controller.cql
+    public static final String CONNECT_CATEGORY_CATEGORY_ID = "33ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+    public static final String CONNECT_CATEGORY_LINKED_CATEGORY_ID = "23ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
+    // Look at ente-category-property-controller.cql
+    public static final String CONNECT_CATEGORY_CATEGORY_PROP_ID = "f9439ad1-4419-4765-acca-55ce69179c0f";
+    public static final String CONNECT_CATEGORY_LINKED_CATEGORY_PROP_ID = "a9439ad1-4419-4765-acca-55ce69179c0f";
 
     private static boolean beforeOnce;
 
@@ -79,7 +87,8 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
 
         this.testClient
                 .get()
-                .uri("/api/entecategories/{enteCategoryId}/properties/{propertyId}", ENTE_CATEGORY_ID, CATEGORY_PROPERTY_ID)
+                .uri("/api/entecategories/{enteCategoryId}/properties/{propertyId}",
+                        ENTE_CATEGORY_ID, CATEGORY_PROPERTY_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -243,7 +252,7 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     }
 
     @Test
-    public void connect_ente_to_category_property_should_return_categoryProperty_not_found() {
+    public void connect_ente_to_category_property_should_return_category_property_not_found() {
 
         String categoryPropertyId = "e8437ad1-4419-4765-acca-55ce69179c0f";
 
@@ -286,6 +295,72 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
                 .uri("/api/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
                                 "/connectente/{enteId}/properties/{entePropertyId}",
                         ENTE_CATEGORY_ID, CATEGORY_PROPERTY_ID, CONNECT_ENTE_ID, entePropertyId)
+                .contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(createEnteCategoryProperty()), EnteCategoryProperty.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    public void connect_category_prop_to_category_prop_using_put_should_return_linked_entecategoryproperty() {
+
+        this.testClient
+                .put()
+                .uri("/api/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
+                                "/connectpropertycategory/{linkedEnteCategoryId}/properties/{linkedCategoryPropertyId}",
+                        CONNECT_CATEGORY_CATEGORY_ID, CONNECT_CATEGORY_CATEGORY_PROP_ID,
+                        CONNECT_CATEGORY_LINKED_CATEGORY_ID, CONNECT_CATEGORY_LINKED_CATEGORY_PROP_ID)
+                .contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$.id").isEqualTo(CONNECT_CATEGORY_CATEGORY_PROP_ID)
+                    .jsonPath("$.enteCategoryId").isEqualTo(CONNECT_CATEGORY_CATEGORY_ID)
+                    .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
+                    .jsonPath("$.type").isEqualTo(EnteProperty.Type.Integer.toString())
+                    .jsonPath("$._links.category.href").hasJsonPath()
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                .consumeWith(document("entecategoryproperties-connectpropertycategory-put",
+                        commonConnectPathParameters(Arrays.asList(
+                                parameterWithName("linkedEnteCategoryId")
+                                     .description("Connected Ente category identifier (UUID string format)"),
+                                parameterWithName("linkedCategoryPropertyId")
+                                     .description("Connected Ente category property identifier (UUID string format)"))
+                        ),
+                        commonResponseFields()));
+    }
+
+    @Test
+    public void connect_category_prop_to_category_prop_should_return_linked_category_property_not_found() {
+
+        String linkedCategoryPropertyId = "a6637ad1-4419-4765-acca-55ce69179c0f";
+
+        this.testClient
+                .put()
+                .uri("/api/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
+                                "/connectpropertycategory/{linkedEnteCategoryId}/properties/{linkedCategoryPropertyId}",
+                        CONNECT_CATEGORY_CATEGORY_ID, CONNECT_CATEGORY_CATEGORY_PROP_ID,
+                        CONNECT_CATEGORY_LINKED_CATEGORY_ID, linkedCategoryPropertyId)
+                .contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(createEnteCategoryProperty()), EnteCategoryProperty.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    public void connect_category_prop_to_category_prop_should_return_linked_category_not_found_as_child_of_category() {
+
+        String linkedEnteCategoryId = "b7637ad1-4419-4765-acca-55ce69179c0f";
+
+        this.testClient
+                .put()
+                .uri("/api/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
+                                "/connectpropertycategory/{linkedEnteCategoryId}/properties/{linkedCategoryPropertyId}",
+                        CONNECT_CATEGORY_CATEGORY_ID, CONNECT_CATEGORY_CATEGORY_PROP_ID,
+                        linkedEnteCategoryId, CONNECT_CATEGORY_LINKED_CATEGORY_PROP_ID)
                 .contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .body(Mono.just(createEnteCategoryProperty()), EnteCategoryProperty.class)

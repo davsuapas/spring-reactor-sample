@@ -93,7 +93,8 @@ public class EnteCategoryPropertyController {
 
         return this.crudHypermediaController.get(
                 this.enteCategoryPropertyService
-                        .getById(EnteCategoryProperty.GetMapId(UUID.fromString(enteCategoryId), UUID.fromString(propertyId))));
+                        .getById(EnteCategoryProperty.GetMapId(
+                                UUID.fromString(enteCategoryId), UUID.fromString(propertyId))));
     }
 
     /**
@@ -158,23 +159,23 @@ public class EnteCategoryPropertyController {
      * Connect the Ente category property to Ente category property as inheritance.
      * @param enteCategoryId the Ente category identifier
      * @param categoryPropertyId the Ente category property identifier
-     * @param enteLinkedCategoryId the connected Ente category identifier
+     * @param linkedEnteCategoryId the connected Ente category identifier
      * @param linkedCategoryPropertyId the connected Ente category property identifier
      * @return
      */
     @PutMapping("/entecategories/{enteCategoryId}/properties/{categoryPropertyId}" +
-            "/connectpropertycategory/{enteId}/properties/{entePropertyId}")
+            "/connectpropertycategory/{linkedEnteCategoryId}/properties/{linkedCategoryPropertyId}")
     public Publisher<ResponseEntity<EntityModel<EnteCategoryProperty>>> connectToCategoryProperty(
             final @PathVariable("enteCategoryId") String enteCategoryId,
             final @PathVariable("categoryPropertyId") String categoryPropertyId,
-            final @PathVariable("enteLinkedCategoryId") String enteLinkedCategoryId,
+            final @PathVariable("linkedEnteCategoryId") String linkedEnteCategoryId,
             final @PathVariable("linkedCategoryPropertyId") String linkedCategoryPropertyId) {
 
         return this.crudHypermediaController
                 .connectToParent(this.enteCategoryPropertyService
                                 .connectToCategoryProperty(
                                         UUID.fromString(enteCategoryId), UUID.fromString(categoryPropertyId),
-                                        UUID.fromString(enteLinkedCategoryId),
+                                        UUID.fromString(linkedEnteCategoryId),
                                         UUID.fromString(linkedCategoryPropertyId)),
                         tryThrowConflictException());
     }

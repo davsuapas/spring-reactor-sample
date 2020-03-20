@@ -138,20 +138,20 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
     @Override
     public Mono<EnteCategoryProperty> connectToCategoryProperty(
             final UUID enteCategoryId, final UUID categoryPropertyId,
-            final UUID enteLinkedCategoryId, final UUID linkedCategoryPropertyId) {
+            final UUID linkedEnteCategoryId, final UUID linkedCategoryPropertyId) {
 
-        return enteHierarchyRelation.existsById(EnteHierarchy.GetMapId(enteCategoryId, enteLinkedCategoryId))
+        return enteHierarchyRelation.existsById(EnteHierarchy.GetMapId(enteCategoryId, linkedEnteCategoryId))
                 .flatMap(exists -> {
                     if (exists) { // Only properties of the children of the actual catalog can be referenced
                         return this.getById(EnteCategoryProperty.GetMapId(
-                                    enteLinkedCategoryId, linkedCategoryPropertyId))
+                                    linkedEnteCategoryId, linkedCategoryPropertyId))
                                 .flatMap(this.setCategoryPropertyType(
                                         enteCategoryId, categoryPropertyId, linkedCategoryPropertyId))
                                 .flatMap(categoryProp -> this.linkEnteRelation.connectTo(
                                         EnteCategoryLinkProperty.builder()
                                                 .parentCategoryId(enteCategoryId)
                                                 .parentId(categoryPropertyId)
-                                                .parentLinkId(enteLinkedCategoryId)
+                                                .parentLinkId(linkedEnteCategoryId)
                                                 .linkId(linkedCategoryPropertyId)
                                                 .category(true)
                                              .build(),
