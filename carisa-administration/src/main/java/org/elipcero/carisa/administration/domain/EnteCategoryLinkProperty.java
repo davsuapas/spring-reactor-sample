@@ -30,7 +30,7 @@ import java.util.UUID;
 /**
  * The category properties links with Ente properties or category properties. Each category properties can have
  * more than one link. Each one can link with properties of the down level in her hierarchy. All links have to be
- * of the same property type (string, boolean)
+ * of the same property type (string, boolean). In this way, we get properties inheritance
  *
  * @author David Suárez
  */
@@ -45,7 +45,7 @@ public class EnteCategoryLinkProperty implements Relation {
     private UUID parentId; // Ente category property identifier
 
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    private UUID linkId; // Ente category or Ente identifier
+    private UUID linkId; // Ente category property or Ente property identifier
 
     private UUID parentCategoryId;
     private UUID parentLinkId; // Identify the parent of link

@@ -21,10 +21,13 @@ import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.exception.NotMatchingTypeException;
 import org.elipcero.carisa.administration.general.StringResource;
+import org.elipcero.carisa.administration.projection.ChildName;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -36,6 +39,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -129,6 +134,47 @@ public class EnteCategoryPropertyController {
 
         return this.crudHypermediaController.updateOrCreate(
                 this.enteCategoryPropertyService.updateOrCreate(enteCategoryProperty, false));
+    }
+
+    /**
+     * Get children (Ente category property or Ente property)
+     * @param enteCategoryId  the Ente category identifier
+     * @param propertyId the ente category property identifier
+     * @return Children collections with links
+     */
+    @GetMapping("/entecategories/{enteCategoryId}/properties/{propertyId}/children")
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getChildren(
+            final @PathVariable("enteCategoryId") String enteCategoryId,
+            final @PathVariable("propertyId") String propertyId) {
+
+        return this.enteCategoryPropertyService.getChildren(UUID.fromString(propertyId))
+                .flatMap(child -> {
+                    WebFluxLinkBuilder.WebFluxLink link;
+                    if (child.isCategory()) { // Category property
+                        link = linkTo(
+                                methodOn(EnteCategoryPropertyController.class)
+                                        .getById(child.getParentId().toString(), child.getChildId().toString()))
+                                .withRel(EnteCategoryPropertyModelAssembler.PROPERTY_REL_NAME);
+                    }
+                    else { // Ente property
+                        link = linkTo(
+                                methodOn(EntePropertyController.class)
+                                        .getById(child.getParentId().toString(), child.getChildId().toString()))
+                                .withRel(EntePropertyModelAssembler.PROPERTY_REL_NAME);
+                    }
+                    return Flux.concat(link.toMono())
+                            .map(links -> new EntityModel<>(ChildName
+                                    .builder()
+                                        .id(child.getChildId())
+                                        .name(child.getChildName())
+                                    .build(), links));
+                })
+                .collectList()
+                .flatMap(entities ->
+                        linkTo(
+                                methodOn(EnteCategoryPropertyController.class).getById(enteCategoryId, propertyId))
+                                .withRel(EnteCategoryPropertyModelAssembler.PROPERTY_REL_NAME).toMono()
+                                .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
     }
 
     /**

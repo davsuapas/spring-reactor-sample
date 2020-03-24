@@ -24,8 +24,10 @@ import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.administration.domain.Named;
 import org.elipcero.carisa.administration.domain.PropertyType;
 import org.elipcero.carisa.administration.exception.NotMatchingTypeException;
+import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationChildNotFoundException;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
@@ -99,6 +101,29 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
     @Override
     public Flux<EnteCategoryProperty> getPropertiesByCategoryId(final UUID enteCategoryId) {
         return this.enteCategoryPropertyRelation.getRelationsByParent(enteCategoryId);
+    }
+
+    /**
+     * @see EnteCategoryPropertyService
+     */
+    @Override
+    public Flux<EnteHierachyName> getChildren(final UUID enteCategoryPropertyId) {
+        return this.linkEnteRelation.getChildrenByParent(
+                enteCategoryPropertyId, relation
+                        -> relation.isCategory() ?
+                        this.enteCategoryPropertyRelation.getById(
+                                EnteCategoryProperty.GetMapId(relation.getParentLinkId(), relation.getLinkId()))
+                                .cast(Named.class) :
+                        this.entePropertyRelation.getById(
+                                EnteProperty.GetMapId(relation.getParentLinkId(), relation.getLinkId()))
+                                .cast(Named.class))
+                .map(child -> EnteHierachyName
+                        .builder()
+                            .parentId(child.getRelation().getParentLinkId())
+                            .childId(child.getRelation().getLinkId())
+                            .childName(child.getChild().getName())
+                            .category(child.getRelation().isCategory())
+                        .build());
     }
 
     /**

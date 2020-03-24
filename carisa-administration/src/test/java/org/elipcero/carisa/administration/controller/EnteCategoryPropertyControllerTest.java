@@ -191,6 +191,44 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     }
 
     @Test
+    public void list_children_from_ente_category_property_should_return_ok_and_properties_entity() {
+
+        String categoryPropertyId = "b8439ad1-4419-4765-acca-55ce69179c0f";
+        String linkedCategoryPropertyId = "d9439ad1-4419-4765-acca-55ce69179c0f";
+        String linkedEntePropertyId = "e0838415-6ae2-4914-b202-f1b3adbf0353";
+        String entePropertyName = "Ente property name";
+
+        this.testClient
+                .get()
+                .uri("/api/entecategories/{enteCategoryId}/properties/{propertyId}/children",
+                        ENTE_CATEGORY_ID, categoryPropertyId)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", linkedCategoryPropertyId)
+                    .isEqualTo(ENTE_PROPERTY_NAME)
+                .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.property.href", linkedCategoryPropertyId)
+                    .hasJsonPath()
+                .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", linkedEntePropertyId)
+                    .isEqualTo(entePropertyName)
+                .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.property.href", linkedEntePropertyId)
+                    .hasJsonPath()
+                .jsonPath("$._embedded.childNameList.length()").isEqualTo(2)
+                .jsonPath("$._links.property.href").hasJsonPath()
+                .consumeWith(document("entecategoryproperties-children-get",
+                        commonPathParameters(),
+                        responseFields(
+                                fieldWithPath("_embedded.childNameList[].id")
+                                    .description("Category property or Ente property identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.childNameList[].name")
+                                    .description("Category property or Ente proerty name"),
+                                subsectionWithPath("_embedded.childNameList[]._links")
+                                    .description("View child name links section"),
+                                subsectionWithPath("_links").description("View links section"))));
+    }
+
+    @Test
     public void connect_ente_to_category_property_using_put_should_return_linked_entecategoryproperty() {
 
         this.testClient

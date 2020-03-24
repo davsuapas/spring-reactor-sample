@@ -22,13 +22,13 @@ import lombok.Getter;
 import java.util.UUID;
 
 /**
- * Ente category child projection
+ * Child projection
  *
  * @author David Suárez
  */
 @Builder
 @Getter
-public class EnteCategoryChildName {
+public class ChildName {
     private UUID id;
     private String name;
 }

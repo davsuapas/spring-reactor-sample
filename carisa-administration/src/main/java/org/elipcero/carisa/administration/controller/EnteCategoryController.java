@@ -18,7 +18,7 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.projection.EnteCategoryChildName;
+import org.elipcero.carisa.administration.projection.ChildName;
 import org.elipcero.carisa.administration.projection.EnteCategoryPropertyName;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.EnteCategoryService;
@@ -139,7 +139,7 @@ public class EnteCategoryController {
      * @return Children collections with links
      */
     @GetMapping("/{id}/children")
-    public Publisher<CollectionModel<EntityModel<EnteCategoryChildName>>> getChildren(
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getChildren(
             final @PathVariable("id") String id) {
 
         return this.enteCategoryService.getChildren(UUID.fromString(id))
@@ -158,7 +158,7 @@ public class EnteCategoryController {
                                     .withRel(EnteModelAssembler.ENTE_REL_NAME);
                         }
                         return Flux.concat(link.toMono())
-                                .map(links -> new EntityModel<>(EnteCategoryChildName
+                                .map(links -> new EntityModel<>(ChildName
                                         .builder()
                                             .id(child.getChildId())
                                             .name(child.getChildName())

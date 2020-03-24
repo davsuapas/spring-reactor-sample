@@ -18,7 +18,7 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.projection.EnteCategoryChildName;
+import org.elipcero.carisa.administration.projection.ChildName;
 import org.elipcero.carisa.administration.projection.EnteName;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
@@ -143,7 +143,7 @@ public class SpaceController {
      * @return Ente category collections with links
      */
     @GetMapping("/{id}/entecategories")
-    public Publisher<CollectionModel<EntityModel<EnteCategoryChildName>>> getEnteCategories(
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getEnteCategories(
             final @PathVariable("id") String id) {
 
         return this.spaceService.getEnteCategoriesBySpace(UUID.fromString(id))
@@ -153,7 +153,7 @@ public class SpaceController {
                                         methodOn(EnteCategoryController.class)
                                                 .getById(spaceEnteCategory.getChildId().toString()))
                                         .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME).toMono())
-                                .map(links -> new EntityModel<>(EnteCategoryChildName
+                                .map(links -> new EntityModel<>(ChildName
                                         .builder()
                                             .id(spaceEnteCategory.getChildId())
                                             .name(spaceEnteCategory.getName())

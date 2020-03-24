@@ -249,21 +249,21 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')].name", ENTECATEGORY_ID)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", ENTECATEGORY_ID)
                         .isEqualTo(ENTECATEGORY_NAME)
-                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')]._links.category.href",
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.category.href",
                             ENTECATEGORY_ID).hasJsonPath()
-                    .jsonPath("$._embedded.enteCategoryChildNameList.length()").isEqualTo(1)
+                    .jsonPath("$._embedded.childNameList.length()").isEqualTo(1)
                     .jsonPath("$._links.space.href").hasJsonPath()
                 .consumeWith(document("space-enteCategories-get",
                         spaceLink(),
                         commonPathParamters(),
                         responseFields(
-                                fieldWithPath("_embedded.enteCategoryChildNameList[].id")
+                                fieldWithPath("_embedded.childNameList[].id")
                                         .description("Ente category identifier. (UUID string format)"),
-                                fieldWithPath("_embedded.enteCategoryChildNameList[].name")
+                                fieldWithPath("_embedded.childNameList[].name")
                                         .description("Ente category name"),
-                                fieldWithPath("_embedded.enteCategoryChildNameList[]._links.category.href")
+                                fieldWithPath("_embedded.childNameList[]._links.category.href")
                                         .description("Ente category information"),
                                 subsectionWithPath("_links").description("View links section"))));
     }

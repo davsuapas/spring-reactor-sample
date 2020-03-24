@@ -17,6 +17,7 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
+import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -88,4 +89,11 @@ public interface EnteCategoryPropertyService {
      */
     Mono<EnteCategoryProperty> connectToCategoryProperty(UUID enteCategoryId, UUID categoryPropertyId,
                                                          UUID enteLinkedCategoryId, UUID linkedCategoryPropertyId);
+
+    /**
+     * Get the linked children (Ente property or Ente category property)
+     * @param enteCategoryPropertyId the category property identifier
+     * @return the children
+     */
+    Flux<EnteHierachyName> getChildren(final UUID enteCategoryPropertyId);
 }

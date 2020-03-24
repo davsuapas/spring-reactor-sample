@@ -1,2 +1,4 @@
 DROP TABLE IF EXISTS carisa_ente_category_property_link
 CREATE TABLE IF NOT EXISTS carisa_ente_category_property_link (parentId UUID, linkId UUID, parentCategoryId UUID, parentLinkId UUID, category boolean, PRIMARY KEY (parentId, linkId))
+INSERT into carisa_ente_category_property_link(parentId, linkId, parentCategoryId, parentLinkId, category) values (b8439ad1-4419-4765-acca-55ce69179c0f, d9439ad1-4419-4765-acca-55ce69179c0f, 83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676, 83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676, true)
+INSERT into carisa_ente_category_property_link(parentId, linkId, parentCategoryId, parentLinkId, category) values (b8439ad1-4419-4765-acca-55ce69179c0f, e0838415-6ae2-4914-b202-f1b3adbf0353, 83ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676, 7acdac69-fdf8-45e5-a189-2b2b4beb1c26, false)

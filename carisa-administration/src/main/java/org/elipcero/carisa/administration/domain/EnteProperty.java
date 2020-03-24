@@ -41,7 +41,7 @@ import java.util.UUID;
 @Table("carisa_ente_property")
 @Getter
 @Setter
-public class EnteProperty implements Relation, EntityInitializer<EnteProperty>, PropertyType {
+public class EnteProperty implements Relation, EntityInitializer<EnteProperty>, PropertyType, Named {
 
     public static String ENTEID_COLUMN_NAME = "parentId";
     public static String ID_COLUMN_NAME = "id";

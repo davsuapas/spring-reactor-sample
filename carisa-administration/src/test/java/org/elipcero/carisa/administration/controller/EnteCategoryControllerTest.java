@@ -220,7 +220,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_children_from_entecategory_should_return_ok_and_entes_entity() {
+    public void list_children_from_ente_category_should_return_ok_and_entes_entity() {
 
         String categoryId = "53ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
         String enteId = "7acdac69-fdf8-45e5-a189-2b2b4beb1c26";
@@ -233,32 +233,29 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')].name", categoryId)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", categoryId)
                         .isEqualTo(ENTECATEGORY_NAME)
-                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')]._links.category.href", categoryId)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.category.href", categoryId)
                         .hasJsonPath()
-                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')].name", enteId)
-                        .isEqualTo(enteName)
-                    .jsonPath("$._embedded.enteCategoryChildNameList[?(@.id=='%s')]._links.ente.href", enteId)
-                .hasJsonPath()
-
-                    .jsonPath("$._embedded.enteCategoryChildNameList.length()").isEqualTo(2)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", enteId).isEqualTo(enteName)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.ente.href", enteId).hasJsonPath()
+                    .jsonPath("$._embedded.childNameList.length()").isEqualTo(2)
                     .jsonPath("$._links.category.href").hasJsonPath()
                 .consumeWith(document("entecategory-children-get",
                         categoryLink(),
                         commonPathParameters(),
                         responseFields(
-                                fieldWithPath("_embedded.enteCategoryChildNameList[].id")
+                                fieldWithPath("_embedded.childNameList[].id")
                                         .description("Category or Ente identifier. (UUID string format)"),
-                                fieldWithPath("_embedded.enteCategoryChildNameList[].name")
+                                fieldWithPath("_embedded.childNameList[].name")
                                         .description("Category or Ente name"),
-                                subsectionWithPath("_embedded.enteCategoryChildNameList[]._links")
+                                subsectionWithPath("_embedded.childNameList[]._links")
                                         .description("View child name links section"),
                                 subsectionWithPath("_links").description("View links section"))));
     }
 
     @Test
-    public void find_properties_from_entecategory_should_return_ok_and_properties_entity() {
+    public void find_properties_from_ente_category_should_return_ok_and_properties_entity() {
 
         this.testClient
             .get()
