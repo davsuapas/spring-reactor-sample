@@ -99,6 +99,8 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.None.toString())
                     .jsonPath("$._links.category.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.connectente.href").hasJsonPath()
+                    .jsonPath("$._links.connectpropertycategory.href").hasJsonPath()
                 .consumeWith(document("entecategoryproperties-get",
                         commonPathParameters(),
                         commonResponseFields()));
@@ -120,6 +122,8 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.None.toString())
                     .jsonPath("$._links.category.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.connectente.href").hasJsonPath()
+                    .jsonPath("$._links.connectpropertycategory.href").hasJsonPath()
                 .consumeWith(document("entecategoryproperties-post",
                         commonRequestFields(
                            Arrays.asList(
@@ -148,6 +152,8 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$._links.category.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.connectente.href").hasJsonPath()
+                    .jsonPath("$._links.connectpropertycategory.href").hasJsonPath()
                 .consumeWith(document("entecategoryproperties-put",
                         commonPathParameters(),
                         commonRequestFields(Arrays.asList(fieldWithPath("enteCategoryId").ignored())),
@@ -179,7 +185,9 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.None.toString())
                     .jsonPath("$._links.category.href").hasJsonPath()
-                    .jsonPath("$._links.self.href").hasJsonPath();
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.connectente.href").hasJsonPath()
+                    .jsonPath("$._links.connectpropertycategory.href").hasJsonPath();
     }
 
     @Test
@@ -201,6 +209,8 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.Integer.toString())
                     .jsonPath("$._links.category.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.connectente.href").hasJsonPath()
+                    .jsonPath("$._links.connectpropertycategory.href").hasJsonPath()
                 .consumeWith(document("entecategoryproperties-connectoente-put",
                         commonConnectPathParameters(Arrays.asList(
                                 parameterWithName("enteId")
@@ -231,7 +241,9 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.name").isEqualTo(ENTE_PROPERTY_NAME)
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.Integer.toString())
                     .jsonPath("$._links.category.href").hasJsonPath()
-                    .jsonPath("$._links.self.href").hasJsonPath();
+                    .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.connectente.href").hasJsonPath()
+                    .jsonPath("$._links.connectpropertycategory.href").hasJsonPath();
     }
 
     @Test
@@ -322,6 +334,8 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.type").isEqualTo(EnteProperty.Type.Integer.toString())
                     .jsonPath("$._links.category.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
+                    .jsonPath("$._links.connectente.href").hasJsonPath()
+                    .jsonPath("$._links.connectpropertycategory.href").hasJsonPath()
                 .consumeWith(document("entecategoryproperties-connectpropertycategory-put",
                         commonConnectPathParameters(Arrays.asList(
                                 parameterWithName("linkedEnteCategoryId")

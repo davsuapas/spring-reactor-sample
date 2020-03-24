@@ -58,6 +58,17 @@ public class EnteCategoryPropertyModelAssembler
                 methodOn(EnteCategoryController.class).getById(enteCategoryProperty.getParentId().toString()))
                 .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME);
 
-        return Flux.concat(self.toMono(), enteCategories.toMono());
+        WebFluxLinkBuilder.WebFluxLink connectEnte  = linkTo(
+                methodOn(EnteCategoryPropertyController.class).connectToEnte(
+                        enteCategoryProperty.getId().toString(), null, null, null))
+                .withRel("connectente");
+
+        WebFluxLinkBuilder.WebFluxLink connectCategoryProperty  = linkTo(
+                methodOn(EnteCategoryPropertyController.class).connectToEnte(
+                        enteCategoryProperty.getId().toString(), null, null, null))
+                .withRel("connectpropertycategory");
+
+        return Flux.concat(self.toMono(), enteCategories.toMono(),
+                connectEnte.toMono(), connectCategoryProperty.toMono());
     }
 }
