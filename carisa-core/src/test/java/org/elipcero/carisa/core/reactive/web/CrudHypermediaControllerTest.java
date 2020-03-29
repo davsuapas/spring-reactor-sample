@@ -16,12 +16,16 @@
 
 package org.elipcero.carisa.core.reactive.web;
 
+import org.elipcero.carisa.core.data.ChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.ParentChildName;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationChildNotFoundException;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationParentNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.reactivestreams.Publisher;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -30,6 +34,9 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -184,6 +191,78 @@ public class CrudHypermediaControllerTest {
                         }))
                 .expectErrorMessage("400 BAD_REQUEST \"error\"")
                 .verify();
+    }
+
+    @Test
+    public void controller_get_children_by_parent_operation_should_return_entity_model() {
+
+        ParentChildName parentChildName =
+                ParentChildName
+                        .builder()
+                            .parentId(UUID.randomUUID())
+                            .childId(UUID.randomUUID())
+                            .name("name")
+                        .build();
+
+        StepVerifier
+                .create(crudHypermediaController.childrenByParent(
+                        parentChildName.getParentId().toString(), Flux.just(parentChildName),
+                        ParentChildController.class, "parentRelName",
+                        ParentChildController.class, "childRelName"))
+                .expectNextMatches(result -> {
+                    Optional<EntityModel<ChildName>> r = result.getContent().stream().findFirst();
+                    assertThat(r.get().getContent().getId()).isEqualTo(parentChildName.getChildId())
+                            .as("Check child identifier");
+                    assertThat(r.get().getContent().getName()).isEqualTo(parentChildName.getName())
+                            .as("Check name");
+                    assertThat(r.get().getLinks().hasSingleLink()).isTrue().as("Check child links");
+                    assertThat(result.getLinks().hasSingleLink()).isTrue().as("Check parent links");
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void controller_get_children_by_parent_operation_with_bi_key_should_return_entity_model() {
+
+        ParentChildName parentChildName =
+                ParentChildName
+                        .builder()
+                            .parentId(UUID.randomUUID())
+                            .childId(UUID.randomUUID())
+                            .name("name")
+                        .build();
+
+        StepVerifier
+                .create(crudHypermediaController.childrenByParentWithBiKey(
+                        parentChildName.getParentId().toString(), Flux.just(parentChildName),
+                        ParentChildController.class, "parentRelName",
+                        ParentChildController.class, "childRelName"))
+                .expectNextMatches(result -> {
+                    Optional<EntityModel<ChildName>> r = result.getContent().stream().findFirst();
+                    assertThat(r.get().getContent().getId()).isEqualTo(parentChildName.getChildId())
+                            .as("Check child identifier");
+                    assertThat(r.get().getContent().getName()).isEqualTo(parentChildName.getName())
+                            .as("Check name");
+                    assertThat(r.get().getLinks().hasSingleLink()).isTrue().as("Check child links");
+                    assertThat(result.getLinks().hasSingleLink()).isTrue().as("Check parent links");
+                    return true;
+                })
+                .verifyComplete();
+    }
+
+    public static class ParentChildController
+            implements ChildControllerHypermedia<String>, BiKeyChildControllerHypermedia<String> {
+
+        @Override
+        public Publisher<EntityModel<String>> getById(String id) {
+            return null;
+        }
+
+        @Override
+        public Publisher<EntityModel<String>> getById(String parentId, String childId) {
+            return null;
+        }
     }
 
     private static class Test1BasicReactiveRepresentationModelAssembler

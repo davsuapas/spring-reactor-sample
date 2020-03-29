@@ -18,8 +18,9 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.projection.SpaceName;
 import org.elipcero.carisa.administration.service.InstanceService;
+import org.elipcero.carisa.core.data.ChildName;
+import org.elipcero.carisa.core.reactive.web.ChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
@@ -33,8 +34,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -42,13 +41,14 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.lin
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
- * Instance controller. @see Instance domain
+ * Instance controller.
+ * @see Instance domain
  *
  * @author David Suárez
  */
 @RestController
 @RequestMapping("/api/instances")
-public class InstanceController {
+public class InstanceController implements ChildControllerHypermedia<Instance> {
 
     private final InstanceService instanceService;
     private final InstanceModelAssembler instanceModelAssembler;
@@ -91,24 +91,12 @@ public class InstanceController {
      * @return Spaces collections with links
      */
     @GetMapping("/{id}/spaces")
-    public Publisher<CollectionModel<EntityModel<SpaceName>>> getSpaces(final @PathVariable("id") String id) {
-        return this.instanceService.getSpacesByInstance(UUID.fromString(id))
-                    .flatMap(instanceSpace ->
-                            Flux.concat(
-                                linkTo(
-                                    methodOn(SpaceController.class).getById(instanceSpace.getChildId().toString()))
-                                    .withRel(SpaceModelAssembler.SPACE_REL_NAME).toMono())
-                            .map(links -> new EntityModel<>(SpaceName
-                                    .builder()
-                                        .spaceId(instanceSpace.getChildId())
-                                        .name(instanceSpace.getName())
-                                    .build(), links)))
-                    .collectList()
-                    .flatMap(entities ->
-                            linkTo(
-                                methodOn(InstanceController.class).getById(id))
-                                .withRel(InstanceModelAssembler.INSTANCE_REL_NAME).toMono()
-                            .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getSpaces(final @PathVariable("id") String id) {
+        return this.crudHypermediaController.childrenByParent(
+                id,
+                this.instanceService.getSpacesByInstance(UUID.fromString(id)),
+                InstanceController.class, InstanceModelAssembler.INSTANCE_REL_NAME,
+                SpaceController.class, SpaceModelAssembler.SPACE_REL_NAME);
     }
 
     /**

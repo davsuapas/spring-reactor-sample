@@ -19,6 +19,7 @@ package org.elipcero.carisa.administration.service;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.ParentChildName;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 /**
  * Operations for Ente category property
+ * @see EnteCategoryProperty
  *
  * @author David Suárez
  */
@@ -62,7 +64,7 @@ public interface EnteCategoryPropertyService {
      * @param enteCategoryId category identifier
      * @return category properties
      */
-    Flux<EnteCategoryProperty> getPropertiesByCategoryId(UUID enteCategoryId);
+    Flux<ParentChildName> getPropertiesByCategoryId(UUID enteCategoryId);
 
     /**
      * Connect category property to Ente as inheritance.

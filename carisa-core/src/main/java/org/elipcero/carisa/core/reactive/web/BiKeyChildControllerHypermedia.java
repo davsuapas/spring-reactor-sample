@@ -14,22 +14,17 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.core.reactive.web;
 
-import lombok.Builder;
-import lombok.Getter;
-
-import java.util.UUID;
+import org.reactivestreams.Publisher;
+import org.springframework.hateoas.EntityModel;
 
 /**
- * Parent-Child name projection
+ * Prototype of the controllers for hypermedia with composed key
+ * @see CrudHypermediaController
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class ParentChildName {
-    private UUID parentId;
-    private UUID childId;
-    private String name;
+public interface BiKeyChildControllerHypermedia<T> {
+    Publisher<EntityModel<T>> getById(final String parentId, final String childId);
 }

@@ -18,9 +18,10 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.projection.ChildName;
-import org.elipcero.carisa.administration.projection.EnteName;
 import org.elipcero.carisa.administration.service.SpaceService;
+import org.elipcero.carisa.core.data.ChildName;
+import org.elipcero.carisa.core.data.ParentChildName;
+import org.elipcero.carisa.core.reactive.web.ChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
@@ -35,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -50,7 +50,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
  */
 @RestController
 @RequestMapping("/api/spaces")
-public class SpaceController {
+public class SpaceController implements ChildControllerHypermedia<Space> {
 
     private final CrudHypermediaController<Space> crudHypermediaController;
     private final SpaceService spaceService;
@@ -117,24 +117,10 @@ public class SpaceController {
      * @return Entes collections with links
      */
     @GetMapping("/{id}/entes")
-    public Publisher<CollectionModel<EntityModel<EnteName>>> getEntes(final @PathVariable("id") String id) {
-        return this.spaceService.getEntesBySpace(UUID.fromString(id))
-                .flatMap(spaceEnte ->
-                        Flux.concat(
-                                linkTo(
-                                        methodOn(EnteController.class).getById(spaceEnte.getChildId().toString()))
-                                        .withRel(EnteModelAssembler.ENTE_REL_NAME).toMono())
-                                .map(links -> new EntityModel<>(EnteName
-                                        .builder()
-                                            .enteId(spaceEnte.getChildId())
-                                            .name(spaceEnte.getName())
-                                        .build(), links)))
-                .collectList()
-                .flatMap(entities ->
-                        linkTo(
-                                methodOn(SpaceController.class).getById(id))
-                                .withRel(SpaceModelAssembler.SPACE_REL_NAME).toMono()
-                                .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getEntes(final @PathVariable("id") String id) {
+        return getChildrenByParentId(
+                id, this.spaceService.getEntesBySpace(UUID.fromString(id)),
+                EnteController.class, EnteModelAssembler.ENTE_REL_NAME);
     }
 
     /**
@@ -146,23 +132,34 @@ public class SpaceController {
     public Publisher<CollectionModel<EntityModel<ChildName>>> getEnteCategories(
             final @PathVariable("id") String id) {
 
-        return this.spaceService.getEnteCategoriesBySpace(UUID.fromString(id))
-                .flatMap(spaceEnteCategory ->
-                        Flux.concat(
-                                linkTo(
-                                        methodOn(EnteCategoryController.class)
-                                                .getById(spaceEnteCategory.getChildId().toString()))
-                                        .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME).toMono())
-                                .map(links -> new EntityModel<>(ChildName
-                                        .builder()
-                                            .id(spaceEnteCategory.getChildId())
-                                            .name(spaceEnteCategory.getName())
-                                        .build(), links)))
-                .collectList()
-                .flatMap(entities ->
-                        linkTo(
-                                methodOn(SpaceController.class).getById(id))
-                                .withRel(SpaceModelAssembler.SPACE_REL_NAME).toMono()
-                                .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
+        return getChildrenByParentId(
+                id, this.spaceService.getEnteCategoriesBySpace(UUID.fromString(id)),
+                EnteCategoryController.class, EnteCategoryModelAssembler.CATEGORY_REL_NAME);
+    }
+
+    /**
+     * Get query prototypes by spaceId
+     * @param id the spaceId
+     * @return the query prototype collections with links
+     */
+    @GetMapping("/{id}/queryprototypes")
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getQueryPrototypes(
+            final @PathVariable("id") String id) {
+
+        return getChildrenByParentId(
+                id, this.spaceService.getQueryPrototypesBySpace(UUID.fromString(id)),
+                QueryPrototypeController.class, QueryPrototypeModelAssembler.QUERY_PROTOTYPE_REL_NAME);
+    }
+
+    private <TParent> Publisher<CollectionModel<EntityModel<ChildName>>> getChildrenByParentId(
+            final String id, final Flux<ParentChildName> parentChildNameFlux,
+            final Class<? extends ChildControllerHypermedia<TParent>> controllerChild,
+            final String childRelName) {
+
+        return this.crudHypermediaController.childrenByParent(
+                id,
+                parentChildNameFlux,
+                SpaceController.class, SpaceModelAssembler.SPACE_REL_NAME,
+                controllerChild,childRelName);
     }
 }

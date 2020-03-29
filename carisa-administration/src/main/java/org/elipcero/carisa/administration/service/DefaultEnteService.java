@@ -26,6 +26,7 @@ import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.ParentChildName;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
@@ -79,7 +80,7 @@ public class DefaultEnteService implements EnteService {
                     public SpaceEnte getRelation() {
                         return SpaceEnte.builder()
                                 .parentId(ente.getSpaceId())
-                                .enteId(ente.getId()).build();
+                                .childId(ente.getId()).build();
                     }
                 });
     }
@@ -99,8 +100,14 @@ public class DefaultEnteService implements EnteService {
      * @see EnteService
      */
     @Override
-    public Flux<EnteProperty> getEntePropertiesByEnteId(final UUID enteId) {
-        return this.entePropertyRelation.getRelationsByParent(enteId);
+    public Flux<ParentChildName> getEntePropertiesByEnteId(final UUID enteId) {
+        return this.entePropertyRelation.getRelationsByParent(enteId)
+                .map(prop ->
+                        ParentChildName.builder()
+                                .parentId(prop.getParentId())
+                                .childId(prop.getChildId())
+                                .name(prop.getName())
+                                .build());
     }
 
     /**

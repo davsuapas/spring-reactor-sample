@@ -14,21 +14,13 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
-
-import lombok.Builder;
-import lombok.Getter;
-
-import java.util.UUID;
+package org.elipcero.carisa.administration.domain.support;
 
 /**
- * Ente short name
+ * Nominative
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class EnteName {
-    private UUID enteId;
-    private String name;
+public interface Named {
+    String getName();
 }

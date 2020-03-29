@@ -14,21 +14,36 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.administration.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+import org.elipcero.carisa.core.data.Entity;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
 
 /**
- * Ente property short name
+ * Allow make prototype of dynamic object. Each object have n dynamic properties
+ * Each object define the representative name
+ * External developer could make dynamic query using dynamic object prototype
  *
  * @author David Suárez
  */
-@Builder
+@Table("carisa_dynamic_object_prototype")
 @Getter
-public class EntePropertyName {
-    private UUID entePropertyId;
+public class DynamicObjectPrototype extends Entity {
+
+    private UUID parentId;
+
+    @Setter
     private String name;
+
+    @Builder
+    public DynamicObjectPrototype(UUID id, UUID parentId, String name) {
+        super(id);
+        this.name = name;
+        this.parentId = parentId;
+    }
 }

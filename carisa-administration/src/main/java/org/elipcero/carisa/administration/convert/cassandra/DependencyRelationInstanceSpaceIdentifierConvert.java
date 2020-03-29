@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Convert Ente property relation identifier to cassandra MapId
+ * Convert instance-space relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
@@ -35,7 +35,7 @@ public class DependencyRelationInstanceSpaceIdentifierConvert
     @Override
     public MapId convert(final InstanceSpace instanceSpace) {
         return this.convertFromDictionary(
-                InstanceSpace.GetMapId(instanceSpace.getParentId(), instanceSpace.getSpaceId()));
+                InstanceSpace.GetMapId(instanceSpace.getParentId(), instanceSpace.getChildId()));
     }
 
     @Override

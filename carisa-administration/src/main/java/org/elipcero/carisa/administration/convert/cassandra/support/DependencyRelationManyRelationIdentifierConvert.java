@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.convert.cassandra;
+package org.elipcero.carisa.administration.convert.cassandra.support;
 
-import org.elipcero.carisa.administration.domain.SpaceEnte;
+import org.elipcero.carisa.administration.domain.support.ManyRelation;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
 import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;
@@ -25,16 +25,17 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Convert Space-Ente relation identifier to cassandra MapId
+ * Convert generic many relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
-public class DependencyRelationSpaceEnteIdentifierConvert
-        implements DependencyRelationIdentifierConvert<SpaceEnte, MapId, UUID> {
+public abstract class DependencyRelationManyRelationIdentifierConvert<TRelation extends ManyRelation>
+        implements DependencyRelationIdentifierConvert<TRelation, MapId, UUID> {
 
     @Override
-    public MapId convert(final SpaceEnte spaceEnte) {
-        return this.convertFromDictionary(spaceEnte.GetMapId(spaceEnte.getParentId(), spaceEnte.getChildId()));
+    public MapId convert(final TRelation manyRelation) {
+        return this.convertFromDictionary(
+                ManyRelation.GetMapId(manyRelation.getParentId(), manyRelation.getChildId()));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class DependencyRelationSpaceEnteIdentifierConvert
     }
 
     @Override
-    public UUID convertToParent(final SpaceEnte spaceEnte) {
-        return spaceEnte.getParentId();
+    public UUID convertToParent(final TRelation manyRelation) {
+        return manyRelation.getParentId();
     }
 }

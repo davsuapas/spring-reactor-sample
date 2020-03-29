@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * Operations for Ente property
+ * @see EnteProperty
  *
  * @author David Suárez
  */

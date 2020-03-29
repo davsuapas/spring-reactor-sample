@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.elipcero.carisa.administration.domain.support.Named;
+import org.elipcero.carisa.administration.domain.support.PropertyType;
 import org.elipcero.carisa.core.data.EntityInitializer;
 import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;

@@ -18,10 +18,10 @@ package org.elipcero.carisa.administration.controller;
 
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.projection.ChildName;
-import org.elipcero.carisa.administration.projection.EnteCategoryPropertyName;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.EnteCategoryService;
+import org.elipcero.carisa.core.data.ChildName;
+import org.elipcero.carisa.core.reactive.web.ChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
@@ -52,7 +52,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
  */
 @RestController
 @RequestMapping("/api/entecategories")
-public class EnteCategoryController {
+public class EnteCategoryController implements ChildControllerHypermedia<EnteCategory> {
 
     private final CrudHypermediaController<EnteCategory> crudHypermediaController;
     private final EnteCategoryService enteCategoryService;
@@ -178,28 +178,13 @@ public class EnteCategoryController {
      * @return the ente category property collections with links
      */
     @GetMapping("/{enteCategoryId}/properties")
-    public Publisher<CollectionModel<EntityModel<EnteCategoryPropertyName>>> getProperties(
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getProperties(
             final @PathVariable("enteCategoryId") String enteCategoryId) {
 
-        return this.enteCategoryPropertyService.getPropertiesByCategoryId(UUID.fromString(enteCategoryId))
-                .flatMap(enteCategoryProperty ->
-                        Flux.concat(
-                                linkTo(
-                                        methodOn(EnteCategoryPropertyController.class)
-                                                .getById(
-                                                        enteCategoryProperty.getParentId().toString(),
-                                                        enteCategoryProperty.getId().toString()))
-                                        .withRel(EnteCategoryPropertyModelAssembler.PROPERTY_REL_NAME).toMono())
-                                .map(links -> new EntityModel<>(EnteCategoryPropertyName
-                                        .builder()
-                                            .enteCategoryPropertyId(enteCategoryProperty.getId())
-                                            .name(enteCategoryProperty.getName())
-                                        .build(), links)))
-                .collectList()
-                .flatMap(entities ->
-                        linkTo(
-                                methodOn(EnteCategoryController.class).getById(enteCategoryId))
-                                .withRel(EnteCategoryModelAssembler.CATEGORY_REL_NAME).toMono()
-                                .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
+        return this.crudHypermediaController.childrenByParentWithBiKey(
+                enteCategoryId,
+                this.enteCategoryPropertyService.getPropertiesByCategoryId(UUID.fromString(enteCategoryId)),
+                EnteCategoryController.class, EnteCategoryModelAssembler.CATEGORY_REL_NAME,
+                EnteCategoryPropertyController.class, EnteCategoryPropertyModelAssembler.PROPERTY_REL_NAME);
     }
 }

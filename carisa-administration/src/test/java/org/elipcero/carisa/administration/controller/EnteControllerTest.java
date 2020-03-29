@@ -199,7 +199,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_enteproperties_from_ente_should_return_ok_and_enteproperties_entity() {
+    public void list_enteproperties_from_ente_should_return_ok_and_enteproperties_entity() {
 
         this.testClient
                 .get()
@@ -208,9 +208,9 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.entePropertyNameList[?(@.entePropertyId=='%s')].name",
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name",
                             ENTE_PROPERTY_ID).isEqualTo(ENTE_PROPERTY_NAME)
-                    .jsonPath("$._embedded.entePropertyNameList[?(@.entePropertyId=='%s')]._links.property.href",
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.property.href",
                             ENTE_PROPERTY_ID)
                         .hasJsonPath()
                     .jsonPath("$._links.ente.href").hasJsonPath()
@@ -218,11 +218,11 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                         links(linkWithRel("ente").description("Ente")),
                         commonPathParameters(),
                         responseFields(
-                                fieldWithPath("_embedded.entePropertyNameList[].entePropertyId")
+                                fieldWithPath("_embedded.childNameList[].id")
                                         .description("Ente property identifier. (UUID string format)"),
-                                fieldWithPath("_embedded.entePropertyNameList[].name")
+                                fieldWithPath("_embedded.childNameList[].name")
                                         .description("Ente property name"),
-                                fieldWithPath("_embedded.entePropertyNameList[]._links.property.href")
+                                fieldWithPath("_embedded.childNameList[]._links.property.href")
                                         .description("Ente property information"),
                                 subsectionWithPath("_links").description("View links section"))));
     }

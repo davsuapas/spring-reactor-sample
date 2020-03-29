@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.administration.configuration;
 
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
@@ -26,6 +27,8 @@ import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
+import org.elipcero.carisa.administration.domain.SpaceQueryPrototype;
+import org.elipcero.carisa.administration.repository.DynamicObjectPrototypeRepository;
 import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
@@ -35,6 +38,7 @@ import org.elipcero.carisa.administration.service.DefaultEnteCategoryService;
 import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
+import org.elipcero.carisa.administration.service.DefaultQueryDynamicPrototypeService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.EnteCategoryService;
@@ -42,6 +46,7 @@ import org.elipcero.carisa.administration.service.EntePropertyService;
 import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.administration.service.SpaceService;
+import org.elipcero.carisa.administration.service.support.DynamicObjectPrototypeService;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
@@ -81,7 +86,7 @@ public class HorizontalServiceConfiguration {
     private MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHirarchyRelation;
 
     @Autowired
-    MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation;
+    private MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation;
 
     @Autowired
     private MultiplyDependencyRelation<Space, EnteCategory, EnteHierarchy> spaceHirarchyRelation;
@@ -91,6 +96,14 @@ public class HorizontalServiceConfiguration {
 
     @Autowired
     private MultiplyDependencyRelation<EnteCategoryProperty, Ente, EnteCategoryLinkProperty> linkEnteRelation;
+
+    @Autowired
+    private MultiplyDependencyRelation<Space, DynamicObjectPrototype, SpaceQueryPrototype> spaceQueryRelation;
+
+    // Dynamic object
+
+    @Autowired
+    private DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository;
 
     // Instance configuration
 
@@ -111,7 +124,8 @@ public class HorizontalServiceConfiguration {
     @Bean
     public SpaceService spaceService() {
         return new DefaultSpaceService(
-                spaceRepository, spaceEnteRelation, enteCategoryHirarchyRelation, instanceSpaceRelation);
+                spaceRepository, spaceEnteRelation, enteCategoryHirarchyRelation,
+                instanceSpaceRelation, spaceQueryRelation);
     }
 
     // Ente configuration
@@ -150,5 +164,12 @@ public class HorizontalServiceConfiguration {
     public EnteCategoryPropertyService enteCategoryPropertyService() {
         return new DefaultEnteCategoryPropertyService(
                 enteCategoryPropertyRelation, linkEnteRelation, enteHierarchyRelation, entePropertyRelation);
+    }
+
+    // Query prototype configuration
+
+    @Bean("QueryPrototypeService")
+    public DynamicObjectPrototypeService dynamicObjectPrototypeService() {
+        return new DefaultQueryDynamicPrototypeService(dynamicObjectPrototypeRepository, spaceQueryRelation);
     }
 }

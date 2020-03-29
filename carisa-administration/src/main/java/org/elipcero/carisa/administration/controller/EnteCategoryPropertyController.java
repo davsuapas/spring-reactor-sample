@@ -16,13 +16,13 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.exception.NotMatchingTypeException;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.projection.ChildName;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
+import org.elipcero.carisa.core.data.ChildName;
+import org.elipcero.carisa.core.reactive.web.BiKeyChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
@@ -50,13 +50,13 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 
 /**
  * Ente category property controller.
- * @see Ente domain
+ * @see EnteCategoryProperty domain
  *
  * @author David Suárez
  */
 @RestController
 @RequestMapping("/api")
-public class EnteCategoryPropertyController {
+public class EnteCategoryPropertyController implements BiKeyChildControllerHypermedia<EnteCategoryProperty> {
 
     private final CrudHypermediaController<EnteCategoryProperty> crudHypermediaController;
     private final EnteCategoryPropertyService enteCategoryPropertyService;

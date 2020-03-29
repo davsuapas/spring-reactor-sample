@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
@@ -25,9 +26,10 @@ import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
-import org.elipcero.carisa.administration.projection.ParentChildName;
+import org.elipcero.carisa.administration.domain.SpaceQueryPrototype;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.ParentChildName;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Flux;
@@ -52,7 +54,11 @@ public class DefaultSpaceService implements SpaceService {
     @NonNull
     private final MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHierarchyRelation;
 
+    @NonNull
     private final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelation;
+
+    @NonNull
+    private final MultiplyDependencyRelation<Space, DynamicObjectPrototype, SpaceQueryPrototype> spaceQueryProtRelation;
 
     /**
      * @see SpaceService
@@ -78,7 +84,7 @@ public class DefaultSpaceService implements SpaceService {
                     public InstanceSpace getRelation() {
                         return InstanceSpace.builder()
                                 .parentId(space.getInstanceId())
-                                .spaceId(space.getId()).build();
+                                .childId(space.getId()).build();
                     }
                 });
     }
@@ -113,13 +119,27 @@ public class DefaultSpaceService implements SpaceService {
      * @see SpaceService
      */
     @Override
-    public Flux<ParentChildName> getEnteCategoriesBySpace(UUID spaceId) {
+    public Flux<ParentChildName> getEnteCategoriesBySpace(final UUID spaceId) {
         return this.enteCategoryHierarchyRelation.getChildrenByParent(spaceId)
                 .map(enteCategory -> ParentChildName
                         .builder()
-                        .parentId(spaceId)
-                        .childId(enteCategory.getChild().getId())
-                        .name(enteCategory.getChild().getName())
+                            .parentId(spaceId)
+                            .childId(enteCategory.getChild().getId())
+                            .name(enteCategory.getChild().getName())
+                        .build());
+    }
+
+    /**
+     * @see SpaceService
+     */
+    @Override
+    public Flux<ParentChildName> getQueryPrototypesBySpace(final UUID spaceId) {
+        return this.spaceQueryProtRelation.getChildrenByParent(spaceId)
+                .map(query -> ParentChildName
+                        .builder()
+                            .parentId(spaceId)
+                            .childId(query.getChild().getId())
+                            .name(query.getChild().getName())
                         .build());
     }
 }

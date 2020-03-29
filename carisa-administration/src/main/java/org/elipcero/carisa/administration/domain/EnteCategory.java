@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.elipcero.carisa.administration.domain.support.Named;
 import org.elipcero.carisa.core.data.Entity;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.cassandra.core.mapping.Table;

@@ -14,21 +14,19 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.administration.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-
-import java.util.UUID;
+import org.elipcero.carisa.administration.domain.support.ManyRelation;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 /**
- * Child projection
+ * The query represents the aggregation information of each Ente properties or categories property
+ * Can exist many query types. Each query will have associate a micro services to operate
+ * The query prototype define the metadata of each query type and can have many dynamic properties
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class ChildName {
-    private UUID id;
-    private String name;
+
+@Table("carisa_space_query_prototype")
+public class SpaceQueryPrototype extends ManyRelation {
 }

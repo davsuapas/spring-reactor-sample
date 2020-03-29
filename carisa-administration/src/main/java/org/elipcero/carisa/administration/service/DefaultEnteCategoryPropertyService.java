@@ -24,11 +24,12 @@ import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
 import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
-import org.elipcero.carisa.administration.domain.Named;
-import org.elipcero.carisa.administration.domain.PropertyType;
+import org.elipcero.carisa.administration.domain.support.Named;
+import org.elipcero.carisa.administration.domain.support.PropertyType;
 import org.elipcero.carisa.administration.exception.NotMatchingTypeException;
 import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.ParentChildName;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationChildNotFoundException;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
@@ -99,8 +100,14 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
      * @see EnteCategoryPropertyService
      */
     @Override
-    public Flux<EnteCategoryProperty> getPropertiesByCategoryId(final UUID enteCategoryId) {
-        return this.enteCategoryPropertyRelation.getRelationsByParent(enteCategoryId);
+    public Flux<ParentChildName> getPropertiesByCategoryId(final UUID enteCategoryId) {
+        return this.enteCategoryPropertyRelation.getRelationsByParent(enteCategoryId)
+                .map(prop ->
+                        ParentChildName.builder()
+                                .parentId(prop.getParentId())
+                                .childId(prop.getChildId())
+                                .name(prop.getName())
+                        .build());
     }
 
     /**

@@ -26,6 +26,7 @@ import java.util.UUID;
 
 /**
  * Operations for ente category
+ * @see EnteCategory
  *
  * @author David Suárez
  */

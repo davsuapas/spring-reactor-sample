@@ -14,21 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.administration.repository.cassandra;
 
-import lombok.Builder;
-import lombok.Getter;
-
-import java.util.UUID;
+import org.elipcero.carisa.administration.domain.SpaceQueryPrototype;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
+import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
- * Space short name
+ * Repository for relation between space and object dynamic prototype
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class SpaceName {
-    private UUID spaceId;
-    private String name;
+public interface SpaceQueryPrototypeRepository extends DependencyRelationRepository<SpaceQueryPrototype, MapId> {
 }

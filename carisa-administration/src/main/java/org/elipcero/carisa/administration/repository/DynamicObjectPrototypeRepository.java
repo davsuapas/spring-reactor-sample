@@ -14,21 +14,18 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.projection;
+package org.elipcero.carisa.administration.repository;
 
-import lombok.Builder;
-import lombok.Getter;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
+import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
 
 import java.util.UUID;
 
 /**
- * Ente category property short name
+ * Repository for dynamic object prototype
  *
  * @author David Suárez
  */
-@Builder
-@Getter
-public class EnteCategoryPropertyName {
-    private UUID enteCategoryPropertyId;
-    private String name;
+public interface DynamicObjectPrototypeRepository
+        extends CustomizedReactiveCrudRepository<DynamicObjectPrototype, UUID> {
 }

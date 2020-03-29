@@ -72,6 +72,8 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
             this.executeCommands("ente-hierarchy-controller.cql");
             this.executeCommands("ente-category-controller.cql");
             this.executeCommands("space-ente-controller.cql");
+            this.executeCommands("space-query-prototype-controller.cql");
+            this.executeCommands("query-prototype-controller.cql");
             beforeOnce = true;
         }
     }
@@ -213,7 +215,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_entes_from_space_should_return_ok_and_entes_entity() {
+    public void list_entes_from_space_should_return_ok_and_entes_entity() {
 
         this.testClient
                 .get()
@@ -222,25 +224,26 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')].name", ENTE_ID)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", ENTE_ID)
                         .isEqualTo(ENTE_NAME)
-                    .jsonPath("$._embedded.enteNameList[?(@.enteId=='%s')]._links.ente.href", ENTE_ID)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.ente.href", ENTE_ID)
                         .hasJsonPath()
-                    .jsonPath("$._embedded.enteNameList.length()").isEqualTo(2)
+                    .jsonPath("$._embedded.childNameList.length()").isEqualTo(2)
                     .jsonPath("$._links.space.href").hasJsonPath()
                 .consumeWith(document("space-entes-get",
                         spaceLink(),
                         commonPathParamters(),
                         responseFields(
-                                fieldWithPath("_embedded.enteNameList[].enteId")
+                                fieldWithPath("_embedded.childNameList[].id")
                                         .description("Ente identifier. (UUID string format)"),
-                                fieldWithPath("_embedded.enteNameList[].name").description("Ente name"),
-                                fieldWithPath("_embedded.enteNameList[]._links.ente.href").description("Ente information"),
+                                fieldWithPath("_embedded.childNameList[].name").description("Ente name"),
+                                fieldWithPath("_embedded.childNameList[]._links.ente.href")
+                                        .description("Ente information"),
                                 subsectionWithPath("_links").description("View links section"))));
     }
 
     @Test
-    public void find_entecategories_from_space_should_return_ok_and_ente_categories_entity() {
+    public void list_entecategories_from_space_should_return_ok_and_ente_categories_entity() {
 
         this.testClient
                 .get()
@@ -265,6 +268,38 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
                                         .description("Ente category name"),
                                 fieldWithPath("_embedded.childNameList[]._links.category.href")
                                         .description("Ente category information"),
+                                subsectionWithPath("_links").description("View links section"))));
+    }
+
+    @Test
+    public void list_query_prototype_from_space_should_return_ok_and_child_name_entity() {
+
+        String queryPrototypeId = "a985074c-796b-4ecb-9a8f-21f4b26aa11b";
+        String queryPrototypeName = "Query type name";
+
+        this.testClient
+                .get()
+                .uri("/api/spaces/{id}/queryprototypes", SPACE_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", queryPrototypeId)
+                        .isEqualTo(queryPrototypeName)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.queryprototype.href",
+                            queryPrototypeId).hasJsonPath()
+                    .jsonPath("$._embedded.childNameList.length()").isEqualTo(1)
+                    .jsonPath("$._links.space.href").hasJsonPath()
+                .consumeWith(document("space-queryprototypes-get",
+                        spaceLink(),
+                        commonPathParamters(),
+                        responseFields(
+                                fieldWithPath("_embedded.childNameList[].id")
+                                        .description("Query prototype identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.childNameList[].name")
+                                        .description("Query prototype name"),
+                                fieldWithPath("_embedded.childNameList[]._links.queryprototype.href")
+                                        .description("Query prototype information"),
                                 subsectionWithPath("_links").description("View links section"))));
     }
 

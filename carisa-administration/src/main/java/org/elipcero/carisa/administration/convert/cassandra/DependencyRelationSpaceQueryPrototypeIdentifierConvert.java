@@ -14,13 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.administration.convert.cassandra;
+
+import org.elipcero.carisa.administration.convert.cassandra.support.DependencyRelationManyRelationIdentifierConvert;
+import org.elipcero.carisa.administration.domain.SpaceQueryPrototype;
 
 /**
- * Nominative
+ * Convert space-query relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
-public interface Named {
-    String getName();
+public class DependencyRelationSpaceQueryPrototypeIdentifierConvert
+        extends DependencyRelationManyRelationIdentifierConvert<SpaceQueryPrototype> {
 }

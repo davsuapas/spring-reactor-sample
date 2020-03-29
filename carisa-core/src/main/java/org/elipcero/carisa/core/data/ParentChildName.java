@@ -14,36 +14,22 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.core.data;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import org.elipcero.carisa.administration.domain.support.Named;
-import org.elipcero.carisa.core.data.Entity;
-import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
 
 /**
- * The thinks of space.
- * The ente are the items of spaces to trace, count, measure, etc.
+ * Parent-Child name projection
  *
  * @author David Suárez
  */
-@Table("carisa_ente")
+@Builder
 @Getter
-public class Ente extends Entity implements Named {
-
-    private UUID spaceId;
-
-    @Setter
+public class ParentChildName {
+    private UUID parentId;
+    private UUID childId;
     private String name;
-
-    @Builder
-    public Ente(UUID id, UUID spaceId, String name) {
-        super(id);
-        this.name = name;
-        this.spaceId = spaceId;
-    }
 }

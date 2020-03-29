@@ -16,10 +16,10 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.service.EntePropertyService;
+import org.elipcero.carisa.core.reactive.web.BiKeyChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
@@ -40,13 +40,13 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 
 /**
  * Ente property controller.
- * @see Ente domain
+ * @see EnteProperty domain
  *
  * @author David Suárez
  */
 @RestController
 @RequestMapping("/api")
-public class EntePropertyController {
+public class EntePropertyController implements BiKeyChildControllerHypermedia<EnteProperty> {
 
     private final CrudHypermediaController<EnteProperty> crudHypermediaController;
     private final EntePropertyService entePropertyService;

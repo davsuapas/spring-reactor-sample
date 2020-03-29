@@ -17,8 +17,8 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Ente;
-import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.ParentChildName;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,6 +26,7 @@ import java.util.UUID;
 
 /**
  * Operations for Ente
+ * @see Ente
  *
  * @author David Suárez
  */
@@ -59,7 +60,7 @@ public interface EnteService {
      * @param enteId the enteId to find
      * @return the ente property view
      */
-    Flux<EnteProperty> getEntePropertiesByEnteId(final UUID enteId);
+    Flux<ParentChildName> getEntePropertiesByEnteId(final UUID enteId);
 
     /**
      * Connect the ente with the category

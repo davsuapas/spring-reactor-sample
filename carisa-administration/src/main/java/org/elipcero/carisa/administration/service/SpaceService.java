@@ -17,8 +17,8 @@
 package org.elipcero.carisa.administration.service;
 
 import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.projection.ParentChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.ParentChildName;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,6 +26,7 @@ import java.util.UUID;
 
 /**
  * Operations for space
+ * @see Space
  *
  * @author David Suárez
  */
@@ -36,14 +37,14 @@ public interface SpaceService {
      * @param id
      * @return space found
      */
-    Mono<Space> getById(UUID id);
+    Mono<Space> getById(final UUID id);
 
     /**
      * Create the space and insert the space into the instance. It's not done in the same transaction.
      * @param space space for creating
      * @return space created
      */
-    Mono<Space> create(Space space);
+    Mono<Space> create(final Space space);
 
     /**
      * Update or create the space. If the id exits is updated
@@ -68,4 +69,11 @@ public interface SpaceService {
      * @return the ente category view
      */
     Flux<ParentChildName> getEnteCategoriesBySpace(final UUID spaceId);
+
+    /**
+     * Get query prototypes by space id.
+     * @param spaceId the spaceId to find
+     * @return the query prototype view
+     */
+    Flux<ParentChildName> getQueryPrototypesBySpace(final UUID spaceId);
 }

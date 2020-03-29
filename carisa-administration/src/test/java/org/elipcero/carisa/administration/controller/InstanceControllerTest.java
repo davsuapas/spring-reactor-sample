@@ -103,7 +103,7 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_spaces_from_instance_should_return_ok_and_spaces_entity() {
+    public void list_spaces_from_instance_should_return_ok_and_spaces_entity() {
 
         this.testClient
                 .get()
@@ -112,20 +112,20 @@ public class InstanceControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')].name", SPACE_ID)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", SPACE_ID)
                         .isEqualTo(SPACE_NAME)
-                    .jsonPath("$._embedded.spaceNameList[?(@.spaceId=='%s')]._links.space.href", SPACE_ID)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.space.href", SPACE_ID)
                         .hasJsonPath()
-                    .jsonPath("$._embedded.spaceNameList.length()").isEqualTo(1)
+                    .jsonPath("$._embedded.childNameList.length()").isEqualTo(1)
                     .jsonPath("$._links.instance.href").hasJsonPath()
                 .consumeWith(document("instances-spaces-get",
                         instanceLink(),
                         commonPathParamters(),
                         responseFields(
-                                fieldWithPath("_embedded.spaceNameList[].spaceId")
+                                fieldWithPath("_embedded.childNameList[].id")
                                         .description("Space identifier. (UUID string format)"),
-                                fieldWithPath("_embedded.spaceNameList[].name").description("Space name"),
-                                fieldWithPath("_embedded.spaceNameList[]._links.space.href").description("Space information"),
+                                fieldWithPath("_embedded.childNameList[].name").description("Space name"),
+                                fieldWithPath("_embedded.childNameList[]._links.space.href").description("Space information"),
                                 subsectionWithPath("_links").description("View links section"))));
     }
 

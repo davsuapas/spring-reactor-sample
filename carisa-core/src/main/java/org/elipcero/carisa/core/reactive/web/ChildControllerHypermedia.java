@@ -14,8 +14,17 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.core.reactive.web;
 
-public interface PropertyType {
-    EnteProperty.Type getType();
+import org.reactivestreams.Publisher;
+import org.springframework.hateoas.EntityModel;
+
+/**
+ * Prototype of the controllers for hypermedia
+ * @see CrudHypermediaController
+ *
+ * @author David Suárez
+ */
+public interface ChildControllerHypermedia<T> {
+    Publisher<EntityModel<T>> getById(final String id);
 }
