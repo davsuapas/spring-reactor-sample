@@ -72,8 +72,8 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
             this.executeCommands("ente-hierarchy-controller.cql");
             this.executeCommands("ente-category-controller.cql");
             this.executeCommands("space-ente-controller.cql");
-            this.executeCommands("space-query-prototype-controller.cql");
-            this.executeCommands("query-prototype-controller.cql");
+            this.executeCommands("space-query-instance-controller.cql");
+            this.executeCommands("query-instance-controller.cql");
             beforeOnce = true;
         }
     }
@@ -274,31 +274,31 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     @Test
     public void list_query_prototype_from_space_should_return_ok_and_child_name_entity() {
 
-        String queryPrototypeId = "a985074c-796b-4ecb-9a8f-21f4b26aa11b";
-        String queryPrototypeName = "Query type name";
+        String queryInstanceId = "a985074c-796b-4ecb-9a8f-21f4b26aa11b";
+        String queryInstanceName = "Query type name";
 
         this.testClient
                 .get()
-                .uri("/api/spaces/{id}/queryprototypes", SPACE_ID)
+                .uri("/api/spaces/{id}/queryinstances", SPACE_ID)
                 .accept(MediaTypes.HAL_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", queryPrototypeId)
-                        .isEqualTo(queryPrototypeName)
-                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.queryprototype.href",
-                            queryPrototypeId).hasJsonPath()
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", queryInstanceId)
+                        .isEqualTo(queryInstanceName)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.queryinstance.href",
+                            queryInstanceId).hasJsonPath()
                     .jsonPath("$._embedded.childNameList.length()").isEqualTo(1)
                     .jsonPath("$._links.space.href").hasJsonPath()
-                .consumeWith(document("space-queryprototypes-get",
+                .consumeWith(document("space-queryinstances-get",
                         spaceLink(),
                         commonPathParamters(),
                         responseFields(
                                 fieldWithPath("_embedded.childNameList[].id")
-                                        .description("Query prototype identifier. (UUID string format)"),
+                                        .description("Query instance identifier. (UUID string format)"),
                                 fieldWithPath("_embedded.childNameList[].name")
-                                        .description("Query prototype name"),
-                                fieldWithPath("_embedded.childNameList[]._links.queryprototype.href")
+                                        .description("Query instance name"),
+                                fieldWithPath("_embedded.childNameList[]._links.queryinstance.href")
                                         .description("Query prototype information"),
                                 subsectionWithPath("_links").description("View links section"))));
     }

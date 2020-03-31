@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS carisa_dynamic_object_instance
+CREATE TABLE IF NOT EXISTS carisa_dynamic_object_instance (parentId UUID, id UUID, prototypeId UUID, name text, description text, PRIMARY KEY (id))
+INSERT into carisa_dynamic_object_instance(parentId, id, prototypeId, name, description) values (52107f03-cf1b-4760-b2c2-4273482f0f7a, a985074c-796b-4ecb-9a8f-21f4b26aa11b, 5d191729-1f4c-4b7e-b573-b90cf3457df8, 'Query type name', 'Query type description')
+INSERT into carisa_dynamic_object_instance(parentId, id, prototypeId, name, description) values (52107f03-cf1b-4760-b2c2-4273482f0f7a, b985074c-796b-4ecb-9a8f-21f4b26aa11b, 5d191729-1f4c-4b7e-b573-b90cf3457df8, 'Name updated', 'Description updated')

@@ -46,7 +46,8 @@ public interface EntePropertyService {
 
     /**
      * Update or create the ente property. If the id exits is updated
-     * otherwise is created. The EntePropertyId can not be updated. To create @see create
+     * otherwise is created. The EntePropertyId can not be updated.
+     * @see EntePropertyService#create(EnteProperty)
      * @param enteProperty Ente property for updating or creating
      * @return Ente property created or updated
      */

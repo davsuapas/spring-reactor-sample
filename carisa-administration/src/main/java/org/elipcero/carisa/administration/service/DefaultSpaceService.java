@@ -18,7 +18,7 @@ package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
@@ -26,7 +26,7 @@ import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
-import org.elipcero.carisa.administration.domain.SpaceQueryPrototype;
+import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.ParentChildName;
@@ -58,7 +58,7 @@ public class DefaultSpaceService implements SpaceService {
     private final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelation;
 
     @NonNull
-    private final MultiplyDependencyRelation<Space, DynamicObjectPrototype, SpaceQueryPrototype> spaceQueryProtRelation;
+    private final MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> spaceQueryInstanRelation;
 
     /**
      * @see SpaceService
@@ -134,7 +134,7 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Flux<ParentChildName> getQueryPrototypesBySpace(final UUID spaceId) {
-        return this.spaceQueryProtRelation.getChildrenByParent(spaceId)
+        return this.spaceQueryInstanRelation.getChildrenByParent(spaceId)
                 .map(query -> ParentChildName
                         .builder()
                             .parentId(spaceId)

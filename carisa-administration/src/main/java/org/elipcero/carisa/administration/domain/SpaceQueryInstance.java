@@ -14,17 +14,19 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.core.reactive.web;
+package org.elipcero.carisa.administration.domain;
 
-import org.reactivestreams.Publisher;
-import org.springframework.hateoas.EntityModel;
+import org.elipcero.carisa.administration.domain.support.ManyRelation;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 /**
- * Prototype of the controllers for hypermedia when getting children by parent identifier
- * @see CrudHypermediaController
+ * The query represents the aggregation information of each Ente properties or categories property
+ * Can exist many query types. Each query will have associate a micro services to operate
+ * The dynamic object prototype define the metadata of each query type and can have many dynamic properties
  *
  * @author David Suárez
  */
-public interface ChildControllerHypermedia<T> {
-    Publisher<EntityModel<T>> getById(final String id);
+
+@Table("carisa_space_query_instance")
+public class SpaceQueryInstance extends ManyRelation {
 }

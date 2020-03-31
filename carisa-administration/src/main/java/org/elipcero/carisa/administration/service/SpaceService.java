@@ -48,7 +48,8 @@ public interface SpaceService {
 
     /**
      * Update or create the space. If the id exits is updated
-     * otherwise is created. The instanceId can not be updated. To create @see create
+     * otherwise is created. The instanceId can not be updated.
+     * @see SpaceService#create(Space)
      * @param id
      * @param space space for updating or creating
      * @return space created or updated

@@ -16,14 +16,14 @@
 
 package org.elipcero.carisa.administration.repository.cassandra;
 
-import org.elipcero.carisa.administration.domain.SpaceQueryPrototype;
+import org.elipcero.carisa.administration.domain.Plugin;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
 import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
- * Repository for relation between space and object dynamic prototype
+ * Repository for relation between plugin type and plugin
  *
  * @author David Suárez
  */
-public interface SpaceQueryPrototypeRepository extends DependencyRelationRepository<SpaceQueryPrototype, MapId> {
+public interface PluginTypePluginRepository extends DependencyRelationRepository<Plugin, MapId> {
 }

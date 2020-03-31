@@ -138,17 +138,17 @@ public class SpaceController implements ChildControllerHypermedia<Space> {
     }
 
     /**
-     * Get query prototypes by spaceId
+     * Get query instances by spaceId
      * @param id the spaceId
-     * @return the query prototype collections with links
+     * @return the query instance collections with links
      */
-    @GetMapping("/{id}/queryprototypes")
+    @GetMapping("/{id}/queryinstances")
     public Publisher<CollectionModel<EntityModel<ChildName>>> getQueryPrototypes(
             final @PathVariable("id") String id) {
 
         return getChildrenByParentId(
                 id, this.spaceService.getQueryPrototypesBySpace(UUID.fromString(id)),
-                QueryPrototypeController.class, QueryPrototypeModelAssembler.QUERY_PROTOTYPE_REL_NAME);
+                QueryDynamicInstanceController.class, QueryDynamicInstanceModelAssembler.QUERY_INSTANCE_REL_NAME);
     }
 
     private <TParent> Publisher<CollectionModel<EntityModel<ChildName>>> getChildrenByParentId(

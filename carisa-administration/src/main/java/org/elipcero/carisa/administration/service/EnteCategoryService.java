@@ -48,7 +48,8 @@ public interface EnteCategoryService {
 
     /**
      * Update or create the ente category. If the id exits is updated
-     * otherwise is created. The parentId can not be updated. To create @see create
+     * otherwise is created. The parentId can not be updated.
+     * @see EnteCategoryService#create(EnteCategory)
      * @param id
      * @param enteCategory ente category for updating or creating
      * @return Ente category created or updated

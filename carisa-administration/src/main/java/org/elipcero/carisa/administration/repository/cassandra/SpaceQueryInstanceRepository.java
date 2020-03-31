@@ -14,17 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.core.reactive.web;
+package org.elipcero.carisa.administration.repository.cassandra;
 
-import org.reactivestreams.Publisher;
-import org.springframework.hateoas.EntityModel;
+import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
+import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
- * Prototype of the controllers for hypermedia when getting children by parent identifier
- * @see CrudHypermediaController
+ * Repository for relation between space and object dynamic instance
  *
  * @author David Suárez
  */
-public interface ChildControllerHypermedia<T> {
-    Publisher<EntityModel<T>> getById(final String id);
+public interface SpaceQueryInstanceRepository extends DependencyRelationRepository<SpaceQueryInstance, MapId> {
 }

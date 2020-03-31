@@ -14,19 +14,18 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.administration.repository;
 
-import org.elipcero.carisa.administration.domain.support.ManyRelation;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
+import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
+
+import java.util.UUID;
 
 /**
- * The query represents the aggregation information of each Ente properties or categories property
- * Can exist many query types. Each query will have associate a micro services to operate
- * The query prototype define the metadata of each query type and can have many dynamic properties
+ * Repository for dynamic object instance
  *
  * @author David Suárez
  */
-
-@Table("carisa_space_query_prototype")
-public class SpaceQueryPrototype extends ManyRelation {
+public interface DynamicObjectInstanceRepository
+        extends CustomizedReactiveCrudRepository<DynamicObjectInstance, UUID> {
 }

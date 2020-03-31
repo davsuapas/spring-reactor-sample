@@ -48,7 +48,8 @@ public interface EnteService {
 
     /**
      * Update or create the ente. If the id exits is updated
-     * otherwise is created. The EnteId can not be updated. To create @see create
+     * otherwise is created. The EnteId can not be updated.
+     * @see EnteService#create(Ente)
      * @param id ente identifier
      * @param ente Ente for updating or creating
      * @return Ente created or updated

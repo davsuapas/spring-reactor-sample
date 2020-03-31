@@ -17,34 +17,34 @@
 package org.elipcero.carisa.administration.service.support;
 
 import lombok.NonNull;
-import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.administration.domain.support.ManyRelation;
-import org.elipcero.carisa.administration.repository.DynamicObjectPrototypeRepository;
+import org.elipcero.carisa.administration.repository.DynamicObjectInstanceRepository;
 import org.elipcero.carisa.core.data.Entity;
 import org.elipcero.carisa.core.data.Relation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 
 /**
- * Service for operations of the dynamic object prototype
+ * Service for operations of the dynamic object instance
  * @see DefaultMultiplyDependencyRelationService
  *
  * @author David Suárez
  */
-public class DynamicObjectPrototypeService<TRelation extends ManyRelation>
-        extends DefaultMultiplyDependencyRelationService<DynamicObjectPrototype, TRelation>  {
+public class DynamicObjectInstanceService<TRelation extends ManyRelation>
+        extends DefaultMultiplyDependencyRelationService<DynamicObjectInstance, TRelation>  {
 
-    public DynamicObjectPrototypeService(
-            @NonNull DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository,
-            @NonNull MultiplyDependencyRelation<? extends Entity, DynamicObjectPrototype, TRelation> relation) {
+    public DynamicObjectInstanceService(
+            @NonNull DynamicObjectInstanceRepository dynamicObjectInstanceRepository,
+            @NonNull MultiplyDependencyRelation<? extends Entity, DynamicObjectInstance, TRelation> relation) {
 
-        super(dynamicObjectPrototypeRepository, relation);
+        super(dynamicObjectInstanceRepository, relation);
     }
 
     /**
      * @see DefaultMultiplyDependencyRelationService#updateEntity(Relation, Relation)
      */
     @Override
-    protected void updateEntity(DynamicObjectPrototype entityForUpdating, DynamicObjectPrototype entity) {
+    protected void updateEntity(DynamicObjectInstance entityForUpdating, DynamicObjectInstance entity) {
         entityForUpdating.setName(entity.getName());
         entityForUpdating.setDescription(entity.getDescription());
     }

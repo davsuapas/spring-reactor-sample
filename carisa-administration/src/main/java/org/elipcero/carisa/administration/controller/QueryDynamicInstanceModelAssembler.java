@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
@@ -33,22 +33,23 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
  * @author David Suárez
  */
 @Component
-public class QueryPrototypeModelAssembler implements BasicReactiveRepresentationModelAssembler<DynamicObjectPrototype> {
+public class QueryDynamicInstanceModelAssembler
+        implements BasicReactiveRepresentationModelAssembler<DynamicObjectInstance> {
 
-    public static final String QUERY_PROTOTYPE_REL_NAME = "queryprototype";
-    public static final String QUERY_PROTOTYPES_REL_NAME = "queryprototypes";
+    public static final String QUERY_INSTANCE_REL_NAME = "queryinstance";
+    public static final String QUERY_INSTANCES_REL_NAME = QUERY_INSTANCE_REL_NAME + "s";
 
     @Override
-    public Flux<Link> addLinks(DynamicObjectPrototype queryPrototype, ServerWebExchange exchange) {
+    public Flux<Link> addLinks(DynamicObjectInstance queryInstance, ServerWebExchange exchange) {
 
         WebFluxLinkBuilder.WebFluxLink self = linkTo(
-                methodOn(QueryPrototypeController.class).getById(queryPrototype.getId().toString()))
+                methodOn(QueryDynamicInstanceController.class).getById(queryInstance.getId().toString()))
                 .withSelfRel()
-                .andAffordance(methodOn(QueryPrototypeController.class)
-                        .updateOrCreate(queryPrototype.getId().toString(), queryPrototype));
+                .andAffordance(methodOn(QueryDynamicInstanceController.class)
+                        .updateOrCreate(queryInstance.getId().toString(), queryInstance));
 
         WebFluxLinkBuilder.WebFluxLink spaces = linkTo(
-                methodOn(SpaceController.class).getById(queryPrototype.getParentId().toString()))
+                methodOn(SpaceController.class).getById(queryInstance.getParentId().toString()))
                 .withRel(SpaceModelAssembler.SPACE_REL_NAME);
 
         return Flux.concat(self.toMono(), spaces.toMono());

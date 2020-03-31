@@ -14,17 +14,19 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.core.reactive.web;
+package org.elipcero.carisa.administration.domain;
 
-import org.reactivestreams.Publisher;
-import org.springframework.hateoas.EntityModel;
+import org.elipcero.carisa.administration.domain.support.ManyRelation;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 /**
- * Prototype of the controllers for hypermedia when getting children by parent identifier
- * @see CrudHypermediaController
+ * The plugin represents all queries types of the system.
+ * The plugin parentId contain the type identifier
+ * There are several plugin types: Query
+ * @see SpaceQueryInstance
  *
  * @author David Suárez
  */
-public interface ChildControllerHypermedia<T> {
-    Publisher<EntityModel<T>> getById(final String id);
+@Table("carisa_plugin")
+public class Plugin extends ManyRelation {
 }

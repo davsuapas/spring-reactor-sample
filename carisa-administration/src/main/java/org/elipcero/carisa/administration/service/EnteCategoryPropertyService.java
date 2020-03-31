@@ -50,7 +50,8 @@ public interface EnteCategoryPropertyService {
 
     /**
      * Update or create the Ente category property. If the id exits is updated
-     * otherwise is created. The EnteCategoryPropertyId can not be updated. To create @see create
+     * otherwise is created. The EnteCategoryPropertyId can not be updated.
+     * @see EnteCategoryPropertyService#create(EnteCategoryProperty)
      * @param enteCategoryProperty Ente category property for updating or creating
      * @param updateType allow update type
      * @return Ente category property created or updated

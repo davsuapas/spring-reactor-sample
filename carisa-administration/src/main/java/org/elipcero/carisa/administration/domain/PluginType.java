@@ -14,16 +14,27 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.convert.cassandra;
+package org.elipcero.carisa.administration.domain;
 
-import org.elipcero.carisa.administration.convert.cassandra.support.DependencyRelationManyRelationIdentifierConvert;
-import org.elipcero.carisa.administration.domain.SpaceQueryPrototype;
+import lombok.Builder;
+import org.elipcero.carisa.core.data.Entity;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
- * Convert space-query relation identifier to cassandra MapId
+ * Plugin type
  *
  * @author David Suárez
  */
-public class DependencyRelationSpaceQueryPrototypeIdentifierConvert
-        extends DependencyRelationManyRelationIdentifierConvert<SpaceQueryPrototype> {
+@Builder
+public class PluginType extends Entity {
+
+    // All plugin type in memory
+    public static Map<UUID, PluginType> INSTANCES = new HashMap<UUID, PluginType>() {{
+        put(UUID.fromString("9b3d108e-89cb-4c7c-a774-a527a8b22e57"), PluginType.builder().name("Query").build());
+    }};
+
+    private String name;
 }

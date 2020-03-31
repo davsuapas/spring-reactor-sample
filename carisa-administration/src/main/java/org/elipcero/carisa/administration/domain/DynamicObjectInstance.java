@@ -27,17 +27,19 @@ import org.springframework.data.cassandra.core.mapping.Table;
 import java.util.UUID;
 
 /**
- * Allow make prototype of dynamic object. Each object have n dynamic properties
- * Each object define the representative name
- * External users could make dynamic object using dynamic object prototype
+ * Instance of a prototype of dynamic object. Each instance have n dynamic properties
+ * External users could instance dynamic object using dynamic object instance
+ * Example: Queries. The queries has a object prototype where define the metadata o a query type
+ * and the instance is the particular information of those metadata configure by users
  *
  * @author David Suárez
  */
-@Table("carisa_dynamic_object_prototype")
+@Table("carisa_dynamic_object_instance")
 @Getter
-public class DynamicObjectPrototype extends Entity implements Relation {
+public class DynamicObjectInstance extends Entity implements Relation {
 
     private UUID parentId;
+    private UUID prototypeId; // referenced dynamic object prototype identifier
 
     @Setter
     private String name;
@@ -46,11 +48,12 @@ public class DynamicObjectPrototype extends Entity implements Relation {
     private String description;
 
     @Builder
-    public DynamicObjectPrototype(UUID id, UUID parentId, String name, String description) {
+    public DynamicObjectInstance(UUID id, UUID parentId, UUID prototypeId, String name, String description) {
         super(id);
         this.name = name;
         this.description = description;
         this.parentId = parentId;
+        this.prototypeId = prototypeId;
     }
 
     @Override
