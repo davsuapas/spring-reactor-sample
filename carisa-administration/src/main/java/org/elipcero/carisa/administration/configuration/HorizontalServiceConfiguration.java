@@ -17,6 +17,7 @@
 package org.elipcero.carisa.administration.configuration;
 
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
@@ -25,6 +26,8 @@ import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
+import org.elipcero.carisa.administration.domain.Plugin;
+import org.elipcero.carisa.administration.domain.PluginType;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
@@ -39,6 +42,7 @@ import org.elipcero.carisa.administration.service.DefaultEnteCategoryService;
 import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
+import org.elipcero.carisa.administration.service.DefaultPluginDynamicPrototypeService;
 import org.elipcero.carisa.administration.service.DefaultQueryDynamicInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
@@ -48,6 +52,7 @@ import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.administration.service.support.DynamicObjectInstanceService;
+import org.elipcero.carisa.administration.service.support.DynamicObjectPrototypeService;
 import org.elipcero.carisa.core.application.configuration.ServiceProperties;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
@@ -100,6 +105,9 @@ public class HorizontalServiceConfiguration {
 
     @Autowired
     private MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> spaceQueryRelation;
+
+    @Autowired
+    private MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> pluginTypePluginRelation;
 
     // Dynamic object
 
@@ -171,8 +179,16 @@ public class HorizontalServiceConfiguration {
     }
 
     // Query prototype configuration
+
     @Bean
-    public DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectPrototypeService() {
+    public DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectInstanceService() {
         return new DefaultQueryDynamicInstanceService(dynamicObjectInstanceRepository, spaceQueryRelation);
+    }
+
+    // Query prototype configuration
+
+    @Bean
+    public DynamicObjectPrototypeService<Plugin> dynamicObjectPrototypeService() {
+        return new DefaultPluginDynamicPrototypeService(dynamicObjectPrototypeRepository, pluginTypePluginRelation);
     }
 }

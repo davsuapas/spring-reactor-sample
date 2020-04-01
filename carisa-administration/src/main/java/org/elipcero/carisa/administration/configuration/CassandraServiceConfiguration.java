@@ -21,9 +21,11 @@ import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEn
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEnteHirarchyIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEntePropertyIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationInstanceSpaceIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationPluginTypePluginPrototypeIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationSpaceEnteIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationSpaceQueryInstanceIdentifierConvert;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
@@ -32,6 +34,8 @@ import org.elipcero.carisa.administration.domain.EnteHierarchy;
 import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.administration.domain.Instance;
 import org.elipcero.carisa.administration.domain.InstanceSpace;
+import org.elipcero.carisa.administration.domain.Plugin;
+import org.elipcero.carisa.administration.domain.PluginType;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
@@ -40,12 +44,14 @@ import org.elipcero.carisa.administration.repository.DynamicObjectPrototypeRepos
 import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
+import org.elipcero.carisa.administration.repository.PluginTypeRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteCategoryLinkPropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteCategoryPropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteHirarchyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EntePropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.InstanceSpaceRepository;
+import org.elipcero.carisa.administration.repository.cassandra.PluginRepository;
 import org.elipcero.carisa.administration.repository.cassandra.SpaceEnteRepository;
 import org.elipcero.carisa.administration.repository.cassandra.SpaceQueryInstanceRepository;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
@@ -108,6 +114,14 @@ public class CassandraServiceConfiguration {
 
     @Autowired
     private SpaceQueryInstanceRepository spaceQueryInstanceRepository;
+
+    @Autowired
+    private PluginRepository pluginRepository;
+
+    @Bean
+    public PluginTypeRepository pluginTypeRepository() {
+        return new PluginTypeRepository();
+    }
 
     // Converter
 
@@ -178,5 +192,12 @@ public class CassandraServiceConfiguration {
         return new MultiplyDependencyRelationImpl<>(
                 spaceRepository, dynamicObjectInstanceRepository, spaceQueryInstanceRepository,
                 new DependencyRelationSpaceQueryInstanceIdentifierConvert());
+    }
+
+    @Bean
+    public MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> pluginTypePluginRelation() {
+        return new MultiplyDependencyRelationImpl<>(
+                pluginTypeRepository(), dynamicObjectPrototypeRepository, pluginRepository,
+                new DependencyRelationPluginTypePluginPrototypeIdentifierConvert());
     }
 }

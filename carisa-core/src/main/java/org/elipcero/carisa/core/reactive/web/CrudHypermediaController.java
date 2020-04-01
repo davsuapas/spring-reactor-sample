@@ -75,12 +75,7 @@ public class CrudHypermediaController<T> {
                         ResponseEntity
                                 .created(resourceCreated.getLink(IanaLinkRelations.SELF).get().toUri())
                                 .body(resourceCreated))
-                .onErrorResume(error -> {
-                    if (error instanceof DependencyRelationParentNotFoundException) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage());
-                    }
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-                });
+                .onErrorResume(throwableController(null));
     }
 
     /**
@@ -100,7 +95,8 @@ public class CrudHypermediaController<T> {
                                         ResponseEntity.created(resource.getLink(IanaLinkRelations.SELF).get().toUri()) :
                                         ResponseEntity.ok();
                                 return builder.body(resource);
-                            }));
+                            }))
+            .onErrorResume(throwableController(null));
     }
 
     /**
@@ -124,16 +120,7 @@ public class CrudHypermediaController<T> {
         return entity
                 .flatMap(child -> this.assembler.toModel(child, null))
                 .map(ResponseEntity::ok)
-                .onErrorResume(error -> {
-                    if (error instanceof DependencyRelationChildNotFoundException ||
-                            error instanceof DependencyRelationParentNotFoundException) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage());
-                    }
-                    if (onError != null) {
-                        onError.accept(error);
-                    }
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-                });
+                .onErrorResume(throwableController(onError));
     }
 
     /**
@@ -212,6 +199,21 @@ public class CrudHypermediaController<T> {
                                 methodOn(controllerParent).getById(parentId))
                                 .withRel(parentRelName).toMono()
                                 .flatMap(link -> Mono.just(new CollectionModel<>(entities, link))));
+    }
+
+    private Function<Throwable, Mono<? extends ResponseEntity<EntityModel<T>>>> throwableController(
+            Consumer<Throwable> onError) {
+
+        return error -> {
+            if (error instanceof DependencyRelationChildNotFoundException ||
+                    error instanceof DependencyRelationParentNotFoundException) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage());
+            }
+            if (onError != null) {
+                onError.accept(error);
+            }
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        };
     }
 }
 

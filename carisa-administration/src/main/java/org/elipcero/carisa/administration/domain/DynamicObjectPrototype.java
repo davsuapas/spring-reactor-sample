@@ -37,6 +37,7 @@ import java.util.UUID;
 @Getter
 public class DynamicObjectPrototype extends Entity implements Relation {
 
+    @Setter
     private UUID parentId;
 
     @Setter

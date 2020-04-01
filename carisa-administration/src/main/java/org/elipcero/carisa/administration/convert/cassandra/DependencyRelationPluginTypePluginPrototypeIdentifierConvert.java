@@ -14,20 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.administration.convert.cassandra;
 
-import org.elipcero.carisa.administration.domain.support.ManyRelation;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.elipcero.carisa.administration.convert.cassandra.support.DependencyRelationManyRelationIdentifierConvert;
+import org.elipcero.carisa.administration.domain.Plugin;
 
 /**
- * The plugin represents all queries types of the system.
- * The plugin parentId contain the type plugin identifier
- * There are several plugin types: Query
- * @see PluginType
- * @see SpaceQueryInstance
+ * Convert plugintype-plugin (dynamic object prototype) relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
-@Table("carisa_plugin")
-public class Plugin extends ManyRelation {
+public class DependencyRelationPluginTypePluginPrototypeIdentifierConvert
+        extends DependencyRelationManyRelationIdentifierConvert<Plugin> {
 }

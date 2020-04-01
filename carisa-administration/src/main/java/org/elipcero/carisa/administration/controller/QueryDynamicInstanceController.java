@@ -17,7 +17,7 @@
 package org.elipcero.carisa.administration.controller;
 
 import lombok.NonNull;
-import org.elipcero.carisa.administration.controller.support.DynamicObjectInstanceRelationController;
+import org.elipcero.carisa.administration.controller.support.DynamicObjectInstanceController;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
 import org.elipcero.carisa.administration.service.support.DynamicObjectInstanceService;
@@ -32,8 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/queryinstances")
-public class QueryDynamicInstanceController
-        extends DynamicObjectInstanceRelationController<SpaceQueryInstance> {
+public class QueryDynamicInstanceController extends DynamicObjectInstanceController<SpaceQueryInstance> {
 
     public QueryDynamicInstanceController(
        @NonNull final DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectService,
@@ -43,7 +42,7 @@ public class QueryDynamicInstanceController
     }
 
     /**
-     * @see DynamicObjectInstanceRelationController
+     * @see DynamicObjectInstanceController
      */
     @Override
     protected SpaceQueryInstance buildManyRelation(DynamicObjectInstance relation) {

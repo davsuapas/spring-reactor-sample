@@ -52,7 +52,11 @@ public class PluginTypeRepository implements CustomizedReactiveCrudRepository<Pl
 
     @Override
     public Mono<PluginType> findById(UUID uuid) {
-        return Mono.just(PluginType.INSTANCES.get(uuid));
+        PluginType pluginType = PluginType.INSTANCES.get(uuid);
+        if (pluginType == null) {
+            return Mono.empty();
+        }
+        return Mono.just(pluginType);
     }
 
     @Override

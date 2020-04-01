@@ -1,8 +1,7 @@
 package org.elipcero.carisa.administration.controller.support;
 
 import lombok.NonNull;
-import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
-import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.domain.support.ManyRelation;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.service.support.MultiplyDependencyRelationService;
@@ -25,21 +24,21 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.lin
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
- * Base controller to dynamic object instance controller.
- * It could use instead of DynamicObjectInstance a generic but then it not work affordance
- * @see SpaceQueryInstance
+ * Base controller to dynamic object prototype controller.
+ * It could use instead of DynamicObjectPrototype a generic but then it not work affordance
+ * @see DynamicObjectPrototype
  *
  * @author David Suárez
  */
-public abstract class DynamicObjectInstanceRelationController<TRelation extends ManyRelation>
-        implements ChildControllerHypermedia<DynamicObjectInstance> {
+public abstract class DynamicObjectPrototypeController<TRelation extends ManyRelation>
+        implements ChildControllerHypermedia<DynamicObjectPrototype> {
 
-    private final CrudHypermediaController<DynamicObjectInstance> crudHypermediaController;
-    private final MultiplyDependencyRelationService<DynamicObjectInstance, TRelation> multiDependencyService;
+    private final CrudHypermediaController<DynamicObjectPrototype> crudHypermediaController;
+    private final MultiplyDependencyRelationService<DynamicObjectPrototype, TRelation> multiDependencyService;
 
-    public DynamicObjectInstanceRelationController(
-           @NonNull final BasicReactiveRepresentationModelAssembler<DynamicObjectInstance> modelAssembler,
-           @NonNull final MultiplyDependencyRelationService<DynamicObjectInstance, TRelation> multiDependencyService) {
+    public DynamicObjectPrototypeController(
+           @NonNull final BasicReactiveRepresentationModelAssembler<DynamicObjectPrototype> modelAssembler,
+           @NonNull final MultiplyDependencyRelationService<DynamicObjectPrototype, TRelation> multiDependencyService) {
 
         Assert.notNull(modelAssembler, "The modelAssembler can not be null");
         Assert.notNull(multiDependencyService, "The multiDependencyService can not be null");
@@ -53,7 +52,7 @@ public abstract class DynamicObjectInstanceRelationController<TRelation extends 
      * @param relation the information to build the relation
      * @return the many to many relation
      */
-    protected abstract TRelation buildManyRelation(DynamicObjectInstance relation);
+    protected abstract TRelation buildManyRelation(DynamicObjectPrototype relation);
 
     /**
      * Return schema
@@ -69,38 +68,38 @@ public abstract class DynamicObjectInstanceRelationController<TRelation extends 
     }
 
     /**
-     * Get the entity by id
-     * @param id the entity identifier (UUID string)
-     * @return the entity found
+     * Get the DynamicObjectPrototype by id
+     * @param id the DynamicObjectPrototype identifier (UUID string)
+     * @return the DynamicObjectPrototype found
      */
     @GetMapping("/{id}")
-    public Publisher<EntityModel<DynamicObjectInstance>> getById(final @PathVariable("id") String id) {
+    public Publisher<EntityModel<DynamicObjectPrototype>> getById(final @PathVariable("id") String id) {
         return this.crudHypermediaController.get(this.multiDependencyService.getById(UUID.fromString(id)));
     }
 
     /**
-     * Create the entity
-     * @param entity the entity (Id == null)
-     * @return the entity created
+     * Create the DynamicObjectPrototype
+     * @param entity the DynamicObjectPrototype (Id == null)
+     * @return the DynamicObjectPrototype created
      */
     @PostMapping
-    public Publisher<ResponseEntity<EntityModel<DynamicObjectInstance>>> create(
-            final @RequestBody DynamicObjectInstance entity) {
+    public Publisher<ResponseEntity<EntityModel<DynamicObjectPrototype>>> create(
+            final @RequestBody DynamicObjectPrototype entity) {
 
         return this.crudHypermediaController.create(
                 this.multiDependencyService.create(entity, this.buildManyRelation(entity)));
     }
 
     /**
-     * Update or create the entity depending of the identifier if exists.
-     * @param id the entity identifier (UUID string)
-     * @param entity the entity (Id == null)
-     * @return the entity updated or created
+     * Update or create the DynamicObjectPrototype depending of the identifier if exists.
+     * @param id the DynamicObjectPrototype identifier (UUID string)
+     * @param entity the DynamicObjectPrototype (Id == null)
+     * @return the DynamicObjectPrototype updated or created
      */
     @PutMapping("/{id}")
-    public Publisher<ResponseEntity<EntityModel<DynamicObjectInstance>>> updateOrCreate(
+    public Publisher<ResponseEntity<EntityModel<DynamicObjectPrototype>>> updateOrCreate(
             final @PathVariable("id") String id,
-            final @RequestBody DynamicObjectInstance entity) {
+            final @RequestBody DynamicObjectPrototype entity) {
 
         return this.crudHypermediaController.updateOrCreate(
                 this.multiDependencyService.updateOrCreate(

@@ -21,7 +21,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 
 /**
  * The query represents the aggregation information of each Ente properties or categories property
- * Can exist many query types. Each query will have associate a micro services to operate
+ * Can exist many queries types. Each query will have associate a micro services to operate
  * The dynamic object prototype define the metadata of each query type and can have many dynamic properties
  *
  * @author David Suárez

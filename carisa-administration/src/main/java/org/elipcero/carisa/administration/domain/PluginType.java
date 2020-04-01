@@ -31,9 +31,11 @@ import java.util.UUID;
 @Builder
 public class PluginType extends Entity {
 
+    public static UUID QUERY_ID =  UUID.fromString("9b3d108e-89cb-4c7c-a774-a527a8b22e57");
+
     // All plugin type in memory
     public static Map<UUID, PluginType> INSTANCES = new HashMap<UUID, PluginType>() {{
-        put(UUID.fromString("9b3d108e-89cb-4c7c-a774-a527a8b22e57"), PluginType.builder().name("Query").build());
+        put(QUERY_ID, PluginType.builder().name("Query").build());
     }};
 
     private String name;
