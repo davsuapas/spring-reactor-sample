@@ -54,7 +54,11 @@ public class IndexController {
                 linkTo(methodOn(EnteCategoryController.class)
                         .getMetadata()).withRel(EnteCategoryModelAssembler.CATEGORIES_REL_NAME).toMono(),
                 linkTo(methodOn(EnteCategoryPropertyController.class)
-                        .getMetadata()).withRel(EnteCategoryPropertyModelAssembler.PROPERTIES_REL_NAME).toMono())
+                        .getMetadata()).withRel(EnteCategoryPropertyModelAssembler.PROPERTIES_REL_NAME).toMono(),
+                linkTo(methodOn(QueryDynamicPrototypeController.class)
+                        .getMetadata()).withRel(QueryDynamicPrototypeModelAssembler.QUERY_PROTOTYPES_REL_NAME).toMono(),
+                linkTo(methodOn(QueryDynamicInstanceController.class)
+                        .getMetadata()).withRel(QueryDynamicInstanceModelAssembler.QUERY_INSTANCES_REL_NAME).toMono())
                 .collectList().map(links -> new EntityModel<>(new Index(), links));
     }
 }
