@@ -80,6 +80,7 @@ public class QueryDynamicInstanceControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.prototypeId").isEqualTo(QUERY_PROTOTYPE_ID)
                     .jsonPath("$.parentId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.queryplugin.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstances-get",
                         commonPathParameters(),
@@ -102,6 +103,7 @@ public class QueryDynamicInstanceControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.prototypeId").isEqualTo(QUERY_PROTOTYPE_ID)
                     .jsonPath("$.parentId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.queryplugin.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstances-post",
                         commonRequestFields(),
@@ -126,6 +128,7 @@ public class QueryDynamicInstanceControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.parentId").isEqualTo(SPACE_ID)
                     .jsonPath("$.prototypeId").isEqualTo(QUERY_PROTOTYPE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.queryplugin.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstances-put",
                         commonPathParameters(),
@@ -161,6 +164,7 @@ public class QueryDynamicInstanceControllerTest extends DataAbstractControllerTe
                     .jsonPath("$.parentId").isEqualTo(SPACE_ID)
                     .jsonPath("$.prototypeId").isEqualTo(QUERY_PROTOTYPE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.queryplugin.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 

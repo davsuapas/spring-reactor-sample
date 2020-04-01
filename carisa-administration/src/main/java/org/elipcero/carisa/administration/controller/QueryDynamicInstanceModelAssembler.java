@@ -48,10 +48,14 @@ public class QueryDynamicInstanceModelAssembler
                 .andAffordance(methodOn(QueryDynamicInstanceController.class)
                         .updateOrCreate(queryInstance.getId().toString(), queryInstance));
 
+        WebFluxLinkBuilder.WebFluxLink queryPrototype = linkTo(
+                methodOn(QueryDynamicPrototypeController.class).getById(queryInstance.getPrototypeId().toString()))
+                .withRel(QueryDynamicPrototypeModelAssembler.QUERY_PROTOTYPE_REL_NAME);
+
         WebFluxLinkBuilder.WebFluxLink spaces = linkTo(
                 methodOn(SpaceController.class).getById(queryInstance.getParentId().toString()))
                 .withRel(SpaceModelAssembler.SPACE_REL_NAME);
 
-        return Flux.concat(self.toMono(), spaces.toMono());
+        return Flux.concat(self.toMono(), spaces.toMono(), queryPrototype.toMono());
     }
 }
