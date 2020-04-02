@@ -17,7 +17,6 @@
 package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
@@ -30,8 +29,8 @@ import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.ParentChildName;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelationService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -42,11 +41,9 @@ import java.util.UUID;
  *
  * @author David Suárez
  */
-@RequiredArgsConstructor
-public class DefaultSpaceService implements SpaceService {
-
-    @NonNull
-    private final SpaceRepository spaceRepository;
+public class DefaultSpaceService
+        extends MultiplyDependencyRelationService<Space, InstanceSpace>
+        implements SpaceService {
 
     @NonNull
     private final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation;
@@ -55,17 +52,20 @@ public class DefaultSpaceService implements SpaceService {
     private final MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHierarchyRelation;
 
     @NonNull
-    private final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelation;
-
-    @NonNull
     private final MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> spaceQueryInstanRelation;
 
-    /**
-     * @see SpaceService
-     */
-    @Override
-    public Mono<Space> getById(final UUID id) {
-        return this.spaceRepository.findById(id);
+    public DefaultSpaceService(
+           @NonNull final SpaceRepository spaceRepository,
+           @NonNull final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation,
+           @NonNull final MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHierarchyRelation,
+           @NonNull final MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelation,
+           @NonNull final MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> spaceQueryInstanRelation) {
+
+        super(spaceRepository, instanceSpaceRelation);
+
+        this.spaceEnteRelation = spaceEnteRelation;
+        this.enteCategoryHierarchyRelation = enteCategoryHierarchyRelation;
+        this.spaceQueryInstanRelation = spaceQueryInstanRelation;
     }
 
     /**
@@ -73,20 +73,7 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Mono<Space> create(final Space space) {
-        return this.instanceSpaceRelation.create(
-                new DependencyRelationCreateCommand<Space, InstanceSpace>() {
-                    @Override
-                    public Space getChild() {
-                        return space;
-                    }
-
-                    @Override
-                    public InstanceSpace getRelation() {
-                        return InstanceSpace.builder()
-                                .parentId(space.getInstanceId())
-                                .childId(space.getId()).build();
-                    }
-                });
+        return super.create(space, new InstanceSpace());
     }
 
     /**
@@ -94,11 +81,7 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public Mono<EntityDataState<Space>> updateOrCreate(final UUID id, final Space space) {
-        space.setId(id);
-        return this.spaceRepository
-                .updateCreate(id,
-                        spaceForUpdating -> spaceForUpdating.setName(space.getName()),
-                        this.create(space));
+        return super.updateOrCreate(id, space, new InstanceSpace());
     }
 
     /**
@@ -141,5 +124,13 @@ public class DefaultSpaceService implements SpaceService {
                             .childId(query.getChild().getId())
                             .name(query.getChild().getName())
                         .build());
+    }
+
+    /**
+     * @see MultiplyDependencyRelationService
+     */
+    @Override
+    protected void updateEntity(Space entityForUpdating, Space entity) {
+        entityForUpdating.setName(entity.getName());
     }
 }

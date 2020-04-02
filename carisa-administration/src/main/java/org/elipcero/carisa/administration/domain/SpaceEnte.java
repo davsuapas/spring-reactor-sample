@@ -16,17 +16,9 @@
 
 package org.elipcero.carisa.administration.domain;
 
-import lombok.Builder;
-import org.elipcero.carisa.administration.domain.support.ManyRelation;
+import org.elipcero.carisa.core.data.ManyRelation;
 import org.springframework.data.cassandra.core.mapping.Table;
-
-import java.util.UUID;
 
 @Table("carisa_space_ente")
 public class SpaceEnte extends ManyRelation {
-
-    @Builder
-    public SpaceEnte(UUID parentId, UUID childId) {
-        super(parentId, childId);
-    }
 }

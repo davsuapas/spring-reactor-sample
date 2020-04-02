@@ -16,10 +16,12 @@
 
 package org.elipcero.carisa.administration.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.elipcero.carisa.core.data.Entity;
+import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
@@ -32,7 +34,7 @@ import java.util.UUID;
  */
 @Table("carisa_space")
 @Getter
-public class Space extends Entity {
+public class Space extends Entity implements Relation {
 
     private UUID instanceId;
 
@@ -44,5 +46,17 @@ public class Space extends Entity {
         super(id);
         this.instanceId = instanceId;
         this.name = name;
+    }
+
+    @Override
+    @JsonIgnore
+    public Object getParentId() {
+        return this.getInstanceId();
+    }
+
+    @Override
+    @JsonIgnore
+    public UUID getChildId() {
+        return this.getId();
     }
 }

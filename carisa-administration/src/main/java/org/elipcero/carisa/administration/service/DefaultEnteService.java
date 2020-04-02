@@ -17,7 +17,6 @@
 package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteHierarchy;
@@ -27,10 +26,10 @@ import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.ParentChildName;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelationService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -41,11 +40,9 @@ import java.util.UUID;
  *
  * @author David Suárez
  */
-@RequiredArgsConstructor
-public class DefaultEnteService implements EnteService {
-
-    @NonNull
-    private final EnteRepository enteRepository;
+public class DefaultEnteService
+        extends MultiplyDependencyRelationService<Ente, SpaceEnte>
+        implements EnteService {
 
     @NonNull
     private final MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation;
@@ -53,15 +50,16 @@ public class DefaultEnteService implements EnteService {
     @NonNull
     private final EmbeddedDependencyRelation<EnteProperty> entePropertyRelation;
 
-    @NonNull
-    private final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation;
+    public DefaultEnteService(
+            @NonNull final EnteRepository enteRepository,
+            @NonNull final MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation,
+            @NonNull final EmbeddedDependencyRelation<EnteProperty> entePropertyRelation,
+            @NonNull final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation) {
 
-    /**
-     * @see EnteService
-     */
-    @Override
-    public Mono<Ente> getById(final UUID id) {
-        return this.enteRepository.findById(id);
+        super(enteRepository, spaceEnteRelation);
+
+        this.enteHierarchyRelation = enteHierarchyRelation;
+        this.entePropertyRelation = entePropertyRelation;
     }
 
     /**
@@ -69,20 +67,7 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Mono<Ente> create(final Ente ente) {
-        return this.spaceEnteRelation.create(
-                new DependencyRelationCreateCommand<Ente, SpaceEnte>() {
-                    @Override
-                    public Ente getChild() {
-                        return ente;
-                    }
-
-                    @Override
-                    public SpaceEnte getRelation() {
-                        return SpaceEnte.builder()
-                                .parentId(ente.getSpaceId())
-                                .childId(ente.getId()).build();
-                    }
-                });
+        return super.create(ente, new SpaceEnte());
     }
 
     /**
@@ -90,10 +75,7 @@ public class DefaultEnteService implements EnteService {
      */
     @Override
     public Mono<EntityDataState<Ente>> updateOrCreate(final UUID id, final Ente ente) {
-        return this.enteRepository
-                .updateCreate(id,
-                        enteForUpdating -> enteForUpdating.setName(ente.getName()),
-                        this.create(ente));
+        return super.updateOrCreate(id, ente, new SpaceEnte());
     }
 
     /**
@@ -121,5 +103,13 @@ public class DefaultEnteService implements EnteService {
                         .id(enteId)
                         .category(false)
                     .build()).map(MultiplyDependencyConnectionInfo::getChild);
+    }
+
+    /**
+     * @see MultiplyDependencyRelationService
+     */
+    @Override
+    protected void updateEntity(Ente entityForUpdating, Ente entity) {
+        entityForUpdating.setName(entity.getName());
     }
 }

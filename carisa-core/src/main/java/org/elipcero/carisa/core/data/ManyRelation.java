@@ -14,14 +14,13 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain.support;
+package org.elipcero.carisa.core.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.elipcero.carisa.core.data.Relation;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 

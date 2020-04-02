@@ -14,32 +14,28 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.service.support;
+package org.elipcero.carisa.core.reactive.data;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.elipcero.carisa.administration.domain.support.ManyRelation;
 import org.elipcero.carisa.core.data.Entity;
 import org.elipcero.carisa.core.data.EntityDataState;
+import org.elipcero.carisa.core.data.ManyRelation;
 import org.elipcero.carisa.core.data.Relation;
-import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationCreateCommand;
-import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
 /**
- * @see MultiplyDependencyRelationService
+ * Operations for entity with relation.
  *
  * @author David Suárez
  */
 @RequiredArgsConstructor
-public abstract class DefaultMultiplyDependencyRelationService<T extends Relation, TRelation extends ManyRelation>
-        implements MultiplyDependencyRelationService<T, TRelation> {
+public abstract class MultiplyDependencyRelationService<T extends Relation, TRelation extends ManyRelation> {
 
     @NonNull
-    private CustomizedReactiveCrudRepository<T, UUID> entityRepository;
+    private final CustomizedReactiveCrudRepository<T, UUID> entityRepository;
 
     @NonNull
     private final MultiplyDependencyRelation<? extends Entity, T, TRelation> relation;
@@ -52,19 +48,21 @@ public abstract class DefaultMultiplyDependencyRelationService<T extends Relatio
     protected abstract void updateEntity(T entityForUpdating, T entity);
 
     /**
-     * @see MultiplyDependencyRelationService
+     * Getting the entity
+     * @param id the entity identifier
+     * @return the entity
      */
-    @Override
     public Mono<T> getById(final UUID id) {
         return this.entityRepository.findById(id);
     }
 
     /**
-     * @see MultiplyDependencyRelationService
+     * Create the entity and insert it into the parent. It's not done in the same transaction.
+     * @param entity the entity to insert
+     * @param manyRelation the relation between parent and entity
+     * @return the inserted entity
      */
-    @Override
     public Mono<T> create(final T entity, final TRelation manyRelation) {
-
         return this.relation.create(
                 new DependencyRelationCreateCommand<T, TRelation>() {
                     @Override
@@ -82,12 +80,15 @@ public abstract class DefaultMultiplyDependencyRelationService<T extends Relatio
     }
 
     /**
-     * @see MultiplyDependencyRelationService
+     * Update or create the entity. If the id exits is updated
+     * otherwise is created. The identifier can not be updated.
+     * @see MultiplyDependencyRelationService#create(Relation, ManyRelation)
+     * @param id the dynamicn object identifier
+     * @param entity the entity to insert or update
+     * @param manyRelation the relation between parent and dynamic object
+     * @return the inserted or updated dynamic object
      */
-    @Override
-    public Mono<EntityDataState<T>> updateOrCreate(
-            final UUID id, final T entity, final TRelation manyRelation) {
-
+    public Mono<EntityDataState<T>> updateOrCreate(final UUID id, final T entity, final TRelation manyRelation) {
         return this.entityRepository
                 .updateCreate(id,
                         entityForUpdating -> this.updateEntity(entityForUpdating, entity),

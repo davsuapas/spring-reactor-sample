@@ -2,10 +2,10 @@ package org.elipcero.carisa.administration.controller.support;
 
 import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
-import org.elipcero.carisa.administration.domain.support.ManyRelation;
 import org.elipcero.carisa.administration.general.StringResource;
-import org.elipcero.carisa.administration.service.support.MultiplyDependencyRelationService;
+import org.elipcero.carisa.core.data.ManyRelation;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
+import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelationService;
 import org.elipcero.carisa.core.reactive.web.ChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;

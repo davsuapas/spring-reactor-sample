@@ -42,14 +42,14 @@ import org.elipcero.carisa.administration.service.DefaultEnteCategoryService;
 import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
-import org.elipcero.carisa.administration.service.DefaultPluginDynamicPrototypeService;
-import org.elipcero.carisa.administration.service.DefaultQueryDynamicInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.EnteCategoryService;
 import org.elipcero.carisa.administration.service.EntePropertyService;
 import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
+import org.elipcero.carisa.administration.service.PluginDynamicPrototypeService;
+import org.elipcero.carisa.administration.service.QueryDynamicInstanceService;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.administration.service.support.DynamicObjectInstanceService;
 import org.elipcero.carisa.administration.service.support.DynamicObjectPrototypeService;
@@ -182,13 +182,13 @@ public class HorizontalServiceConfiguration {
 
     @Bean
     public DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectInstanceService() {
-        return new DefaultQueryDynamicInstanceService(dynamicObjectInstanceRepository, spaceQueryRelation);
+        return new QueryDynamicInstanceService(dynamicObjectInstanceRepository, spaceQueryRelation);
     }
 
     // Query prototype configuration
 
     @Bean
     public DynamicObjectPrototypeService<Plugin> dynamicObjectPrototypeService() {
-        return new DefaultPluginDynamicPrototypeService(dynamicObjectPrototypeRepository, pluginTypePluginRelation);
+        return new PluginDynamicPrototypeService(dynamicObjectPrototypeRepository, pluginTypePluginRelation);
     }
 }

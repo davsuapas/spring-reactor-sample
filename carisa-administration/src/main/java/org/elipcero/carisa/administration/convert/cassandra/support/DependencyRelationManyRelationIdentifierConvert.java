@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.convert.cassandra.support;
 
-import org.elipcero.carisa.administration.domain.support.ManyRelation;
+import org.elipcero.carisa.core.data.ManyRelation;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
 import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;

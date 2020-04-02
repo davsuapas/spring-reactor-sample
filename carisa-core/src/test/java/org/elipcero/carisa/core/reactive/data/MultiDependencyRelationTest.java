@@ -77,7 +77,7 @@ public class MultiDependencyRelationTest {
                 .expectNextMatches(result -> {
                     assertThat(result.getParentId()).isEqualTo(relationEntity.getParentId())
                             .as("Check relation parentId");
-                    assertThat(result.getParentId()).isEqualTo(relationEntity.getParentId())
+                    assertThat(result.getChildId()).isEqualTo(relationEntity.getChildId())
                             .as("Check relation childId");
                     return true;
                 })

@@ -17,26 +17,25 @@
 package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
-import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
-import org.elipcero.carisa.administration.domain.Space;
-import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
-import org.elipcero.carisa.administration.repository.DynamicObjectInstanceRepository;
-import org.elipcero.carisa.administration.service.support.DynamicObjectInstanceService;
-import org.elipcero.carisa.administration.service.support.MultiplyDependencyRelationService;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
+import org.elipcero.carisa.administration.domain.Plugin;
+import org.elipcero.carisa.administration.domain.PluginType;
+import org.elipcero.carisa.administration.repository.DynamicObjectPrototypeRepository;
+import org.elipcero.carisa.administration.service.support.DynamicObjectPrototypeService;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 
 /**
- * Operations for query instance
- * @see MultiplyDependencyRelationService
+ * Operations for plugin instance
+ * @see DynamicObjectPrototypeService
  *
  * @author David Suárez
  */
 
-public class DefaultQueryDynamicInstanceService extends DynamicObjectInstanceService<SpaceQueryInstance> {
+public class PluginDynamicPrototypeService extends DynamicObjectPrototypeService<Plugin> {
 
-    public DefaultQueryDynamicInstanceService(
-         @NonNull DynamicObjectInstanceRepository dynamicObjectRepository,
-         @NonNull MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> relation) {
+    public PluginDynamicPrototypeService(
+         @NonNull DynamicObjectPrototypeRepository dynamicObjectRepository,
+         @NonNull MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> relation) {
 
         super(dynamicObjectRepository, relation);
     }
