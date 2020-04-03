@@ -56,7 +56,7 @@ public abstract class DependencyRelationImpl<TParent, TRelation extends Relation
         return this.parentRepository.findById(this.convertRelationId.convertToParent(relationEntity))
                 .flatMap(__ -> relationRepository.save(relationEntity))
                 .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
-                        String.format("The ParentId: '%s' not found", relationEntity.getParentId()))));
+                        String.format("The parent container with ID: '%s' not found", relationEntity.getParentId()))));
     }
 
     /**

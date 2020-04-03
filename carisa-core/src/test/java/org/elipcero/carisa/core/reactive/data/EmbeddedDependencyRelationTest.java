@@ -84,7 +84,7 @@ public class EmbeddedDependencyRelationTest {
 
         StepVerifier
                 .create(embeddedDependencyRelation.create(relationEntity))
-                .expectErrorMessage(String.format("The ParentId: '%s' not found", relationEntity.getParentId()))
+                .expectErrorMessage(String.format("The parent container with ID: '%s' not found", relationEntity.getParentId()))
                 .verify();
     }
 

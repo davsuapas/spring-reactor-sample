@@ -153,10 +153,12 @@ public class CrudHypermediaControllerTest {
     @Test
     public void controller_connectToParent_ref_not_found_should_return_status_204() {
 
+        UUID id = UUID.randomUUID();
+
         StepVerifier
                 .create(crudHypermediaController.connectToParent(
-                        Mono.error(new DependencyRelationRefNotFoundException("error"))))
-                .expectErrorMessage("404 NOT_FOUND \"error\"")
+                        Mono.error(new DependencyRelationRefNotFoundException(String.format("error: %s", id)))))
+                .expectErrorMessage("404 NOT_FOUND \"error: " + id + "\"")
                 .verify();
     }
 

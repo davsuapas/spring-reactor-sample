@@ -159,7 +159,7 @@ public class MultiDependencyRelationTest {
 
         StepVerifier
                 .create(multiplyDependencyRelation.create(getCreateCommand(relationEntity, child)))
-                .expectErrorMessage(String.format("The ParentId: '%s' not found", relationEntity.getParentId()))
+                .expectErrorMessage(String.format("The parent container with ID: '%s' not found", relationEntity.getParentId()))
                 .verify();
     }
 
@@ -257,7 +257,7 @@ public class MultiDependencyRelationTest {
 
         StepVerifier
                 .create(multiplyDependencyRelation.connectTo(relationEntity))
-                .expectErrorMessage(String.format("The ParentId: '%s' not found", relationEntity.getParentId()))
+                .expectErrorMessage(String.format("The parent container with ID: '%s' not found", relationEntity.getParentId()))
                 .verify();
     }
 
@@ -272,7 +272,7 @@ public class MultiDependencyRelationTest {
 
         StepVerifier
                 .create(multiplyDependencyRelation.connectTo(relationEntity))
-                .expectErrorMessage(String.format("The ChildId: '%s' not found", relationEntity.getChildId()))
+                .expectErrorMessage(String.format("The child with ID: '%s' not found", relationEntity.getChildId()))
                 .verify();
     }
 

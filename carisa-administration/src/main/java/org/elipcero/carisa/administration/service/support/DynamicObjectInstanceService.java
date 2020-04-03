@@ -61,7 +61,7 @@ public abstract class DynamicObjectInstanceService<TRelation extends ManyRelatio
                         return super.create(entity, manyRelation);
                     }
                     return Mono.error(new DependencyRelationRefNotFoundException(
-                            String.format("The object prototype with ID: %s not found", entity.getPrototypeId())));
+                            String.format("The object prototype with ID: '%s' not found", entity.getPrototypeId())));
                 });
     }
 

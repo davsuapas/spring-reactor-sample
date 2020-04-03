@@ -155,7 +155,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                                              .build(),
                                         rel -> Mono.just(enteProp)))
                                 .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
-                                        String.format("The ente property identifier: '%s' not found", enteId))));
+                                        String.format("The ente property with ID: '%s' not found", enteId))));
                     }
                     else {
                         return monoErrorIncorrectReferenceToConnect(enteCategoryId);
@@ -189,7 +189,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                                              .build(),
                                         rel -> Mono.just(categoryProp)))
                                 .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
-                                        String.format("The category property Id: '%s' not found",
+                                        String.format("The category property with ID: '%s' not found",
                                                 linkedCategoryPropertyId))));
                     }
                     else {
@@ -221,7 +221,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                 }
             })
             .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
-                     String.format("The category property identifier: '%s' not found", categoryPropertyId))));
+                     String.format("The category property with ID: '%s' not found", categoryPropertyId))));
     }
 
     private static Mono<? extends MultiplyDependencyConnectionInfo<EnteCategoryProperty, Mono<PropertyType>>>
