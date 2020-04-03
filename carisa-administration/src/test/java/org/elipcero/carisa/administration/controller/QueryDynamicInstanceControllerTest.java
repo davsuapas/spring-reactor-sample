@@ -61,6 +61,7 @@ public class QueryDynamicInstanceControllerTest extends DataAbstractControllerTe
             this.executeCommands("space-controller.cql");
             this.executeCommands("space-query-instance-controller.cql");
             this.executeCommands("query-instance-controller.cql");
+            this.executeCommands("query-prototype-controller.cql");
             beforeOnce = true;
         }
     }
@@ -108,6 +109,23 @@ public class QueryDynamicInstanceControllerTest extends DataAbstractControllerTe
                 .consumeWith(document("queryinstances-post",
                         commonRequestFields(),
                         commonResponseFields()));
+    }
+
+    @Test
+    public void create_query_using_post_protoype_not_exist_should_return_error_not_found() {
+
+        DynamicObjectInstance objectPrototype = DynamicObjectInstance.builder()
+                    .prototypeId(UUID.randomUUID())
+                .build();
+
+        this.testClient
+                .post()
+                .uri("/api/queryinstances").contentType(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .body(Mono.just(objectPrototype), DynamicObjectInstance.class)
+                .exchange()
+                .expectStatus().isNotFound();
+
     }
 
     @Test

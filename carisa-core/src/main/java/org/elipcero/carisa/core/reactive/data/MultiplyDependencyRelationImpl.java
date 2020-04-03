@@ -102,10 +102,10 @@ public class MultiplyDependencyRelationImpl<TParent, TChild,
                                             }
                                             return Mono.just(new MultiplyDependencyConnectionInfo<>(parent, child));
                                         }))
-                            .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
+                            .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
                                     String.format("The ChildId: '%s' not found", relation.getChildId()))))
                 )
-                .switchIfEmpty(Mono.error(new DependencyRelationParentNotFoundException(
+                .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
                         String.format("The ParentId: '%s' not found", relation.getParentId()))));
     }
 

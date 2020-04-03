@@ -96,14 +96,12 @@ public class MultiplyDependencyRelationServiceTest {
     }
 
     @Test
-    public void update_should_return_created_entity() {
+    public void updateOrCreate_should_return_created_entity() {
 
         EntityTest entity = new EntityTest();
         RelationEntity relation = new RelationEntity();
 
-        Mockito.when(this.relation.create(any())).thenReturn(Mono.empty());
-
-        Mockito.when(this.entityRepository.updateCreate(eq(entity.getId()), any(), eq(Mono.empty())))
+        Mockito.when(this.entityRepository.updateCreate(eq(entity.getId()), any(), any()))
                 .thenReturn(Mono.just(EntityDataState.<EntityTest>builder()
                         .domainState(EntityDataState.State.updated)
                         .entity(entity)

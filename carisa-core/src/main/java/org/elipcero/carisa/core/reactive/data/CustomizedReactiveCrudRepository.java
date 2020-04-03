@@ -22,6 +22,7 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Reactive extended crud repository
@@ -37,10 +38,10 @@ public interface CustomizedReactiveCrudRepository<T, ID>
      * a predicate parameter, otherwise return the created entity with state
      *
      * @param id id for finding
-     * @param updateChange predicate for updating entity
-     * @param monoCreatedEntity entity inserted
+     * @param updateChange predicate for updating entity if exists
+     * @param monoCreatedEntity function for inserted entity if not exists
      * @return Mono<EntityDataState<T>> the entity with state
      */
     Mono<EntityDataState<T>> updateCreate(final ID id, final Consumer<T> updateChange,
-                                          final Mono<T> monoCreatedEntity);
+                                          final Supplier<Mono<T>> monoCreatedEntity);
 }

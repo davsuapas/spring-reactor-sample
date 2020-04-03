@@ -22,8 +22,7 @@ import org.elipcero.carisa.core.data.ChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.ParentChildName;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationChildNotFoundException;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationParentNotFoundException;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRefNotFoundException;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -205,8 +204,7 @@ public class CrudHypermediaController<T> {
             Consumer<Throwable> onError) {
 
         return error -> {
-            if (error instanceof DependencyRelationChildNotFoundException ||
-                    error instanceof DependencyRelationParentNotFoundException) {
+            if (error instanceof DependencyRelationRefNotFoundException) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage());
             }
             if (onError != null) {

@@ -21,9 +21,9 @@ package org.elipcero.carisa.core.reactive.data;
  *
  * @author David Suárez
  */
-public class DependencyRelationChildNotFoundException extends RuntimeException {
+public class DependencyRelationRefNotFoundException extends RuntimeException {
 
-    public DependencyRelationChildNotFoundException(String s) {
+    public DependencyRelationRefNotFoundException(String s) {
         super(s);
     }
 }

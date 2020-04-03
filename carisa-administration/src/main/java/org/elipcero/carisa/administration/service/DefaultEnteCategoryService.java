@@ -100,7 +100,7 @@ public class DefaultEnteCategoryService implements EnteCategoryService {
         return this.enteCategoryRepository
                 .updateCreate(id,
                         enteCategoryForUpdating -> enteCategoryForUpdating.setName(enteCategory.getName()),
-                        this.create(enteCategory));
+                        () -> this.create(enteCategory));
     }
 
     /**

@@ -63,6 +63,6 @@ public class DefaultEntePropertyService implements EntePropertyService {
                             entePropertyForUpdating.setName(enteProperty.getName());
                             entePropertyForUpdating.setType(enteProperty.getType());
                         },
-                        this.create(enteProperty));
+                        () -> this.create(enteProperty));
     }
 }

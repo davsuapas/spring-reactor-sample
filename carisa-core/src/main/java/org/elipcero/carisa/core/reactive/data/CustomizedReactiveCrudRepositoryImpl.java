@@ -23,6 +23,7 @@ import org.springframework.data.cassandra.repository.support.SimpleReactiveCassa
 import reactor.core.publisher.Mono;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Adding new features to reactive crud repository
@@ -45,12 +46,12 @@ public class CustomizedReactiveCrudRepositoryImpl<T, ID>
      */
     @Override
     public Mono<EntityDataState<T>> updateCreate(
-            final ID id, final Consumer<T> updateChange, final Mono<T> monoCreatedEntity) {
+            final ID id, final Consumer<T> onUpdateChange, final Supplier<Mono<T>> onCreatedEntity) {
 
         return this
                 .findById(id)
                 .flatMap(entity -> {
-                    updateChange.accept(entity);
+                    onUpdateChange.accept(entity);
                     return this.save(entity)
                             .map(entityUpdated ->
                                     EntityDataState.<T>
@@ -61,13 +62,14 @@ public class CustomizedReactiveCrudRepositoryImpl<T, ID>
 
                 })
                 .switchIfEmpty(
-                        monoCreatedEntity.map(
-                                entityCreated ->
-                                    EntityDataState.<T>
-                                        builder()
-                                            .domainState(EntityDataState.State.created)
-                                            .entity(entityCreated)
-                                        .build())
+                        Mono.defer(() ->
+                            onCreatedEntity.get().map(
+                                    entityCreated ->
+                                        EntityDataState.<T>
+                                            builder()
+                                                .domainState(EntityDataState.State.created)
+                                                .entity(entityCreated)
+                                            .build()))
                 );
     }
 }

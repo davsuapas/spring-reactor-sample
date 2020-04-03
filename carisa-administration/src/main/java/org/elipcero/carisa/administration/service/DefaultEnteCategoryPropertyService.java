@@ -30,7 +30,7 @@ import org.elipcero.carisa.administration.exception.NotMatchingTypeException;
 import org.elipcero.carisa.administration.projection.EnteHierachyName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.ParentChildName;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationChildNotFoundException;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRefNotFoundException;
 import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyConnectionInfo;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
@@ -93,7 +93,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                                 enteCategoryPropertyForUpdating.setType(enteCategoryProperty.getType());
                             }
                         },
-                        this.create(enteCategoryProperty));
+                        () -> this.create(enteCategoryProperty));
     }
 
     /**
@@ -154,7 +154,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                                                 .category(false)
                                              .build(),
                                         rel -> Mono.just(enteProp)))
-                                .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
+                                .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
                                         String.format("The ente property identifier: '%s' not found", enteId))));
                     }
                     else {
@@ -188,7 +188,7 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                                                 .category(true)
                                              .build(),
                                         rel -> Mono.just(categoryProp)))
-                                .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
+                                .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
                                         String.format("The category property Id: '%s' not found",
                                                 linkedCategoryPropertyId))));
                     }
@@ -220,14 +220,14 @@ public class DefaultEnteCategoryPropertyService implements EnteCategoryPropertyS
                     return Mono.just(enteProp);
                 }
             })
-            .switchIfEmpty(Mono.error(new DependencyRelationChildNotFoundException(
+            .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
                      String.format("The category property identifier: '%s' not found", categoryPropertyId))));
     }
 
     private static Mono<? extends MultiplyDependencyConnectionInfo<EnteCategoryProperty, Mono<PropertyType>>>
         monoErrorIncorrectReferenceToConnect(UUID enteCategoryId) {
 
-        return Mono.error(new DependencyRelationChildNotFoundException(
+        return Mono.error(new DependencyRelationRefNotFoundException(
                 String.format(
                         "Only properties of the children of the catalog: '%s' can be referenced",
                         enteCategoryId)));

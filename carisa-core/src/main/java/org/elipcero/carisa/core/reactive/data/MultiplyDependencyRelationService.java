@@ -92,6 +92,6 @@ public abstract class MultiplyDependencyRelationService<T extends Relation, TRel
         return this.entityRepository
                 .updateCreate(id,
                         entityForUpdating -> this.updateEntity(entityForUpdating, entity),
-                        this.create(entity, manyRelation));
+                        () -> this.create(entity, manyRelation));
     }
 }

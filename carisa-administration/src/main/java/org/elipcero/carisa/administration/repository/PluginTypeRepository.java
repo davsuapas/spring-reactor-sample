@@ -26,6 +26,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Repository for plugin type
@@ -126,7 +127,7 @@ public class PluginTypeRepository implements CustomizedReactiveCrudRepository<Pl
 
     @Override
     public Mono<EntityDataState<PluginType>> updateCreate(
-            UUID uuid, Consumer<PluginType> updateChange, Mono<PluginType> monoCreatedEntity) {
+            UUID uuid, Consumer<PluginType> onUpdateChange, Supplier<Mono<PluginType>> onCreatedEntity) {
 
         throw new NotImplementedException();
     }

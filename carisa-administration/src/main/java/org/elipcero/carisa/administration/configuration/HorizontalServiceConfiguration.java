@@ -182,7 +182,8 @@ public class HorizontalServiceConfiguration {
 
     @Bean
     public DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectInstanceService() {
-        return new QueryDynamicInstanceService(dynamicObjectInstanceRepository, spaceQueryRelation);
+        return new QueryDynamicInstanceService(
+                dynamicObjectInstanceRepository, spaceQueryRelation, dynamicObjectPrototypeRepository);
     }
 
     // Query prototype configuration

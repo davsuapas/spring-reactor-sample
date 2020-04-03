@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface DependencyRelation<TRelation extends Relation> {
 
@@ -44,13 +45,13 @@ public interface DependencyRelation<TRelation extends Relation> {
     /**
      * It update or create the relation depending if it exists
      * @param relation relation to update
-     * @param updateChange If exists it update changes
-     * @param monoCreatedEntity If not exist relation to create
+     * @param onUpdateChange If exists it update changes
+     * @param onCreatedEntity If not exist relation is created
      * @return relation updated or created
      */
     Mono<EntityDataState<TRelation>> updateOrCreate(
             final TRelation relation,
-            final Consumer<TRelation> updateChange, final Mono<TRelation> monoCreatedEntity);
+            final Consumer<TRelation> onUpdateChange, final Supplier<Mono<TRelation>> onCreatedEntity);
 
     /**
      * Get Children by parent identifier

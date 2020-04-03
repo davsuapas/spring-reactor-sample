@@ -20,8 +20,7 @@ import org.elipcero.carisa.core.data.ChildName;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.data.ParentChildName;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationChildNotFoundException;
-import org.elipcero.carisa.core.reactive.data.DependencyRelationParentNotFoundException;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRefNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.reactivestreams.Publisher;
@@ -71,7 +70,7 @@ public class CrudHypermediaControllerTest {
 
         StepVerifier
                 .create(crudHypermediaController.create(
-                        Mono.error(new DependencyRelationParentNotFoundException("error"))))
+                        Mono.error(new DependencyRelationRefNotFoundException("error"))))
                 .expectErrorMessage("404 NOT_FOUND \"error\"")
                 .verify();
     }
@@ -152,21 +151,11 @@ public class CrudHypermediaControllerTest {
     }
 
     @Test
-    public void controller_connectToParent_child_not_found_should_return_status_204() {
+    public void controller_connectToParent_ref_not_found_should_return_status_204() {
 
         StepVerifier
                 .create(crudHypermediaController.connectToParent(
-                        Mono.error(new DependencyRelationChildNotFoundException("error"))))
-                .expectErrorMessage("404 NOT_FOUND \"error\"")
-                .verify();
-    }
-
-    @Test
-    public void controller_connectToParent_parent_not_found_should_return_status_404() {
-
-        StepVerifier
-                .create(crudHypermediaController.connectToParent(
-                        Mono.error(new DependencyRelationParentNotFoundException("error"))))
+                        Mono.error(new DependencyRelationRefNotFoundException("error"))))
                 .expectErrorMessage("404 NOT_FOUND \"error\"")
                 .verify();
     }

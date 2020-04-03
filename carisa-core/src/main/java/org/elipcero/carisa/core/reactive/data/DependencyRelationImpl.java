@@ -27,6 +27,7 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Manage dependency relations operations
@@ -54,7 +55,7 @@ public abstract class DependencyRelationImpl<TParent, TRelation extends Relation
     protected Mono<TRelation> createBasic(final TRelation relationEntity) {
         return this.parentRepository.findById(this.convertRelationId.convertToParent(relationEntity))
                 .flatMap(__ -> relationRepository.save(relationEntity))
-                .switchIfEmpty(Mono.error(new DependencyRelationParentNotFoundException(
+                .switchIfEmpty(Mono.error(new DependencyRelationRefNotFoundException(
                         String.format("The ParentId: '%s' not found", relationEntity.getParentId()))));
     }
 
@@ -83,10 +84,10 @@ public abstract class DependencyRelationImpl<TParent, TRelation extends Relation
      */
     @Override
     public Mono<EntityDataState<TRelation>> updateOrCreate(
-            final TRelation relation, Consumer<TRelation> updateChange,
-            final Mono<TRelation> monoCreatedEntity) {
+            final TRelation relation, Consumer<TRelation> onUpdateChange,
+            final Supplier<Mono<TRelation>> onCreatedEntity) {
 
         return this.relationRepository.updateCreate(
-                this.convertRelationId.convert(relation), updateChange, monoCreatedEntity);
+                this.convertRelationId.convert(relation), onUpdateChange, onCreatedEntity);
     }
 }

@@ -110,7 +110,7 @@ public class DefaultInstanceService implements InstanceService {
         return this.instanceRepository
                 .updateCreate(id,
                     instanceForUpdating -> instanceForUpdating.setName(instance.getName()),
-                    this.create(instance));
+                        () -> this.create(instance));
     }
 
     /**
