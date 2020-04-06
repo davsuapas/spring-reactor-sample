@@ -3,15 +3,14 @@ package org.elipcero.carisa.administration.controller.support;
 import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.administration.general.StringResource;
+import org.elipcero.carisa.administration.service.support.DynamicObjectInstanceService;
 import org.elipcero.carisa.core.data.ManyRelation;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
-import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelationService;
 import org.elipcero.carisa.core.reactive.web.ChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,14 +33,11 @@ public abstract class DynamicObjectInstanceController<TRelation extends ManyRela
         implements ChildControllerHypermedia<DynamicObjectInstance> {
 
     private final CrudHypermediaController<DynamicObjectInstance> crudHypermediaController;
-    private final MultiplyDependencyRelationService<DynamicObjectInstance, TRelation> multiDependencyService;
+    private final DynamicObjectInstanceService<TRelation> multiDependencyService;
 
     public DynamicObjectInstanceController(
            @NonNull final BasicReactiveRepresentationModelAssembler<DynamicObjectInstance> modelAssembler,
-           @NonNull final MultiplyDependencyRelationService<DynamicObjectInstance, TRelation> multiDependencyService) {
-
-        Assert.notNull(modelAssembler, "The modelAssembler can not be null");
-        Assert.notNull(multiDependencyService, "The multiDependencyService can not be null");
+           @NonNull final DynamicObjectInstanceService<TRelation> multiDependencyService) {
 
         this.crudHypermediaController = new CrudHypermediaController<>(modelAssembler);
         this.multiDependencyService = multiDependencyService;

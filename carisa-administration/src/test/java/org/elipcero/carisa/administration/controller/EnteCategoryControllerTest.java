@@ -72,7 +72,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_entecategory_should_return_ok_and_entecategory_entity() {
+    public void find_ente_category_should_return_ok_and_ente_category_entity() {
 
         this.testClient
                 .get()
@@ -91,7 +91,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void create_entecategory_using_post_should_return_created_and_entecategory_entity() {
+    public void create_ente_category_using_post_should_return_created_and_ente_category_entity() {
 
         this.testClient
                 .post()
@@ -112,7 +112,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void create_entecategory_with_root_using_post_should_return_created_and_entecategory_entity() {
+    public void create_ente_category_with_root_using_post_should_return_created_and_ente_category_entity() {
 
         String spaceId = "52107f03-cf1b-4760-b2c2-4273482f0f7a";
 
@@ -137,7 +137,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void create_entecategory_using_put_should_return_created_and_entecategory_entity() {
+    public void create_ente_category_using_put_should_return_created_and_ente_category_entity() {
 
         String id = "51ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
 
@@ -161,7 +161,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void update_entecategory_using_put_should_return_ok_and_entecategory_entity() {
+    public void update_ente_category_using_put_should_return_ok_and_ente_category_entity() {
 
         String id = "73ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676"; // Look at entecategory-controller
         String newName = "Ente Category updated";
@@ -205,7 +205,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_entecategory_should_return_affordance() {
+    public void find_ente_category_should_return_affordance() {
 
         this.testClient
                 .get()
@@ -285,7 +285,7 @@ public class EnteCategoryControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void connect_entecategory_child_with_parent_using_put_should_return_ok_and_entecategory_child() {
+    public void connect_ente_category_child_with_parent_using_put_should_return_ok_and_ente_category_child() {
 
         String childId = "43ed3c4c-5c7f-4e76-8a2a-2e3b7bfca676";
 

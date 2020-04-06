@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -45,7 +47,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_query_prototype_controller" })
-public class QueryDynamicPrototypeControllerTest extends DataAbstractControllerTest {
+public class QueryPrototypeControllerTest extends DataAbstractControllerTest {
 
     private static final String QUERY_ID = "5d191729-1f4c-4b7e-b573-b90cf3457df8"; // Look at query-prototype-controller
     private static final String QUERY_NAME = "Query prototype name"; // Look at query-prototype-controller
@@ -58,6 +60,7 @@ public class QueryDynamicPrototypeControllerTest extends DataAbstractControllerT
         if (!beforeOnce) {
             this.executeCommands("query-prototype-controller.cql");
             this.executeCommands("plugin-controller.cql");
+            this.executeCommands("query-prototype-property-controller.cql");
             beforeOnce = true;
         }
     }
@@ -151,6 +154,35 @@ public class QueryDynamicPrototypeControllerTest extends DataAbstractControllerT
                     .jsonPath("$.description").isEqualTo(newDescription)
                     .jsonPath("$.parentId").isEqualTo(PluginType.QUERY_ID.toString())
                     .jsonPath("$._links.self.href").hasJsonPath();
+    }
+
+    @Test
+    public void list_properties_from_query_should_return_ok_and_properties_entity() {
+
+        String propertyId = "249f1073-3164-4ed0-9ad5-4415945b273f";
+        String propertyName = "Query property name";
+
+        this.testClient
+                .get()
+                .uri("/api/queriesplugin/{id}/properties", QUERY_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", propertyId).isEqualTo(propertyName)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.property.href", propertyId).hasJsonPath()
+                    .jsonPath("$._links.queryplugin.href").hasJsonPath()
+                .consumeWith(document("queriesplugin-properties-get",
+                        links(linkWithRel("queryplugin").description("Query plugin")),
+                        commonPathParameters(),
+                        responseFields(
+                                fieldWithPath("_embedded.childNameList[].id")
+                                        .description("Query plugin identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.childNameList[].name")
+                                        .description("Query plugin property name"),
+                                fieldWithPath("_embedded.childNameList[]._links.property.href")
+                                        .description("Query Plugin property information"),
+                                subsectionWithPath("_links").description("View links section"))));
     }
 
     @Test

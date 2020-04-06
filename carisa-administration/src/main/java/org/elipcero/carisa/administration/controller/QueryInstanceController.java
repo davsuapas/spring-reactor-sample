@@ -32,20 +32,20 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/queryinstances")
-public class QueryDynamicInstanceController extends DynamicObjectInstanceController<SpaceQueryInstance> {
+public class QueryInstanceController extends DynamicObjectInstanceController<SpaceQueryInstance> {
 
-    public QueryDynamicInstanceController(
+    public QueryInstanceController(
        @NonNull final DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectService,
-       @NonNull final QueryDynamicInstanceModelAssembler queryDynamicInstanceModelAssembler) {
+       @NonNull final QueryInstanceModelAssembler queryInstanceModelAssembler) {
 
-        super(queryDynamicInstanceModelAssembler, dynamicObjectService);
+        super(queryInstanceModelAssembler, dynamicObjectService);
     }
 
     /**
      * @see DynamicObjectInstanceController
      */
     @Override
-    protected SpaceQueryInstance buildManyRelation(DynamicObjectInstance relation) {
+    protected SpaceQueryInstance buildManyRelation(final DynamicObjectInstance relation) {
         return new SpaceQueryInstance();
     }
 }

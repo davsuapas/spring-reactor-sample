@@ -32,9 +32,9 @@ import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
  * @author David Suárez
  */
 
-public class QueryDynamicInstanceService extends DynamicObjectInstanceService<SpaceQueryInstance> {
+public class DynamicQueryInstanceService extends DynamicObjectInstanceService<SpaceQueryInstance> {
 
-    public QueryDynamicInstanceService(
+    public DynamicQueryInstanceService(
          @NonNull DynamicObjectInstanceRepository dynamicObjectRepository,
          @NonNull MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> relation,
          @NonNull DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository) {

@@ -22,13 +22,19 @@ import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.domain.Plugin;
 import org.elipcero.carisa.administration.domain.PluginType;
 import org.elipcero.carisa.administration.service.support.DynamicObjectPrototypeService;
+import org.elipcero.carisa.core.data.ChildName;
 import org.reactivestreams.Publisher;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 /**
  * Query prototype controller.
@@ -38,13 +44,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/queriesplugin")
-public class QueryDynamicPrototypeController extends DynamicObjectPrototypeController<Plugin> {
+public class QueryPrototypeController extends DynamicObjectPrototypeController<Plugin> {
 
-    public QueryDynamicPrototypeController(
+    public QueryPrototypeController(
        @NonNull final DynamicObjectPrototypeService<Plugin> dynamicObjectService,
-       @NonNull final QueryDynamicPrototypeModelAssembler queryDynamicPrototypeModelAssembler) {
+       @NonNull final QueryPrototypeModelAssembler queryPrototypeModelAssembler) {
 
-        super(queryDynamicPrototypeModelAssembler, dynamicObjectService);
+        super(queryPrototypeModelAssembler, dynamicObjectService);
     }
 
     /**
@@ -65,7 +71,22 @@ public class QueryDynamicPrototypeController extends DynamicObjectPrototypeContr
      * @see DynamicObjectPrototypeController
      */
     @Override
-    protected Plugin buildManyRelation(DynamicObjectPrototype relation) {
+    protected Plugin buildManyRelation(final DynamicObjectPrototype relation) {
         return new Plugin();
+    }
+
+    /**
+     * Get properties by plugin (prototypeId)
+     * @param id the prototype identifier (UUID string)
+     * @return the property collections with links
+     */
+    @GetMapping("/{id}/properties")
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getProperties(final @PathVariable("id") String id) {
+
+        return this.crudHypermediaController.childrenByParentWithBiKey(
+                id,
+                this.dynamicObjectPrototypeService.getPropertiesByPrototypeId(UUID.fromString(id)),
+                QueryPrototypeController.class, QueryPrototypeModelAssembler.QUERY_PROTOTYPE_REL_NAME,
+                QueryPrototypePropertyController.class, QueryPrototypePropertyModelAssembler.QUERY_PROTOTYPE_PROP_REL_NAME);
     }
 }

@@ -14,21 +14,17 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.domain;
+package org.elipcero.carisa.administration.repository.cassandra;
 
-import org.elipcero.carisa.core.data.ManyRelation;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
+import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
- * The plugin represents all queries types of the system.
- * The plugin parentId contain the type plugin identifier.
- * The plugin reference to a dynamic object prototype which define all dynamic properties of the plugin
- * There are several plugin types: Query
- * @see PluginType
- * @see SpaceQueryInstance
+ * Dynamic object prototype property
  *
  * @author David Suárez
  */
-@Table("carisa_plugin")
-public class Plugin extends ManyRelation {
+public interface DynamicObjectPrototypePropertyRepository
+        extends DependencyRelationRepository<DynamicObjectPrototypeProperty, MapId> {
 }

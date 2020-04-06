@@ -107,7 +107,7 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void create_enteproperty_using_put_should_return_created_and_enteproperty_entity() {
+    public void create_ente_property_using_put_should_return_created_and_ente_property_entity() {
 
         String propertyId = "361370a0-e3e5-45e5-b675-a55fe923873f";
 
@@ -133,18 +133,16 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void update_enteproperty_using_put_should_return_ok_and_enteproperty_entity() {
+    public void update_ente_property_using_put_should_return_ok_and_ente_property_entity() {
 
         String propertyId = "d0838415-6ae2-4914-b202-f1b3adbf0353"; // Look at enteproperties-controller
-        String newName = "Ente property name updated";
+        String newName = "Updated Ente property name";
 
         EnteProperty entePropertyUpdated = EnteProperty
                 .builder()
                     .name(newName)
                     .type(EnteProperty.Type.DateTime)
                 .build();
-
-        entePropertyUpdated.setName(newName);
 
         this.testClient
                 .put()
@@ -164,7 +162,7 @@ public class EntePropertyControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void find_enteproperty_should_return_affordance() {
+    public void find_ente_property_should_return_affordance() {
 
         this.testClient
                 .get()

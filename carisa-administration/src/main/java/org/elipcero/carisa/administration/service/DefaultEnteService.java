@@ -44,10 +44,8 @@ public class DefaultEnteService
         extends MultiplyDependencyRelationService<Ente, SpaceEnte>
         implements EnteService {
 
-    @NonNull
     private final MultiplyDependencyRelation<EnteCategory, Ente, EnteHierarchy> enteHierarchyRelation;
 
-    @NonNull
     private final EmbeddedDependencyRelation<EnteProperty> entePropertyRelation;
 
     public DefaultEnteService(

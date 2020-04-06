@@ -18,6 +18,7 @@ package org.elipcero.carisa.administration.configuration;
 
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
@@ -37,19 +38,21 @@ import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.service.DefaultDynamicObjectPrototypePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteCategoryService;
 import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
+import org.elipcero.carisa.administration.service.DynamicObjectPrototypePropertyService;
+import org.elipcero.carisa.administration.service.DynamicQueryInstanceService;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.EnteCategoryService;
 import org.elipcero.carisa.administration.service.EntePropertyService;
 import org.elipcero.carisa.administration.service.EnteService;
 import org.elipcero.carisa.administration.service.InstanceService;
 import org.elipcero.carisa.administration.service.PluginDynamicPrototypeService;
-import org.elipcero.carisa.administration.service.QueryDynamicInstanceService;
 import org.elipcero.carisa.administration.service.SpaceService;
 import org.elipcero.carisa.administration.service.support.DynamicObjectInstanceService;
 import org.elipcero.carisa.administration.service.support.DynamicObjectPrototypeService;
@@ -108,6 +111,9 @@ public class HorizontalServiceConfiguration {
 
     @Autowired
     private MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> pluginTypePluginRelation;
+
+    @Autowired
+    private EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> prototypePropertyRelation;
 
     // Dynamic object
 
@@ -178,18 +184,26 @@ public class HorizontalServiceConfiguration {
                 enteCategoryPropertyRelation, linkEnteRelation, enteHierarchyRelation, entePropertyRelation);
     }
 
-    // Query prototype configuration
-
-    @Bean
-    public DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectInstanceService() {
-        return new QueryDynamicInstanceService(
-                dynamicObjectInstanceRepository, spaceQueryRelation, dynamicObjectPrototypeRepository);
-    }
-
-    // Query prototype configuration
+    // Plugin prototype configuration
 
     @Bean
     public DynamicObjectPrototypeService<Plugin> dynamicObjectPrototypeService() {
-        return new PluginDynamicPrototypeService(dynamicObjectPrototypeRepository, pluginTypePluginRelation);
+        return new PluginDynamicPrototypeService(
+                dynamicObjectPrototypeRepository, pluginTypePluginRelation, prototypePropertyRelation);
+    }
+
+    // Query instance configuration
+
+    @Bean
+    public DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectInstanceService() {
+        return new DynamicQueryInstanceService(
+                dynamicObjectInstanceRepository, spaceQueryRelation, dynamicObjectPrototypeRepository);
+    }
+
+    // Query prototype property configuration
+
+    @Bean
+    public DynamicObjectPrototypePropertyService dynamicObjectPrototypePropertyService() {
+        return new DefaultDynamicObjectPrototypePropertyService(prototypePropertyRelation);
     }
 }

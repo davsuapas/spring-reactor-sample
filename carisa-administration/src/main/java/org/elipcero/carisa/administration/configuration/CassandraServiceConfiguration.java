@@ -22,10 +22,12 @@ import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEn
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEntePropertyIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationInstanceSpaceIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationPluginTypePluginPrototypeIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationPrototypePropertyIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationSpaceEnteIdentifierConvert;
 import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationSpaceQueryInstanceIdentifierConvert;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.domain.EnteCategory;
 import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
@@ -46,6 +48,7 @@ import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.PluginTypeRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.repository.cassandra.DynamicObjectPrototypePropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteCategoryLinkPropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteCategoryPropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteHirarchyRepository;
@@ -123,6 +126,9 @@ public class CassandraServiceConfiguration {
         return new PluginTypeRepository();
     }
 
+    @Autowired
+    private DynamicObjectPrototypePropertyRepository dynamicObjectPrototypePropertyRepository;
+
     // Converter
 
     @Bean
@@ -199,5 +205,12 @@ public class CassandraServiceConfiguration {
         return new MultiplyDependencyRelationImpl<>(
                 pluginTypeRepository(), dynamicObjectPrototypeRepository, pluginRepository,
                 new DependencyRelationPluginTypePluginPrototypeIdentifierConvert());
+    }
+
+    @Bean
+    public EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> prototypePropert() {
+        return new EmbeddedDependencyRelationImpl<>(
+                dynamicObjectPrototypeRepository, dynamicObjectPrototypePropertyRepository,
+                new DependencyRelationPrototypePropertyIdentifierConvert());
     }
 }

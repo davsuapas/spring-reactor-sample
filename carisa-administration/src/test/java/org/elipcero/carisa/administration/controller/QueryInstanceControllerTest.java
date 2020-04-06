@@ -44,7 +44,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_query_instance_controller" })
-public class QueryDynamicInstanceControllerTest extends DataAbstractControllerTest {
+public class QueryInstanceControllerTest extends DataAbstractControllerTest {
 
     private static final String QUERY_ID = "a985074c-796b-4ecb-9a8f-21f4b26aa11b"; // Look at query-instance-controller
     private static final String SPACE_ID = "52107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller

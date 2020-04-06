@@ -16,6 +16,7 @@
 
 package org.elipcero.carisa.administration.controller;
 
+import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.Ente;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.elipcero.carisa.administration.service.EnteService;
@@ -26,7 +27,6 @@ import org.reactivestreams.Publisher;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,11 +53,7 @@ public class EnteController implements ChildControllerHypermedia<Ente> {
     private final CrudHypermediaController<Ente> crudHypermediaController;
     private final EnteService enteService;
 
-    public EnteController(final EnteService enteService, final EnteModelAssembler enteModelAssembler) {
-
-        Assert.notNull(enteModelAssembler, "The enteModelAssembler can not be null");
-        Assert.notNull(enteService, "The enteService can not be null");
-
+    public EnteController(@NonNull final EnteService enteService, @NonNull final EnteModelAssembler enteModelAssembler) {
         this.enteService = enteService;
         this.crudHypermediaController = new CrudHypermediaController<>(enteModelAssembler);
     }

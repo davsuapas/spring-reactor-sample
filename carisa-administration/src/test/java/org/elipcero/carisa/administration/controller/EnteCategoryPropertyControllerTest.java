@@ -133,7 +133,7 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     }
 
     @Test
-    public void create_entecategoryproperty_using_put_should_return_created_and_entecategoryproperty_entity() {
+    public void create_ente_category_property_using_put_should_return_created_and_ente_category_property_entity() {
 
         String propertyId = "361370a0-e3e5-45e5-b675-a55fe923873f";
 
@@ -161,7 +161,7 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     }
 
     @Test
-    public void update_entecategoryproperty_using_put_should_return_ok_and_entecategoryproperty_entity() {
+    public void update_ente_category_property_using_put_should_return_ok_and_ente_category_property_entity() {
 
         String propertyId = "c9439ad1-4419-4765-acca-55ce69179c0f"; // Look at entecategoryproperties-controller
         String newName = "Ente category property name updated";
@@ -229,7 +229,7 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     }
 
     @Test
-    public void connect_ente_to_category_property_using_put_should_return_linked_entecategoryproperty() {
+    public void connect_ente_to_category_property_using_put_should_return_linked_ente_category_property() {
 
         this.testClient
                 .put()
@@ -260,7 +260,7 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     }
 
     @Test
-    public void connect_ente_to_category_property_the_types_are_same_should_return_propertyCategory_with_int_type() {
+    public void connect_ente_to_category_property_the_types_are_same_should_return_Category_property_with_int_type() {
 
         String categoryPropertyId = "d9439ad1-4419-4765-acca-55ce69179c0f";
 
@@ -353,7 +353,7 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     }
 
     @Test
-    public void connect_category_prop_to_category_prop_using_put_should_return_linked_entecategoryproperty() {
+    public void connect_category_prop_to_category_prop_using_put_should_return_linked_ente_category_property() {
 
         this.testClient
                 .put()
@@ -421,7 +421,7 @@ public class EnteCategoryPropertyControllerTest extends DataAbstractControllerTe
     }
 
     @Test
-    public void find_enteproperty_should_return_affordance() {
+    public void find_ente_property_should_return_affordance() {
 
         this.testClient
                 .get()

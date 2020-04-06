@@ -3,15 +3,14 @@ package org.elipcero.carisa.administration.controller.support;
 import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.general.StringResource;
+import org.elipcero.carisa.administration.service.support.DynamicObjectPrototypeService;
 import org.elipcero.carisa.core.data.ManyRelation;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
-import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelationService;
 import org.elipcero.carisa.core.reactive.web.ChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,18 +32,15 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 public abstract class DynamicObjectPrototypeController<TRelation extends ManyRelation>
         implements ChildControllerHypermedia<DynamicObjectPrototype> {
 
-    private final CrudHypermediaController<DynamicObjectPrototype> crudHypermediaController;
-    private final MultiplyDependencyRelationService<DynamicObjectPrototype, TRelation> multiDependencyService;
+    protected final CrudHypermediaController<DynamicObjectPrototype> crudHypermediaController;
+    protected final DynamicObjectPrototypeService<TRelation> dynamicObjectPrototypeService;
 
     public DynamicObjectPrototypeController(
-           @NonNull final BasicReactiveRepresentationModelAssembler<DynamicObjectPrototype> modelAssembler,
-           @NonNull final MultiplyDependencyRelationService<DynamicObjectPrototype, TRelation> multiDependencyService) {
-
-        Assert.notNull(modelAssembler, "The modelAssembler can not be null");
-        Assert.notNull(multiDependencyService, "The multiDependencyService can not be null");
+            @NonNull final BasicReactiveRepresentationModelAssembler<DynamicObjectPrototype> modelAssembler,
+            @NonNull final DynamicObjectPrototypeService<TRelation> dynamicObjectPrototypeService) {
 
         this.crudHypermediaController = new CrudHypermediaController<>(modelAssembler);
-        this.multiDependencyService = multiDependencyService;
+        this.dynamicObjectPrototypeService = dynamicObjectPrototypeService;
     }
 
     /**
@@ -52,7 +48,7 @@ public abstract class DynamicObjectPrototypeController<TRelation extends ManyRel
      * @param relation the information to build the relation
      * @return the many to many relation
      */
-    protected abstract TRelation buildManyRelation(DynamicObjectPrototype relation);
+    protected abstract TRelation buildManyRelation(final DynamicObjectPrototype relation);
 
     /**
      * Return schema
@@ -74,7 +70,7 @@ public abstract class DynamicObjectPrototypeController<TRelation extends ManyRel
      */
     @GetMapping("/{id}")
     public Publisher<EntityModel<DynamicObjectPrototype>> getById(final @PathVariable("id") String id) {
-        return this.crudHypermediaController.get(this.multiDependencyService.getById(UUID.fromString(id)));
+        return this.crudHypermediaController.get(this.dynamicObjectPrototypeService.getById(UUID.fromString(id)));
     }
 
     /**
@@ -87,7 +83,7 @@ public abstract class DynamicObjectPrototypeController<TRelation extends ManyRel
             final @RequestBody DynamicObjectPrototype entity) {
 
         return this.crudHypermediaController.create(
-                this.multiDependencyService.create(entity, this.buildManyRelation(entity)));
+                this.dynamicObjectPrototypeService.create(entity, this.buildManyRelation(entity)));
     }
 
     /**
@@ -102,7 +98,7 @@ public abstract class DynamicObjectPrototypeController<TRelation extends ManyRel
             final @RequestBody DynamicObjectPrototype entity) {
 
         return this.crudHypermediaController.updateOrCreate(
-                this.multiDependencyService.updateOrCreate(
+                this.dynamicObjectPrototypeService.updateOrCreate(
                         UUID.fromString(id), entity, this.buildManyRelation(entity)));
     }
 }

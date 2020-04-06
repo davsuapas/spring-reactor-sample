@@ -18,10 +18,12 @@ package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.elipcero.carisa.administration.domain.Plugin;
 import org.elipcero.carisa.administration.domain.PluginType;
 import org.elipcero.carisa.administration.repository.DynamicObjectPrototypeRepository;
 import org.elipcero.carisa.administration.service.support.DynamicObjectPrototypeService;
+import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 
 /**
@@ -35,8 +37,9 @@ public class PluginDynamicPrototypeService extends DynamicObjectPrototypeService
 
     public PluginDynamicPrototypeService(
          @NonNull DynamicObjectPrototypeRepository dynamicObjectRepository,
-         @NonNull MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> relation) {
+         @NonNull MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> relation,
+         @NonNull EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> propertyRelation) {
 
-        super(dynamicObjectRepository, relation);
+        super(dynamicObjectRepository, relation, propertyRelation);
     }
 }

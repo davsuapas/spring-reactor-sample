@@ -23,7 +23,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.elipcero.carisa.administration.domain.support.Named;
-import org.elipcero.carisa.administration.domain.support.PropertyType;
 import org.elipcero.carisa.core.data.EntityInitializer;
 import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
@@ -36,43 +35,48 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Ente property
+ * Object prototype property
  *
  * @author David Suárez
  */
-@Table("carisa_ente_property")
+@Table("carisa_dynamic_object_prototype_property")
 @Getter
 @Setter
-public class EnteProperty implements Relation, EntityInitializer<EnteProperty>, PropertyType, Named {
+public class DynamicObjectPrototypeProperty
+        implements Relation, EntityInitializer<DynamicObjectPrototypeProperty>, Named {
 
-    public static String ENTEID_COLUMN_NAME = "parentId";
+    public static String PROTOTYPE_ID_COLUMN_NAME = "parentId";
     public static String ID_COLUMN_NAME = "id";
 
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private UUID parentId; // ente identifier
+    private UUID parentId; // Object prototype identifier
 
     @PrimaryKeyColumn(ordinal = 1, type = PrimaryKeyType.CLUSTERED)
     private UUID id;
 
     private String name;
+    private String description;
 
     public enum Type {
-        None,
         Integer,
         Decimal,
         Boolean,
-        DateTime
+        DateTime,
+        HierarchyBinding
     }
 
     @CassandraType(type = DataType.Name.INT)
     @Setter
-    private EnteProperty.Type type;
+    private DynamicObjectPrototypeProperty.Type type;
 
     @Builder
-    public EnteProperty(UUID id, UUID parentId, String name, EnteProperty.Type type) {
+    public DynamicObjectPrototypeProperty(
+            UUID id, UUID parentId, String name, String description, DynamicObjectPrototypeProperty.Type type) {
+
         this.id = id;
         this.parentId = parentId;
         this.name = name;
+        this.description = description;
         this.type = type;
     }
 
@@ -83,13 +87,13 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty>, 
     }
 
     // To work Affordance with a new name. Not work JsonProperty
-    @JsonSetter("enteId")
+    @JsonSetter("prototypeId")
     public void setParentId(UUID value) {
         this.parentId = value;
     }
 
     // To work Affordance with a new name. Not work JsonProperty
-    public UUID getEnteId() {
+    public UUID getPrototypeId() {
         return this.getParentId();
     }
 
@@ -99,14 +103,14 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty>, 
         return this.id;
     }
 
-    public static Map<String, Object> GetMapId(UUID enteId, UUID id) {
+    public static Map<String, Object> GetMapId(UUID prototypeId, UUID id) {
         return new HashMap<String, Object>() {{
-            put(ENTEID_COLUMN_NAME, enteId);
+            put(PROTOTYPE_ID_COLUMN_NAME, prototypeId);
             put(ID_COLUMN_NAME, id);
         }};
     }
 
-    public EnteProperty tryInitId() {
+    public DynamicObjectPrototypeProperty tryInitId() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
         }

@@ -45,13 +45,10 @@ public class DefaultSpaceService
         extends MultiplyDependencyRelationService<Space, InstanceSpace>
         implements SpaceService {
 
-    @NonNull
     private final MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation;
 
-    @NonNull
     private final MultiplyDependencyRelation<EnteCategory, EnteCategory, EnteHierarchy> enteCategoryHierarchyRelation;
 
-    @NonNull
     private final MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> spaceQueryInstanRelation;
 
     public DefaultSpaceService(

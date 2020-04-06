@@ -157,7 +157,7 @@ public class SpaceControllerTest extends DataAbstractControllerTest {
     public void update_space_using_put_should_return_ok_and_space_entity() {
 
         String id = "12107f03-cf1b-4760-b2c2-4273482f0f7a"; // Look at space-controller
-        String newName = "Space name updated";
+        String newName = "Updated space name";
 
         Space spaceUpdated = Space
                 .builder()

@@ -93,7 +93,7 @@ public class EntePropertyController implements BiKeyChildControllerHypermedia<En
     /**
      * Create the Ente property
      * @param enteProperty the Ente property (Id == null)
-     * @return
+     * @return the created Ente property
      */
     @PostMapping("/enteproperties")
     public Publisher<ResponseEntity<EntityModel<EnteProperty>>> create(final @RequestBody EnteProperty enteProperty) {
@@ -105,7 +105,7 @@ public class EntePropertyController implements BiKeyChildControllerHypermedia<En
      * @param enteId the ente identifier (UUID string)
      * @param propertyId the property identifier (UUID string)
      * @param enteProperty the EnteProperty property (Id == null)
-     * @return
+     * @return the created or updated Ente property
      */
     @PutMapping("/entes/{enteId}/properties/{propertyId}")
     public Publisher<ResponseEntity<EntityModel<EnteProperty>>> updateOrCreate(

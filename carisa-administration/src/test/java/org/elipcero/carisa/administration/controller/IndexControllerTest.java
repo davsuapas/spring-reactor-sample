@@ -57,6 +57,8 @@ public class IndexControllerTest extends AbstractControllerTest {
                         .isEqualTo("/api/queriesplugin")
                     .jsonPath("$.links.[?(@.rel=='queryinstances')].href")
                         .isEqualTo("/api/queryinstances")
+                    .jsonPath("$.links.[?(@.rel=='querypluginproperties')].href")
+                        .isEqualTo("/api/querypluginproperties")
                 .consumeWith(document("index",
                     responseFields(
                         fieldWithPath("version").description("Carisa API version (x.x.x)"),

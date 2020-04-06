@@ -148,7 +148,7 @@ public class SpaceController implements ChildControllerHypermedia<Space> {
 
         return getChildrenByParentId(
                 id, this.spaceService.getQueryPrototypesBySpace(UUID.fromString(id)),
-                QueryDynamicInstanceController.class, QueryDynamicInstanceModelAssembler.QUERY_INSTANCE_REL_NAME);
+                QueryInstanceController.class, QueryInstanceModelAssembler.QUERY_INSTANCE_REL_NAME);
     }
 
     private <TParent> Publisher<CollectionModel<EntityModel<ChildName>>> getChildrenByParentId(

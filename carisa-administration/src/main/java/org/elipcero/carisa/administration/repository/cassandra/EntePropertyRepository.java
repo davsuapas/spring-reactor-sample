@@ -21,7 +21,7 @@ import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
 import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
- * Relations between Ente property and Ente repository
+ * Ente property repository
  *
  * @author David Suárez
  */

@@ -38,7 +38,7 @@ public interface EntePropertyService {
     Mono<EnteProperty> getById(final Map<String, Object> id);
 
     /**
-     * Create the Ente property and insert it into the Ente. It's not done in the same transaction.
+     * Create the Ente property.
      * @param enteProperty Ente property for creating
      * @return Ente property created
      */

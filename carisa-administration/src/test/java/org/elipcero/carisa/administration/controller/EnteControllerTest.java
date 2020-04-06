@@ -141,7 +141,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
     public void update_ente_using_put_should_return_ok_and_ente_entity() {
 
         String id = "8acdac69-fdf8-45e5-a189-2b2b4beb1c26"; // Look at ente-controller
-        String newName = "Ente name updated";
+        String newName = "Updated Ente name";
 
         Ente enteUpdated = Ente
                 .builder()
@@ -199,7 +199,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
     }
 
     @Test
-    public void list_enteproperties_from_ente_should_return_ok_and_enteproperties_entity() {
+    public void list_properties_from_ente_should_return_ok_and_properties_entity() {
 
         this.testClient
                 .get()
@@ -208,11 +208,8 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name",
-                            ENTE_PROPERTY_ID).isEqualTo(ENTE_PROPERTY_NAME)
-                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.property.href",
-                            ENTE_PROPERTY_ID)
-                        .hasJsonPath()
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", ENTE_PROPERTY_ID).isEqualTo(ENTE_PROPERTY_NAME)
+                    .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.property.href", ENTE_PROPERTY_ID).hasJsonPath()
                     .jsonPath("$._links.ente.href").hasJsonPath()
                 .consumeWith(document("ente-enteproperties-get",
                         links(linkWithRel("ente").description("Ente")),
