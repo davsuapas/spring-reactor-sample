@@ -17,12 +17,12 @@
 package org.elipcero.carisa.administration.repository;
 
 import org.elipcero.carisa.administration.domain.PluginType;
+import org.elipcero.carisa.administration.exception.NotSupportedException;
 import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.reactive.data.CustomizedReactiveCrudRepository;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -62,73 +62,73 @@ public class PluginTypeRepository implements CustomizedReactiveCrudRepository<Pl
 
     @Override
     public <S extends PluginType> Mono<S> save(S s) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public <S extends PluginType> Flux<S> saveAll(Iterable<S> iterable) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public <S extends PluginType> Flux<S> saveAll(Publisher<S> publisher) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<PluginType> findById(Publisher<UUID> publisher) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<Boolean> existsById(Publisher<UUID> publisher) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Flux<PluginType> findAllById(Iterable<UUID> iterable) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Flux<PluginType> findAllById(Publisher<UUID> publisher) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<Void> deleteById(UUID uuid) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<Void> deleteById(Publisher<UUID> publisher) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<Void> delete(PluginType space) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<Void> deleteAll(Iterable<? extends PluginType> iterable) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<Void> deleteAll(Publisher<? extends PluginType> publisher) {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<Void> deleteAll() {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     @Override
     public Mono<EntityDataState<PluginType>> updateCreate(
             UUID uuid, Consumer<PluginType> onUpdateChange, Supplier<Mono<PluginType>> onCreatedEntity) {
 
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

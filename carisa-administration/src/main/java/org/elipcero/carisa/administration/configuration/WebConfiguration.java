@@ -17,6 +17,10 @@
 package org.elipcero.carisa.administration.configuration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.elipcero.carisa.administration.convert.type.ValueConverterFactory;
+import org.elipcero.carisa.administration.convert.web.WebIntegerValueConverter;
+import org.elipcero.carisa.administration.convert.web.WebValueConverter;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
@@ -31,6 +35,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +67,13 @@ public class WebConfiguration {
 
     @Autowired
     private ServerCodecConfigurer serverCodecConfigurer;
+
+    @Bean
+    ValueConverterFactory<WebValueConverter> webValueConverterFactory() {
+        return new ValueConverterFactory<>(new HashMap<Integer, WebValueConverter>() {{
+            put(DynamicObjectPrototypeProperty.Type.Integer.ordinal(), new WebIntegerValueConverter());
+        }});
+    }
 
     @Bean
     @Order(-2)

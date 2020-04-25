@@ -18,11 +18,13 @@ package org.elipcero.carisa.administration.service;
 
 import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 import org.elipcero.carisa.administration.domain.Space;
 import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
 import org.elipcero.carisa.administration.repository.DynamicObjectInstanceRepository;
 import org.elipcero.carisa.administration.repository.DynamicObjectPrototypeRepository;
 import org.elipcero.carisa.administration.service.support.DynamicObjectInstanceService;
+import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 
 /**
@@ -35,10 +37,11 @@ import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 public class DynamicQueryInstanceService extends DynamicObjectInstanceService<SpaceQueryInstance> {
 
     public DynamicQueryInstanceService(
-         @NonNull DynamicObjectInstanceRepository dynamicObjectRepository,
-         @NonNull MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> relation,
-         @NonNull DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository) {
+         @NonNull final DynamicObjectInstanceRepository dynamicObjectRepository,
+         @NonNull final MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> relation,
+         @NonNull final DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository,
+         @NonNull final EmbeddedDependencyRelation<DynamicObjectInstanceProperty<?>> propertyRelation) {
 
-        super(dynamicObjectRepository, relation, dynamicObjectPrototypeRepository);
+        super(dynamicObjectRepository, relation, dynamicObjectPrototypeRepository, propertyRelation);
     }
 }

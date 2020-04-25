@@ -82,6 +82,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(ENTE_NAME)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.enteProperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entes-get",
                         commonPathParameters(),
@@ -101,6 +102,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                 .expectBody()
                     .jsonPath("$.name").isEqualTo(ENTE_NAME)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.enteProperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entes-post",
                         commonRequestFields(
@@ -126,6 +128,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(ENTE_NAME)
                     .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.enteProperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("entes-put",
                         commonPathParameters(),
@@ -163,6 +166,7 @@ public class EnteControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.spaceId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
+                    .jsonPath("$._links.enteProperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 

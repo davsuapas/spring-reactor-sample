@@ -29,7 +29,12 @@ import java.util.UUID;
 /**
  * Allow make prototype of dynamic object. Each object have n dynamic properties
  * Each object define the representative name
- * External users could make dynamic object using dynamic object prototype
+ * The plugin developers could define the necessary information what the plugin needs
+ * with DynamicObjectPrototype and DynamicObjectPrototypeProperty. The user interface will
+ * be built dynamically with this information.
+ * External users could make dynamic object instance using dynamic object prototype
+ * @see DynamicObjectPrototypeProperty
+ * @see DynamicObjectInstance
  *
  * @author David Suárez
  */

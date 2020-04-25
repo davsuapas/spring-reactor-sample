@@ -30,7 +30,10 @@ import java.util.UUID;
  * Instance of a prototype of dynamic object. Each instance have n dynamic properties
  * External users could instance dynamic object using dynamic object instance
  * Example: Queries. The queries has a object prototype where define the metadata o a query type
- * and the instance is the particular information of those metadata configure by users
+ * and the instance is the particular information of those metadata configured by users
+ * Is similar to classes and objects. Object will be the instance.
+ * @see DynamicObjectPrototype
+ * @see DynamicObjectInstanceProperty
  *
  * @author David Suárez
  */

@@ -16,16 +16,18 @@
 
 package org.elipcero.carisa.administration.configuration;
 
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEnteCategoryPropertyIdentifierConvert;
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEnteCategoryPropertyLinkIdentifierConvert;
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEnteHirarchyIdentifierConvert;
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationEntePropertyIdentifierConvert;
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationInstanceSpaceIdentifierConvert;
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationPluginTypePluginPrototypeIdentifierConvert;
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationPrototypePropertyIdentifierConvert;
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationSpaceEnteIdentifierConvert;
-import org.elipcero.carisa.administration.convert.cassandra.DependencyRelationSpaceQueryInstanceIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.EnteCategoryPropertyIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.EnteCategoryPropertyLinkIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.EnteHirarchyIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.EntePropertyIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.InstancePropertyIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.InstanceSpaceIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.PluginTypePluginPrototypeIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.PrototypePropertyIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.SpaceEnteIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.SpaceQueryInstanceIdentifierConvert;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.elipcero.carisa.administration.domain.Ente;
@@ -48,6 +50,7 @@ import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.PluginTypeRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.repository.cassandra.DynamicObjectInstancePropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.DynamicObjectPrototypePropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteCategoryLinkPropertyRepository;
 import org.elipcero.carisa.administration.repository.cassandra.EnteCategoryPropertyRepository;
@@ -129,11 +132,14 @@ public class CassandraServiceConfiguration {
     @Autowired
     private DynamicObjectPrototypePropertyRepository dynamicObjectPrototypePropertyRepository;
 
+    @Autowired
+    private DynamicObjectInstancePropertyRepository dynamicObjectInstancePropertyRepository;
+
     // Converter
 
     @Bean
     public DependencyRelationIdentifierConvert<EnteHierarchy, MapId, UUID> enteHirarchyIdentifierConvert() {
-        return new DependencyRelationEnteHirarchyIdentifierConvert();
+        return new EnteHirarchyIdentifierConvert();
     }
 
     // Relations
@@ -142,20 +148,20 @@ public class CassandraServiceConfiguration {
     public MultiplyDependencyRelation<Instance, Space, InstanceSpace> instanceSpaceRelationRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 instanceRepository, spaceRepository, instanceSpaceRepository,
-                new DependencyRelationInstanceSpaceIdentifierConvert());
+                new InstanceSpaceIdentifierConvert());
     }
 
     @Bean
     public MultiplyDependencyRelation<Space, Ente, SpaceEnte> spaceEnteRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 spaceRepository, enteRepository, spaceEnteRepository,
-                new DependencyRelationSpaceEnteIdentifierConvert());
+                new SpaceEnteIdentifierConvert());
     }
 
     @Bean
     public EmbeddedDependencyRelation<EnteProperty> entePropertyRelation() {
         return new EmbeddedDependencyRelationImpl<>(
-                enteRepository, entePropertyRepository, new DependencyRelationEntePropertyIdentifierConvert());
+                enteRepository, entePropertyRepository, new EntePropertyIdentifierConvert());
     }
 
     @Bean
@@ -183,34 +189,41 @@ public class CassandraServiceConfiguration {
     public EmbeddedDependencyRelation<EnteCategoryProperty> enteCategoryPropertyRelation() {
         return new EmbeddedDependencyRelationImpl<>(
                 enteCategoryRepository, enteCategoryPropertyRepository,
-                new DependencyRelationEnteCategoryPropertyIdentifierConvert());
+                new EnteCategoryPropertyIdentifierConvert());
     }
 
     @Bean
     public MultiplyDependencyRelation<EnteCategoryProperty, Ente, EnteCategoryLinkProperty> linkEnteRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 enteCategoryPropertyRepository, enteRepository, enteCategoryLinkPropertyRepository,
-                new DependencyRelationEnteCategoryPropertyLinkIdentifierConvert());
+                new EnteCategoryPropertyLinkIdentifierConvert());
     }
 
     @Bean
     public MultiplyDependencyRelation<Space, DynamicObjectInstance, SpaceQueryInstance> spaceQueryRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 spaceRepository, dynamicObjectInstanceRepository, spaceQueryInstanceRepository,
-                new DependencyRelationSpaceQueryInstanceIdentifierConvert());
+                new SpaceQueryInstanceIdentifierConvert());
     }
 
     @Bean
     public MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> pluginTypePluginRelation() {
         return new MultiplyDependencyRelationImpl<>(
                 pluginTypeRepository(), dynamicObjectPrototypeRepository, pluginRepository,
-                new DependencyRelationPluginTypePluginPrototypeIdentifierConvert());
+                new PluginTypePluginPrototypeIdentifierConvert());
     }
 
     @Bean
-    public EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> prototypePropert() {
+    public EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> prototypeProperty() {
         return new EmbeddedDependencyRelationImpl<>(
                 dynamicObjectPrototypeRepository, dynamicObjectPrototypePropertyRepository,
-                new DependencyRelationPrototypePropertyIdentifierConvert());
+                new PrototypePropertyIdentifierConvert());
+    }
+
+    @Bean
+    public EmbeddedDependencyRelation<DynamicObjectInstanceProperty<?>> instanceProperty() {
+        return new EmbeddedDependencyRelationImpl<>(
+                dynamicObjectInstanceRepository, dynamicObjectInstancePropertyRepository,
+                new InstancePropertyIdentifierConvert());
     }
 }

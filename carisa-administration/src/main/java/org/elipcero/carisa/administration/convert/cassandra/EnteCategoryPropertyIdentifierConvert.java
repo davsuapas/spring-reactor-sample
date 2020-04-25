@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.convert.cassandra;
 
-import org.elipcero.carisa.administration.domain.EnteHierarchy;
+import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
 import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;
@@ -25,17 +25,17 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Convert Ente hirarchy relation identifier to cassandra MapId
+ * Convert Ente category property relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
-public class DependencyRelationEnteHirarchyIdentifierConvert
-        implements DependencyRelationIdentifierConvert<EnteHierarchy, MapId, UUID> {
+public class EnteCategoryPropertyIdentifierConvert
+        implements DependencyRelationIdentifierConvert<EnteCategoryProperty, MapId, UUID> {
 
     @Override
-    public MapId convert(final EnteHierarchy enteHierarchy) {
+    public MapId convert(final EnteCategoryProperty enteCategoryProperty) {
         return this.convertFromDictionary(
-                EnteHierarchy.GetMapId(enteHierarchy.getParentId(), enteHierarchy.getId()));
+                EnteCategoryProperty.GetMapId(enteCategoryProperty.getParentId(), enteCategoryProperty.getId()));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DependencyRelationEnteHirarchyIdentifierConvert
     }
 
     @Override
-    public UUID convertToParent(final EnteHierarchy enteHierarchy) {
-        return enteHierarchy.getParentId();
+    public UUID convertToParent(final EnteCategoryProperty enteCategoryProperty) {
+        return enteCategoryProperty.getParentId();
     }
 }

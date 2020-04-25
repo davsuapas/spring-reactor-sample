@@ -36,9 +36,9 @@ import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 public class PluginDynamicPrototypeService extends DynamicObjectPrototypeService<Plugin> {
 
     public PluginDynamicPrototypeService(
-         @NonNull DynamicObjectPrototypeRepository dynamicObjectRepository,
-         @NonNull MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> relation,
-         @NonNull EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> propertyRelation) {
+         @NonNull final DynamicObjectPrototypeRepository dynamicObjectRepository,
+         @NonNull final MultiplyDependencyRelation<PluginType, DynamicObjectPrototype, Plugin> relation,
+         @NonNull final EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> propertyRelation) {
 
         super(dynamicObjectRepository, relation, propertyRelation);
     }

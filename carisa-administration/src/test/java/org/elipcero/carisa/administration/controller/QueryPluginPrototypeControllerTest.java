@@ -47,7 +47,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_query_prototype_controller" })
-public class QueryPrototypeControllerTest extends DataAbstractControllerTest {
+public class QueryPluginPrototypeControllerTest extends DataAbstractControllerTest {
 
     private static final String QUERY_ID = "5d191729-1f4c-4b7e-b573-b90cf3457df8"; // Look at query-prototype-controller
     private static final String QUERY_NAME = "Query prototype name"; // Look at query-prototype-controller
@@ -78,6 +78,7 @@ public class QueryPrototypeControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(QUERY_NAME)
                     .jsonPath("$.description").isEqualTo(QUERY_DESCRIPTION)
                     .jsonPath("$.parentId").isEqualTo(PluginType.QUERY_ID.toString())
+                    .jsonPath("$._links.querypluginproperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queriesplugin-get",
                         commonPathParameters(),
@@ -98,6 +99,7 @@ public class QueryPrototypeControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(QUERY_NAME)
                     .jsonPath("$.description").isEqualTo(QUERY_DESCRIPTION)
                     .jsonPath("$.parentId").isEqualTo(PluginType.QUERY_ID.toString())
+                    .jsonPath("$._links.querypluginproperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queriesplugin-post",
                         commonRequestFields(),
@@ -120,6 +122,7 @@ public class QueryPrototypeControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(QUERY_NAME)
                     .jsonPath("$.description").isEqualTo(QUERY_DESCRIPTION)
                     .jsonPath("$.parentId").isEqualTo(PluginType.QUERY_ID.toString())
+                    .jsonPath("$._links.querypluginproperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queriesplugin-put",
                         commonPathParameters(),
@@ -153,6 +156,7 @@ public class QueryPrototypeControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.description").isEqualTo(newDescription)
                     .jsonPath("$.parentId").isEqualTo(PluginType.QUERY_ID.toString())
+                    .jsonPath("$._links.querypluginproperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
 

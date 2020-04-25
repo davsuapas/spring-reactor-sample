@@ -24,7 +24,7 @@
 		<spring-hateoas.version>1.0.0.M2</spring-hateoas.version>
 		<spring-plugin-version>2.0.0.M1</spring-plugin-version>
         <checkstyle.config.location>src/checkstyle/checkstyle-definition.xml</checkstyle.config.location>
-		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
+		<jacoco-version>0.7.9</jacoco-version>
         <dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>
 		<docker.image.prefix>elipceroopensource</docker.image.prefix>
 		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>
@@ -79,6 +79,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-version}</version>
 				<executions>
 					<execution>
 						<id>agent</id>

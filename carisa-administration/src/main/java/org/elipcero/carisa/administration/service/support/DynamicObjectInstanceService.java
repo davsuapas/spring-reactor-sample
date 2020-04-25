@@ -18,15 +18,21 @@ package org.elipcero.carisa.administration.service.support;
 
 import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 import org.elipcero.carisa.administration.repository.DynamicObjectInstanceRepository;
 import org.elipcero.carisa.administration.repository.DynamicObjectPrototypeRepository;
 import org.elipcero.carisa.core.data.Entity;
 import org.elipcero.carisa.core.data.ManyRelation;
+import org.elipcero.carisa.core.data.ParentChildName;
 import org.elipcero.carisa.core.data.Relation;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationRefNotFoundException;
+import org.elipcero.carisa.core.reactive.data.EmbeddedDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelation;
 import org.elipcero.carisa.core.reactive.data.MultiplyDependencyRelationService;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 /**
  * Service for operations of the dynamic object instance
@@ -39,14 +45,18 @@ public abstract class DynamicObjectInstanceService<TRelation extends ManyRelatio
 
     private final DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository;
 
+    private final EmbeddedDependencyRelation<DynamicObjectInstanceProperty<?>> propertyRelation;
+
     public DynamicObjectInstanceService(
-            @NonNull DynamicObjectInstanceRepository dynamicObjectInstanceRepository,
-            @NonNull MultiplyDependencyRelation<? extends Entity, DynamicObjectInstance, TRelation> relation,
-            @NonNull DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository) {
+            @NonNull final DynamicObjectInstanceRepository dynamicObjectInstanceRepository,
+            @NonNull final MultiplyDependencyRelation<? extends Entity, DynamicObjectInstance, TRelation> relation,
+            @NonNull final DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository,
+            @NonNull final EmbeddedDependencyRelation<DynamicObjectInstanceProperty<?>> propertyRelation) {
 
         super(dynamicObjectInstanceRepository, relation);
 
         this.dynamicObjectPrototypeRepository = dynamicObjectPrototypeRepository;
+        this.propertyRelation = propertyRelation;
     }
 
     /**
@@ -72,5 +82,20 @@ public abstract class DynamicObjectInstanceService<TRelation extends ManyRelatio
     protected void updateEntity(DynamicObjectInstance entityForUpdating, DynamicObjectInstance entity) {
         entityForUpdating.setName(entity.getName());
         entityForUpdating.setDescription(entity.getDescription());
+    }
+
+    /**
+     * Get properties of the object instance
+     * @param id the instance identifier
+     * @return the properties
+     */
+    public Flux<ParentChildName> getPropertiesByInstanceId(final UUID id) {
+        return this.propertyRelation.getRelationsByParent(id)
+                .map(prop ->
+                        ParentChildName.builder()
+                                    .parentId(prop.getParentId())
+                                    .childId(prop.getChildId())
+                                    .name(prop.getName())
+                                .build());
     }
 }

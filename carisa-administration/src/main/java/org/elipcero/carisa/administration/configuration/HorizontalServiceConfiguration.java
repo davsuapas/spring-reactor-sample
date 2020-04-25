@@ -17,6 +17,7 @@
 package org.elipcero.carisa.administration.configuration;
 
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototype;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.elipcero.carisa.administration.domain.Ente;
@@ -38,6 +39,7 @@ import org.elipcero.carisa.administration.repository.EnteCategoryRepository;
 import org.elipcero.carisa.administration.repository.EnteRepository;
 import org.elipcero.carisa.administration.repository.InstanceRepository;
 import org.elipcero.carisa.administration.repository.SpaceRepository;
+import org.elipcero.carisa.administration.service.DefaultDynamicObjectInstancePropertyService;
 import org.elipcero.carisa.administration.service.DefaultDynamicObjectPrototypePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteCategoryPropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteCategoryService;
@@ -45,6 +47,7 @@ import org.elipcero.carisa.administration.service.DefaultEntePropertyService;
 import org.elipcero.carisa.administration.service.DefaultEnteService;
 import org.elipcero.carisa.administration.service.DefaultInstanceService;
 import org.elipcero.carisa.administration.service.DefaultSpaceService;
+import org.elipcero.carisa.administration.service.DynamicObjectInstancePropertyService;
 import org.elipcero.carisa.administration.service.DynamicObjectPrototypePropertyService;
 import org.elipcero.carisa.administration.service.DynamicQueryInstanceService;
 import org.elipcero.carisa.administration.service.EnteCategoryPropertyService;
@@ -114,6 +117,9 @@ public class HorizontalServiceConfiguration {
 
     @Autowired
     private EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> prototypePropertyRelation;
+
+    @Autowired
+    private EmbeddedDependencyRelation<DynamicObjectInstanceProperty<?>> instancePropertyRelation;
 
     // Dynamic object
 
@@ -197,7 +203,7 @@ public class HorizontalServiceConfiguration {
     @Bean
     public DynamicObjectInstanceService<SpaceQueryInstance> dynamicObjectInstanceService() {
         return new DynamicQueryInstanceService(
-                dynamicObjectInstanceRepository, spaceQueryRelation, dynamicObjectPrototypeRepository);
+                dynamicObjectInstanceRepository, spaceQueryRelation, dynamicObjectPrototypeRepository, instancePropertyRelation);
     }
 
     // Query prototype property configuration
@@ -205,5 +211,12 @@ public class HorizontalServiceConfiguration {
     @Bean
     public DynamicObjectPrototypePropertyService dynamicObjectPrototypePropertyService() {
         return new DefaultDynamicObjectPrototypePropertyService(prototypePropertyRelation);
+    }
+
+    // Query instance property configuration
+
+    @Bean
+    public DynamicObjectInstancePropertyService dynamicObjectInstancePropertyService() {
+        return new DefaultDynamicObjectInstancePropertyService(instancePropertyRelation);
     }
 }

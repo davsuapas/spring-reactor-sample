@@ -21,8 +21,16 @@ import org.elipcero.carisa.administration.controller.support.DynamicObjectInstan
 import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
 import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
 import org.elipcero.carisa.administration.service.support.DynamicObjectInstanceService;
+import org.elipcero.carisa.core.data.ChildName;
+import org.reactivestreams.Publisher;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 /**
  * Query instance controller.
@@ -47,5 +55,20 @@ public class QueryInstanceController extends DynamicObjectInstanceController<Spa
     @Override
     protected SpaceQueryInstance buildManyRelation(final DynamicObjectInstance relation) {
         return new SpaceQueryInstance();
+    }
+
+    /**
+     * Get properties by instance
+     * @param id the instance identifier (UUID string)
+     * @return the property collections with links
+     */
+    @GetMapping("/{id}/properties")
+    public Publisher<CollectionModel<EntityModel<ChildName>>> getProperties(final @PathVariable("id") String id) {
+
+        return this.crudHypermediaController.childrenByParentWithBiKey(
+                id,
+                this.dynamicObjectInstanceService.getPropertiesByInstanceId(UUID.fromString(id)),
+                QueryInstanceController.class, QueryInstanceModelAssembler.QUERY_INSTANCE_REL_NAME,
+                QueryInstancePropertyController.class, QueryInstancePropertyModelAssembler.QUERY_INSTANCE_PROP_REL_NAME);
     }
 }

@@ -50,6 +50,10 @@ public class EnteModelAssembler implements BasicReactiveRepresentationModelAssem
                 methodOn(SpaceController.class).getById(ente.getSpaceId().toString()))
                 .withRel(SpaceModelAssembler.SPACE_REL_NAME);
 
-        return Flux.concat(self.toMono(), spaces.toMono());
+        WebFluxLinkBuilder.WebFluxLink properties = linkTo(
+                methodOn(EnteController.class).getProperties(ente.getId().toString()))
+                .withRel(EntePropertyModelAssembler.PROPERTIES_REL_NAME);
+
+        return Flux.concat(self.toMono(), spaces.toMono(), properties.toMono());
     }
 }

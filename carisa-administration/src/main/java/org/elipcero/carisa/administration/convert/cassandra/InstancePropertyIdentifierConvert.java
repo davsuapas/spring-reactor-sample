@@ -16,7 +16,8 @@
 
 package org.elipcero.carisa.administration.convert.cassandra;
 
-import org.elipcero.carisa.administration.domain.EnteCategoryProperty;
+import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
+import org.elipcero.carisa.administration.domain.EnteProperty;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
 import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;
@@ -25,17 +26,16 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Convert Ente category property relation identifier to cassandra MapId
+ * Convert dynamic instance prototype property relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
-public class DependencyRelationEnteCategoryPropertyIdentifierConvert
-        implements DependencyRelationIdentifierConvert<EnteCategoryProperty, MapId, UUID> {
+public class InstancePropertyIdentifierConvert
+        implements DependencyRelationIdentifierConvert<DynamicObjectInstanceProperty<?>, MapId, UUID> {
 
     @Override
-    public MapId convert(final EnteCategoryProperty enteCategoryProperty) {
-        return this.convertFromDictionary(
-                EnteCategoryProperty.GetMapId(enteCategoryProperty.getParentId(), enteCategoryProperty.getId()));
+    public MapId convert(final DynamicObjectInstanceProperty<?> property) {
+        return this.convertFromDictionary(EnteProperty.GetMapId(property.getParentId(), property.getId()));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DependencyRelationEnteCategoryPropertyIdentifierConvert
     }
 
     @Override
-    public UUID convertToParent(final EnteCategoryProperty enteCategoryProperty) {
-        return enteCategoryProperty.getParentId();
+    public UUID convertToParent(final DynamicObjectInstanceProperty<?> property) {
+        return property.getParentId();
     }
 }

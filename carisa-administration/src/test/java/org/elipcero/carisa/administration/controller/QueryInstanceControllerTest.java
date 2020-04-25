@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -62,6 +64,7 @@ public class QueryInstanceControllerTest extends DataAbstractControllerTest {
             this.executeCommands("space-query-instance-controller.cql");
             this.executeCommands("query-instance-controller.cql");
             this.executeCommands("query-prototype-controller.cql");
+            this.executeCommands("query-instance-property-controller.cql");
             beforeOnce = true;
         }
     }
@@ -82,6 +85,7 @@ public class QueryInstanceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.parentId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.queryplugin.href").hasJsonPath()
+                    .jsonPath("$._links.queryinstanceproperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstances-get",
                         commonPathParameters(),
@@ -105,6 +109,7 @@ public class QueryInstanceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.parentId").isEqualTo(SPACE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.queryplugin.href").hasJsonPath()
+                    .jsonPath("$._links.queryinstanceproperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstances-post",
                         commonRequestFields(),
@@ -147,6 +152,7 @@ public class QueryInstanceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.prototypeId").isEqualTo(QUERY_PROTOTYPE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.queryplugin.href").hasJsonPath()
+                    .jsonPath("$._links.queryinstanceproperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstances-put",
                         commonPathParameters(),
@@ -183,7 +189,37 @@ public class QueryInstanceControllerTest extends DataAbstractControllerTest {
                     .jsonPath("$.prototypeId").isEqualTo(QUERY_PROTOTYPE_ID)
                     .jsonPath("$._links.space.href").hasJsonPath()
                     .jsonPath("$._links.queryplugin.href").hasJsonPath()
+                    .jsonPath("$._links.queryinstanceproperties.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
+    }
+
+    @Test
+    public void list_properties_from_query_should_return_ok_and_properties_entity() {
+
+        String propertyId = "c6b34eb0-e15e-4e5a-a20d-7548a6967085";
+        String propertyName = "Query property name";
+
+        this.testClient
+                .get()
+                .uri("/api/queryinstances/{id}/properties", QUERY_ID)
+                .accept(MediaTypes.HAL_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", propertyId).isEqualTo(propertyName)
+                .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.property.href", propertyId).hasJsonPath()
+                .jsonPath("$._links.queryinstance.href").hasJsonPath()
+                .consumeWith(document("queryinstances-properties-get",
+                        links(linkWithRel("queryinstance").description("Query instance")),
+                        commonPathParameters(),
+                        responseFields(
+                                fieldWithPath("_embedded.childNameList[].id")
+                                        .description("Query instance identifier. (UUID string format)"),
+                                fieldWithPath("_embedded.childNameList[].name")
+                                        .description("Query instance property name"),
+                                fieldWithPath("_embedded.childNameList[]._links.property.href")
+                                        .description("Query instance property information"),
+                                subsectionWithPath("_links").description("View links section"))));
     }
 
     @Test

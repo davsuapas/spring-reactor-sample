@@ -12,18 +12,15 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
+ *
  */
 
 package org.elipcero.carisa.administration.exception;
 
 /**
- * Not Matching in type exception
+ * Not supported
  *
  * @author David Suárez
  */
-public class NotMatchingTypeException extends RuntimeException {
-
-    public NotMatchingTypeException(String message) {
-        super(message);
-    }
+public class NotSupportedException extends RuntimeException {
 }

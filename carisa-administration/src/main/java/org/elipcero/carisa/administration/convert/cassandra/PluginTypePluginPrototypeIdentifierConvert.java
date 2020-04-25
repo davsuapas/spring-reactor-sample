@@ -14,16 +14,16 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.exception;
+package org.elipcero.carisa.administration.convert.cassandra;
+
+import org.elipcero.carisa.administration.convert.cassandra.support.ManyRelationIdentifierConvert;
+import org.elipcero.carisa.administration.domain.Plugin;
 
 /**
- * Not Matching in type exception
+ * Convert plugintype-plugin (dynamic object prototype) relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
-public class NotMatchingTypeException extends RuntimeException {
-
-    public NotMatchingTypeException(String message) {
-        super(message);
-    }
+public class PluginTypePluginPrototypeIdentifierConvert
+        extends ManyRelationIdentifierConvert<Plugin> {
 }

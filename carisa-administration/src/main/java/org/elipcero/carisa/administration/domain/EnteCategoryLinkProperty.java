@@ -36,6 +36,7 @@ import java.util.UUID;
  */
 @Table("carisa_ente_category_property_link")
 @Getter
+@Builder
 public class EnteCategoryLinkProperty implements Relation {
 
     public static String ENTE_CATEGORY_PROPERTY_ID_COLUMN_NAME = "parentId";
@@ -51,18 +52,6 @@ public class EnteCategoryLinkProperty implements Relation {
     private UUID parentLinkId; // Identify the parent of link
 
     private boolean category; // true -> Is a category ; false -> Is a ente
-
-    @Builder
-    public EnteCategoryLinkProperty(
-            UUID linkId, UUID parentId,
-            UUID parentCategoryId, UUID parentLinkId, boolean category) {
-
-        this.linkId = linkId;
-        this.parentId = parentId;
-        this.parentCategoryId = parentCategoryId;
-        this.parentLinkId = parentLinkId;
-        this.category = category;
-    }
 
     public UUID getRawParentId() {
         return  this.parentId;

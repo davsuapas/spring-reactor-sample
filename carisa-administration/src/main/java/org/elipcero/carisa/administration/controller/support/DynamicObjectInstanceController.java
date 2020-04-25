@@ -32,15 +32,15 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
 public abstract class DynamicObjectInstanceController<TRelation extends ManyRelation>
         implements ChildControllerHypermedia<DynamicObjectInstance> {
 
-    private final CrudHypermediaController<DynamicObjectInstance> crudHypermediaController;
-    private final DynamicObjectInstanceService<TRelation> multiDependencyService;
+    protected final CrudHypermediaController<DynamicObjectInstance> crudHypermediaController;
+    protected final DynamicObjectInstanceService<TRelation> dynamicObjectInstanceService;
 
     public DynamicObjectInstanceController(
            @NonNull final BasicReactiveRepresentationModelAssembler<DynamicObjectInstance> modelAssembler,
-           @NonNull final DynamicObjectInstanceService<TRelation> multiDependencyService) {
+           @NonNull final DynamicObjectInstanceService<TRelation> dynamicObjectInstanceService) {
 
         this.crudHypermediaController = new CrudHypermediaController<>(modelAssembler);
-        this.multiDependencyService = multiDependencyService;
+        this.dynamicObjectInstanceService = dynamicObjectInstanceService;
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class DynamicObjectInstanceController<TRelation extends ManyRela
      */
     @GetMapping("/{id}")
     public Publisher<EntityModel<DynamicObjectInstance>> getById(final @PathVariable("id") String id) {
-        return this.crudHypermediaController.get(this.multiDependencyService.getById(UUID.fromString(id)));
+        return this.crudHypermediaController.get(this.dynamicObjectInstanceService.getById(UUID.fromString(id)));
     }
 
     /**
@@ -83,7 +83,7 @@ public abstract class DynamicObjectInstanceController<TRelation extends ManyRela
             final @RequestBody DynamicObjectInstance entity) {
 
         return this.crudHypermediaController.create(
-                this.multiDependencyService.create(entity, this.buildManyRelation(entity)));
+                this.dynamicObjectInstanceService.create(entity, this.buildManyRelation(entity)));
     }
 
     /**
@@ -98,7 +98,7 @@ public abstract class DynamicObjectInstanceController<TRelation extends ManyRela
             final @RequestBody DynamicObjectInstance entity) {
 
         return this.crudHypermediaController.updateOrCreate(
-                this.multiDependencyService.updateOrCreate(
+                this.dynamicObjectInstanceService.updateOrCreate(
                         UUID.fromString(id), entity, this.buildManyRelation(entity)));
     }
 }

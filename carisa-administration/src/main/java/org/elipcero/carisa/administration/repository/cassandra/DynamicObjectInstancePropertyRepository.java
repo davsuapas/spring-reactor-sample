@@ -14,16 +14,17 @@
  *  limitations under the License.
  */
 
-package org.elipcero.carisa.administration.exception;
+package org.elipcero.carisa.administration.repository.cassandra;
+
+import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
+import org.elipcero.carisa.core.reactive.data.DependencyRelationRepository;
+import org.springframework.data.cassandra.core.mapping.MapId;
 
 /**
- * Not Matching in type exception
+ * Dynamic object instance property
  *
  * @author David Suárez
  */
-public class NotMatchingTypeException extends RuntimeException {
-
-    public NotMatchingTypeException(String message) {
-        super(message);
-    }
+public interface DynamicObjectInstancePropertyRepository
+        extends DependencyRelationRepository<DynamicObjectInstanceProperty<?>, MapId> {
 }

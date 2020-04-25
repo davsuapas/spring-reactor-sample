@@ -43,9 +43,9 @@ public abstract class DynamicObjectPrototypeService<TRelation extends ManyRelati
     private final EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> propertyRelation;
 
     public DynamicObjectPrototypeService(
-            @NonNull DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository,
-            @NonNull MultiplyDependencyRelation<? extends Entity, DynamicObjectPrototype, TRelation> relation,
-            @NonNull EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> propertyRelation) {
+            @NonNull final DynamicObjectPrototypeRepository dynamicObjectPrototypeRepository,
+            @NonNull final MultiplyDependencyRelation<? extends Entity, DynamicObjectPrototype, TRelation> relation,
+            @NonNull final EmbeddedDependencyRelation<DynamicObjectPrototypeProperty> propertyRelation) {
 
         super(dynamicObjectPrototypeRepository, relation);
 

@@ -44,13 +44,13 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/api/queriesplugin")
-public class QueryPrototypeController extends DynamicObjectPrototypeController<Plugin> {
+public class QueryPluginPrototypeController extends DynamicObjectPrototypeController<Plugin> {
 
-    public QueryPrototypeController(
+    public QueryPluginPrototypeController(
        @NonNull final DynamicObjectPrototypeService<Plugin> dynamicObjectService,
-       @NonNull final QueryPrototypeModelAssembler queryPrototypeModelAssembler) {
+       @NonNull final QueryPluginPrototypeModelAssembler queryPluginPrototypeModelAssembler) {
 
-        super(queryPrototypeModelAssembler, dynamicObjectService);
+        super(queryPluginPrototypeModelAssembler, dynamicObjectService);
     }
 
     /**
@@ -86,7 +86,8 @@ public class QueryPrototypeController extends DynamicObjectPrototypeController<P
         return this.crudHypermediaController.childrenByParentWithBiKey(
                 id,
                 this.dynamicObjectPrototypeService.getPropertiesByPrototypeId(UUID.fromString(id)),
-                QueryPrototypeController.class, QueryPrototypeModelAssembler.QUERY_PROTOTYPE_REL_NAME,
-                QueryPrototypePropertyController.class, QueryPrototypePropertyModelAssembler.QUERY_PROTOTYPE_PROP_REL_NAME);
+                QueryPluginPrototypeController.class, QueryPluginPrototypeModelAssembler.QUERY_PROTOTYPE_REL_NAME,
+                QueryPluginPrototypePropertyController.class,
+                QueryPluginPrototypePropertyModelAssembler.QUERY_PROTOTYPE_PROP_REL_NAME);
     }
 }

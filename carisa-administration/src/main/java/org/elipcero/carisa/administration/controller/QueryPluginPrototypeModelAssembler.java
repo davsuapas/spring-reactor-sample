@@ -33,7 +33,7 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
  * @author David Suárez
  */
 @Component
-public class QueryPrototypeModelAssembler
+public class QueryPluginPrototypeModelAssembler
         implements BasicReactiveRepresentationModelAssembler<DynamicObjectPrototype> {
 
     public static final String QUERY_PROTOTYPE_REL_NAME = "queryplugin";
@@ -43,11 +43,15 @@ public class QueryPrototypeModelAssembler
     public Flux<Link> addLinks(DynamicObjectPrototype queryPrototype, ServerWebExchange exchange) {
 
         WebFluxLinkBuilder.WebFluxLink self = linkTo(
-                methodOn(QueryPrototypeController.class).getById(queryPrototype.getId().toString()))
+                methodOn(QueryPluginPrototypeController.class).getById(queryPrototype.getId().toString()))
                 .withSelfRel()
-                .andAffordance(methodOn(QueryPrototypeController.class)
+                .andAffordance(methodOn(QueryPluginPrototypeController.class)
                         .updateOrCreate(queryPrototype.getId().toString(), queryPrototype));
 
-        return Flux.concat(self.toMono());
+        WebFluxLinkBuilder.WebFluxLink properties = linkTo(
+                methodOn(QueryPluginPrototypeController.class).getProperties(queryPrototype.getId().toString()))
+                .withRel(QueryPluginPrototypePropertyModelAssembler.QUERY_PROTOTYPES_PROP_REL_NAME);
+
+        return Flux.concat(self.toMono(), properties.toMono());
     }
 }

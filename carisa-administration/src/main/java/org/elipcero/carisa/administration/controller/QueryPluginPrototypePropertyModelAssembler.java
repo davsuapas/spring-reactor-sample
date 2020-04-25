@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.domain.DynamicObjectInstance;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
@@ -28,38 +28,35 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.lin
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
 
 /**
- * Resources assembler for query instance
+ * Resources assembler for query prototype property
  *
  * @author David Suárez
  */
 @Component
-public class QueryInstanceModelAssembler
-        implements BasicReactiveRepresentationModelAssembler<DynamicObjectInstance> {
+public class QueryPluginPrototypePropertyModelAssembler
+        implements BasicReactiveRepresentationModelAssembler<DynamicObjectPrototypeProperty> {
 
-    public static final String QUERY_INSTANCE_REL_NAME = "queryinstance";
-    public static final String QUERY_INSTANCES_REL_NAME = QUERY_INSTANCE_REL_NAME + "s";
+    public static final String QUERY_PROTOTYPE_PROP_REL_NAME = "property";
+    public static final String QUERY_PROTOTYPES_PROP_REL_NAME = "querypluginproperties";
 
     @Override
-    public Flux<Link> addLinks(DynamicObjectInstance queryInstance, ServerWebExchange exchange) {
+    public Flux<Link> addLinks(DynamicObjectPrototypeProperty queryProperty, ServerWebExchange exchange) {
 
         WebFluxLinkBuilder.WebFluxLink self = linkTo(
-                methodOn(QueryInstanceController.class).getById(queryInstance.getId().toString()))
+                methodOn(QueryPluginPrototypePropertyController.class).getById(
+                        queryProperty.getPrototypeId().toString(),
+                        queryProperty.getId().toString()))
                 .withSelfRel()
-                .andAffordance(methodOn(QueryInstanceController.class)
-                        .updateOrCreate(queryInstance.getId().toString(), queryInstance));
+                .andAffordance(methodOn(QueryPluginPrototypePropertyController.class)
+                        .updateOrCreate(
+                                queryProperty.getPrototypeId().toString(),
+                                queryProperty.getId().toString(),
+                                queryProperty));
 
         WebFluxLinkBuilder.WebFluxLink queryPrototype = linkTo(
-                methodOn(QueryPluginPrototypeController.class).getById(queryInstance.getPrototypeId().toString()))
+                methodOn(QueryPluginPrototypeController.class).getById(queryProperty.getPrototypeId().toString()))
                 .withRel(QueryPluginPrototypeModelAssembler.QUERY_PROTOTYPE_REL_NAME);
 
-        WebFluxLinkBuilder.WebFluxLink spaces = linkTo(
-                methodOn(SpaceController.class).getById(queryInstance.getParentId().toString()))
-                .withRel(SpaceModelAssembler.SPACE_REL_NAME);
-
-        WebFluxLinkBuilder.WebFluxLink properties = linkTo(
-                methodOn(QueryInstanceController.class).getProperties(queryInstance.getId().toString()))
-                .withRel(QueryInstancePropertyModelAssembler.QUERY_INSTANCES_PROP_REL_NAME);
-
-        return Flux.concat(self.toMono(), spaces.toMono(), queryPrototype.toMono(), properties.toMono());
+        return Flux.concat(self.toMono(), queryPrototype.toMono());
     }
 }

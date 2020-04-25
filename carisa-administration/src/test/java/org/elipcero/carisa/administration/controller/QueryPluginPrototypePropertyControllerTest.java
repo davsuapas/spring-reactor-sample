@@ -45,7 +45,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  * @author David Suárez
  */
 @SpringBootTest(properties = { "spring.data.cassandra.keyspaceName=test_admin_prototypeproperty_controller" })
-public class QueryPrototypePropertyControllerTest extends DataAbstractControllerTest {
+public class QueryPluginPrototypePropertyControllerTest extends DataAbstractControllerTest {
 
     // Look at query-prototype-property-controller.cql
     private static final String PROTOTYPE_PROPERTY_ID = "249f1073-3164-4ed0-9ad5-4415945b273f";
@@ -66,7 +66,7 @@ public class QueryPrototypePropertyControllerTest extends DataAbstractController
     }
 
     @Test
-    public void find_ente_property_should_return_ok_and_ente_property_entity() {
+    public void find_query_property_should_return_ok_and_query_property_entity() {
 
         this.testClient
                 .get()
@@ -148,7 +148,6 @@ public class QueryPrototypePropertyControllerTest extends DataAbstractController
                 .builder()
                     .name(newName)
                     .description(newDescription)
-                    .type(DynamicObjectPrototypeProperty.Type.DateTime)
                 .build();
 
         this.testClient
@@ -164,7 +163,7 @@ public class QueryPrototypePropertyControllerTest extends DataAbstractController
                     .jsonPath("$.id").isEqualTo(propertyId)
                     .jsonPath("$.name").isEqualTo(newName)
                     .jsonPath("$.description").isEqualTo(newDescription)
-                    .jsonPath("$.type").isEqualTo(DynamicObjectPrototypeProperty.Type.DateTime.toString())
+                    .jsonPath("$.type").isEqualTo(DynamicObjectPrototypeProperty.Type.HierarchyBinding.toString())
                     .jsonPath("$._links.queryplugin.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
     }
@@ -204,8 +203,8 @@ public class QueryPrototypePropertyControllerTest extends DataAbstractController
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
         List<FieldDescriptor> fieldDescriptor = new ArrayList<>(fields);
         fieldDescriptor.add(fieldWithPath("id").ignored());
-        fieldDescriptor.add(fieldWithPath("name").description("Ente property name"));
-        fieldDescriptor.add(fieldWithPath("description").description("Query prototype property description"));
+        fieldDescriptor.add(fieldWithPath("name").description("Query plugin prototype property name"));
+        fieldDescriptor.add(fieldWithPath("description").description("Query plugin prototype property description"));
         fieldDescriptor.add(fieldWithPath("type")
                 .description("Query prototype property type (Integer, Decimal, Boolean, DateTime, HierarchyBinding)"));
         return requestFields(fieldDescriptor);
@@ -214,19 +213,19 @@ public class QueryPrototypePropertyControllerTest extends DataAbstractController
     private static PathParametersSnippet commonPathParameters() {
         return pathParameters(
                 parameterWithName("prototypeId").description("Query plugin identifier (UUID string format)"),
-                parameterWithName("propertyId").description("Query prototype property identifier (UUID string format)"));
+                parameterWithName("propertyId").description("Query plugin prototype property identifier (UUID string format)"));
     }
 
     private static ResponseFieldsSnippet commonResponseFields() {
         return responseFields(
                 fieldWithPath("prototypeId").description("Query plugin identifier (UUID) for this property"),
-                fieldWithPath("id").description("Query prototype property identifier (UUID)"),
-                fieldWithPath("name").description("Query prototype property name"),
-                fieldWithPath("description").description("Query prototype property description"),
+                fieldWithPath("id").description("Query plugin prototype property identifier (UUID)"),
+                fieldWithPath("name").description("Query plugin prototype property name"),
+                fieldWithPath("description").description("Query plugin prototype property description"),
                 fieldWithPath("type")
                         .description("Query prototype property type (Integer, Decimal, Boolean, DateTime, HierarchyBinding)"),
                 subsectionWithPath("_links")
-                        .description("The Query prototype property links. " + StringResource.METADATA_INFORMATION));
+                        .description("Query plugin prototype property links. " + StringResource.METADATA_INFORMATION));
     }
 
     private static DynamicObjectPrototypeProperty createQueryProtoypeProperty() {

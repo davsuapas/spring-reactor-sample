@@ -17,11 +17,22 @@
 package org.elipcero.carisa.administration.configuration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.elipcero.carisa.administration.convert.cassandra.type.DataEngineIntegerValueConverter;
+import org.elipcero.carisa.administration.convert.cassandra.type.ObjectInstancePropertyValueReadConverter;
+import org.elipcero.carisa.administration.convert.cassandra.type.ObjectInstancePropertyValueWriteConverter;
+import org.elipcero.carisa.administration.convert.type.DataEngineValueConverter;
+import org.elipcero.carisa.administration.convert.type.ValueConverterFactory;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractReactiveCassandraConfiguration;
+import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
+import org.springframework.data.convert.CustomConversions;
+
+import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Cassandra configuration
@@ -44,6 +55,19 @@ public class CassandraConfiguration extends AbstractReactiveCassandraConfigurati
         }
         log.info("Configured cassandra namespace: " + keyNamespace);
         return keyNamespace;
+    }
+
+    @Override
+    public CustomConversions customConversions() {
+        ValueConverterFactory<DataEngineValueConverter> factory =
+                new ValueConverterFactory<>(new HashMap<Integer, DataEngineValueConverter>() {{
+                    put(DynamicObjectPrototypeProperty.Type.Integer.ordinal(), new DataEngineIntegerValueConverter());
+        }});
+
+        return new CassandraCustomConversions(
+                Arrays.asList(
+                        new ObjectInstancePropertyValueReadConverter(factory),
+                        new ObjectInstancePropertyValueWriteConverter(factory)));
     }
 
     @Override

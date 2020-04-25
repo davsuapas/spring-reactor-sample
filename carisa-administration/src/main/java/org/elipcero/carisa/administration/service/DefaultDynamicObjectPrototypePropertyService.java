@@ -67,7 +67,6 @@ public class DefaultDynamicObjectPrototypePropertyService implements DynamicObje
                         prototypePropertyForUpdating -> {
                             prototypePropertyForUpdating.setName(prototypeProperty.getName());
                             prototypePropertyForUpdating.setDescription(prototypeProperty.getDescription());
-                            prototypePropertyForUpdating.setType(prototypeProperty.getType());
                         },
                         () -> this.create(prototypeProperty));
     }

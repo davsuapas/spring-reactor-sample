@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.convert.cassandra;
 
-import org.elipcero.carisa.administration.convert.cassandra.support.DependencyRelationManyRelationIdentifierConvert;
+import org.elipcero.carisa.administration.convert.cassandra.support.ManyRelationIdentifierConvert;
 import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
 
 /**
@@ -24,6 +24,6 @@ import org.elipcero.carisa.administration.domain.SpaceQueryInstance;
  *
  * @author David Suárez
  */
-public class DependencyRelationSpaceQueryInstanceIdentifierConvert
-        extends DependencyRelationManyRelationIdentifierConvert<SpaceQueryInstance> {
+public class SpaceQueryInstanceIdentifierConvert
+        extends ManyRelationIdentifierConvert<SpaceQueryInstance> {
 }

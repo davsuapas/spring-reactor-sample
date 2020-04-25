@@ -55,12 +55,14 @@ public class IndexController {
                         .getMetadata()).withRel(EnteCategoryModelAssembler.CATEGORIES_REL_NAME).toMono(),
                 linkTo(methodOn(EnteCategoryPropertyController.class)
                         .getMetadata()).withRel(EnteCategoryPropertyModelAssembler.PROPERTIES_REL_NAME).toMono(),
-                linkTo(methodOn(QueryPrototypeController.class)
-                        .getMetadata()).withRel(QueryPrototypeModelAssembler.QUERY_PROTOTYPES_REL_NAME).toMono(),
+                linkTo(methodOn(QueryPluginPrototypeController.class)
+                        .getMetadata()).withRel(QueryPluginPrototypeModelAssembler.QUERY_PROTOTYPES_REL_NAME).toMono(),
                 linkTo(methodOn(QueryInstanceController.class)
                         .getMetadata()).withRel(QueryInstanceModelAssembler.QUERY_INSTANCES_REL_NAME).toMono(),
-                linkTo(methodOn(QueryPrototypePropertyController.class)
-                    .getMetadata()).withRel(QueryPrototypePropertyModelAssembler.QUERY_PROTOTYPES_PROP_REL_NAME).toMono())
+                linkTo(methodOn(QueryPluginPrototypePropertyController.class)
+                    .getMetadata()).withRel(QueryPluginPrototypePropertyModelAssembler.QUERY_PROTOTYPES_PROP_REL_NAME).toMono(),
+                linkTo(methodOn(QueryInstancePropertyController.class)
+                    .getMetadata()).withRel(QueryInstancePropertyModelAssembler.QUERY_INSTANCES_PROP_REL_NAME).toMono())
                 .collectList().map(links -> new EntityModel<>(new Index(), links));
     }
 }

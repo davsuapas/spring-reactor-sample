@@ -39,17 +39,17 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-public class QueryPrototypePropertyController extends DynamicObjectPrototypePropertyController {
+public class QueryPluginPrototypePropertyController extends DynamicObjectPrototypePropertyController {
 
-    public QueryPrototypePropertyController(
+    public QueryPluginPrototypePropertyController(
             @NonNull final DynamicObjectPrototypePropertyService service,
-            @NonNull final QueryPrototypePropertyModelAssembler modelAssembler) {
+            @NonNull final QueryPluginPrototypePropertyModelAssembler modelAssembler) {
 
         super(service, modelAssembler);
     }
 
     /**
-     * @see QueryPrototypePropertyController
+     * @see DynamicObjectPrototypePropertyController
      */
     @Override
     @GetMapping("/querypluginproperties")
@@ -58,7 +58,7 @@ public class QueryPrototypePropertyController extends DynamicObjectPrototypeProp
     }
 
     /**
-     * @see QueryPrototypePropertyController
+     * @see DynamicObjectPrototypePropertyController
      */
     @Override
     @GetMapping("/queriesplugin/{prototypeId}/properties/{propertyId}")
@@ -70,7 +70,7 @@ public class QueryPrototypePropertyController extends DynamicObjectPrototypeProp
     }
 
     /**
-     * @see QueryPrototypePropertyController
+     * @see DynamicObjectPrototypePropertyController
      */
     @Override
     @PostMapping("/querypluginproperties")
@@ -81,7 +81,7 @@ public class QueryPrototypePropertyController extends DynamicObjectPrototypeProp
     }
 
     /**
-     * @see QueryPrototypePropertyController
+     * @see DynamicObjectPrototypePropertyController
      */
     @Override
     @PutMapping("/queriesplugin/{prototypeId}/properties/{propertyId}")

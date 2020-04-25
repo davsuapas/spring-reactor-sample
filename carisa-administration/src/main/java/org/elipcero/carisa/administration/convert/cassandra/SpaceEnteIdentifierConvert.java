@@ -16,26 +16,25 @@
 
 package org.elipcero.carisa.administration.convert.cassandra;
 
-import org.elipcero.carisa.administration.domain.EnteCategoryLinkProperty;
+import org.elipcero.carisa.administration.domain.SpaceEnte;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
 import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
- * Convert Ente category property link (Ente or category) relation identifier to cassandra MapId
+ * Convert Space-Ente relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
-public class DependencyRelationEnteCategoryPropertyLinkIdentifierConvert
-        implements DependencyRelationIdentifierConvert<EnteCategoryLinkProperty, MapId, MapId> {
+public class SpaceEnteIdentifierConvert
+        implements DependencyRelationIdentifierConvert<SpaceEnte, MapId, UUID> {
 
     @Override
-    public MapId convert(final EnteCategoryLinkProperty enteCategoryLinkProperty) {
-        return this.convertFromDictionary(
-                EnteCategoryLinkProperty.GetMapId(
-                        enteCategoryLinkProperty.getRawParentId(), enteCategoryLinkProperty.getLinkId()));
+    public MapId convert(final SpaceEnte spaceEnte) {
+        return this.convertFromDictionary(spaceEnte.GetMapId(spaceEnte.getParentId(), spaceEnte.getChildId()));
     }
 
     @Override
@@ -44,12 +43,7 @@ public class DependencyRelationEnteCategoryPropertyLinkIdentifierConvert
     }
 
     @Override
-    public MapId convertToParent(final EnteCategoryLinkProperty enteCategoryLinkProperty) {
-        return this.convertFromDictionary(enteCategoryLinkProperty.getParentId());
-    }
-
-    @Override
-    public MapId convertToParentFromObject(final Object id) {
-        return this.convertFromDictionary((Map<String, Object>)id);
+    public UUID convertToParent(final SpaceEnte spaceEnte) {
+        return spaceEnte.getParentId();
     }
 }

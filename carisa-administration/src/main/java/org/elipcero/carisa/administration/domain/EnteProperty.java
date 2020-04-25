@@ -41,6 +41,7 @@ import java.util.UUID;
  * @author David Suárez
  */
 @Table("carisa_ente_property")
+@Builder
 @Getter
 @Setter
 public class EnteProperty implements Relation, EntityInitializer<EnteProperty>, PropertyType, Named {
@@ -56,6 +57,7 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty>, 
 
     private String name;
 
+    // Neither name nor position can be changed. It's used to persists in the database
     public enum Type {
         None,
         Integer,
@@ -67,14 +69,6 @@ public class EnteProperty implements Relation, EntityInitializer<EnteProperty>, 
     @CassandraType(type = DataType.Name.INT)
     @Setter
     private EnteProperty.Type type;
-
-    @Builder
-    public EnteProperty(UUID id, UUID parentId, String name, EnteProperty.Type type) {
-        this.id = id;
-        this.parentId = parentId;
-        this.name = name;
-        this.type = type;
-    }
 
     @Override
     @JsonIgnore

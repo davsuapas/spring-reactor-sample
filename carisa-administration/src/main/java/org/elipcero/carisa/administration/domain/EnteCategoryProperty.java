@@ -44,6 +44,7 @@ import java.util.UUID;
 @Table("carisa_ente_category_property")
 @Getter
 @Setter
+@Builder
 public class EnteCategoryProperty implements Relation, EntityInitializer<EnteCategoryProperty>, PropertyType, Named {
 
     public static String ENTECATEGORYID_COLUMN_NAME = "parentId";
@@ -59,14 +60,6 @@ public class EnteCategoryProperty implements Relation, EntityInitializer<EnteCat
 
     @CassandraType(type = DataType.Name.INT)
     private EnteProperty.Type type;
-
-    @Builder
-    public EnteCategoryProperty(UUID id, UUID parentId, String name) {
-        this.id = id;
-        this.parentId = parentId;
-        this.name = name;
-        this.type = EnteProperty.Type.None;
-    }
 
     @Override
     @JsonIgnore

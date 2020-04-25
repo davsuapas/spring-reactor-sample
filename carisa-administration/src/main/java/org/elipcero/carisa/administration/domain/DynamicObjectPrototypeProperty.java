@@ -19,6 +19,7 @@ package org.elipcero.carisa.administration.domain;
 import com.datastax.driver.core.DataType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,18 +36,21 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Object prototype property
+ * Each property of object prototype. In the same way that a class has properties a prototype in Carisa has
+ * DynamicObjectPrototypeProperty
  *
  * @author David Suárez
  */
 @Table("carisa_dynamic_object_prototype_property")
+@Builder
 @Getter
 @Setter
 public class DynamicObjectPrototypeProperty
         implements Relation, EntityInitializer<DynamicObjectPrototypeProperty>, Named {
 
-    public static String PROTOTYPE_ID_COLUMN_NAME = "parentId";
-    public static String ID_COLUMN_NAME = "id";
+    public static final String PROTOTYPE_ID_COLUMN_NAME = "parentId";
+    public static final String ID_COLUMN_NAME = "id";
+    public static final String TYPE = "type";
 
     @PrimaryKeyColumn(ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private UUID parentId; // Object prototype identifier
@@ -57,28 +61,17 @@ public class DynamicObjectPrototypeProperty
     private String name;
     private String description;
 
+    // Neither name nor position can be changed. It's used to persists in the database
     public enum Type {
         Integer,
-        Decimal,
+        String,
         Boolean,
-        DateTime,
         HierarchyBinding
     }
 
+    @Setter(AccessLevel.PRIVATE)
     @CassandraType(type = DataType.Name.INT)
-    @Setter
     private DynamicObjectPrototypeProperty.Type type;
-
-    @Builder
-    public DynamicObjectPrototypeProperty(
-            UUID id, UUID parentId, String name, String description, DynamicObjectPrototypeProperty.Type type) {
-
-        this.id = id;
-        this.parentId = parentId;
-        this.name = name;
-        this.description = description;
-        this.type = type;
-    }
 
     @Override
     @JsonIgnore
@@ -115,6 +108,10 @@ public class DynamicObjectPrototypeProperty
             this.id = UUID.randomUUID();
         }
         return this;
+    }
+
+    public static int typeToInteger(String type) {
+        return DynamicObjectPrototypeProperty.Type.valueOf(type).ordinal();
     }
 }
 

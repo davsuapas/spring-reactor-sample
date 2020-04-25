@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.convert.cassandra;
 
-import org.elipcero.carisa.administration.domain.EnteProperty;
+import org.elipcero.carisa.administration.domain.InstanceSpace;
 import org.elipcero.carisa.core.reactive.data.DependencyRelationIdentifierConvert;
 import org.springframework.data.cassandra.core.mapping.BasicMapId;
 import org.springframework.data.cassandra.core.mapping.MapId;
@@ -25,16 +25,17 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Convert Ente property relation identifier to cassandra MapId
+ * Convert instance-space relation identifier to cassandra MapId
  *
  * @author David Suárez
  */
-public class DependencyRelationEntePropertyIdentifierConvert
-        implements DependencyRelationIdentifierConvert<EnteProperty, MapId, UUID> {
+public class InstanceSpaceIdentifierConvert
+        implements DependencyRelationIdentifierConvert<InstanceSpace, MapId, UUID> {
 
     @Override
-    public MapId convert(final EnteProperty enteProperty) {
-        return this.convertFromDictionary(EnteProperty.GetMapId(enteProperty.getParentId(), enteProperty.getId()));
+    public MapId convert(final InstanceSpace instanceSpace) {
+        return this.convertFromDictionary(
+                InstanceSpace.GetMapId(instanceSpace.getParentId(), instanceSpace.getChildId()));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class DependencyRelationEntePropertyIdentifierConvert
     }
 
     @Override
-    public UUID convertToParent(final EnteProperty enteProperty) {
-        return enteProperty.getParentId();
+    public UUID convertToParent(final InstanceSpace instanceSpace) {
+        return instanceSpace.getParentId();
     }
 }
