@@ -31,14 +31,14 @@ import org.springframework.core.convert.converter.Converter;
  */
 @RequiredArgsConstructor
 public class ObjectInstancePropertyValueWriteConverter
-        implements Converter<DynamicObjectInstanceProperty.WrapperValue<?>, String> {
+        implements Converter<DynamicObjectInstanceProperty.Value, String> {
 
     @NonNull
     private final ValueConverterFactory<DataEngineValueConverter> dataValueConverterFactory;
 
     @Override
-    public String convert(final DynamicObjectInstanceProperty.WrapperValue<?> wrapperValue) {
-        int order = wrapperValue.getValue().getType().ordinal();
-        return order + ";" + this.dataValueConverterFactory.get(order).writeToString(wrapperValue.getValue());
+    public String convert(final DynamicObjectInstanceProperty.Value value) {
+        int order = value.getType().ordinal();
+        return order + ";" + this.dataValueConverterFactory.get(order).writeToString(value);
     }
 }

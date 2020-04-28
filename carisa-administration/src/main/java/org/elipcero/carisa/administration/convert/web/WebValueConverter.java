@@ -17,11 +17,8 @@
 
 package org.elipcero.carisa.administration.convert.web;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
-
-import java.io.IOException;
 
 /**
  * Convert json message to dynamic object instance property
@@ -36,11 +33,4 @@ public interface WebValueConverter {
      * @return the dynamic instance object property
      */
     DynamicObjectInstanceProperty<?> create(JsonNode value);
-
-    /**
-     * Convert the dynamic object instance property value to json
-     * @param jsonGenerator the json generator
-     * @param value the value
-     */
-    void writeToJson(JsonGenerator jsonGenerator, DynamicObjectInstanceProperty.Value value) throws IOException;
 }

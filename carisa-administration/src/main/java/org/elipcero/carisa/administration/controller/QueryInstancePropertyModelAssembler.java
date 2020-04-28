@@ -16,7 +16,7 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
+import org.elipcero.carisa.administration.projection.RawDynamicObjectInstanceProperty;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
@@ -34,27 +34,22 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
  */
 @Component
 public class QueryInstancePropertyModelAssembler
-        implements BasicReactiveRepresentationModelAssembler<DynamicObjectInstanceProperty<?>> {
+        implements BasicReactiveRepresentationModelAssembler<RawDynamicObjectInstanceProperty<?>> {
 
     public static final String QUERY_INSTANCE_PROP_REL_NAME = "property";
     public static final String QUERY_INSTANCES_PROP_REL_NAME = "queryinstanceproperties";
 
     @Override
-    public Flux<Link> addLinks(DynamicObjectInstanceProperty<?> queryProperty, ServerWebExchange exchange) {
+    public Flux<Link> addLinks(RawDynamicObjectInstanceProperty<?> queryProperty, ServerWebExchange exchange) {
 
         WebFluxLinkBuilder.WebFluxLink self = linkTo(
                 methodOn(QueryInstancePropertyController.class).getById(
-                        queryProperty.getParentId().toString(),
+                        queryProperty.getInstanceId().toString(),
                         queryProperty.getId().toString()))
-                .withSelfRel()
-                .andAffordance(methodOn(QueryInstancePropertyController.class)
-                        .updateOrCreate(
-                                queryProperty.getParentId().toString(),
-                                queryProperty.getId().toString(),
-                                queryProperty));
+                .withSelfRel();
 
         WebFluxLinkBuilder.WebFluxLink queryInstance = linkTo(
-                methodOn(QueryInstanceController.class).getById(queryProperty.getParentId().toString()))
+                methodOn(QueryInstanceController.class).getById(queryProperty.getInstanceId().toString()))
                 .withRel(QueryInstanceModelAssembler.QUERY_INSTANCE_REL_NAME);
 
         return Flux.concat(self.toMono(), queryInstance.toMono());

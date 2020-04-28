@@ -17,22 +17,20 @@
 package org.elipcero.carisa.administration.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.elipcero.carisa.administration.convert.web.DynamicObjectInstancePropertyDeserializer;
-import org.elipcero.carisa.administration.convert.web.DynamicObjectInstancePropertySerializer;
 import org.elipcero.carisa.administration.domain.support.Named;
 import org.elipcero.carisa.core.data.EntityInitializer;
 import org.elipcero.carisa.core.data.Relation;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
-import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,10 +45,10 @@ import java.util.UUID;
  * @author David Suárez
  */
 @Table("carisa_dynamic_object_instance_property")
+@NoArgsConstructor
 @Getter
 @Setter
 @JsonDeserialize(using = DynamicObjectInstancePropertyDeserializer.class)
-@JsonSerialize(using = DynamicObjectInstancePropertySerializer.class)
 public class DynamicObjectInstanceProperty<TValue extends DynamicObjectInstanceProperty.Value>
         implements Relation, EntityInitializer<DynamicObjectInstanceProperty<TValue>>, Named {
 
@@ -66,10 +64,7 @@ public class DynamicObjectInstanceProperty<TValue extends DynamicObjectInstanceP
     private UUID id;
 
     // Look at custom values
-    @Column("value")
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private WrapperValue<TValue> wrapperValue;
+    private TValue value;
 
     public DynamicObjectInstanceProperty(TValue value) {
         this(null, null, value);
@@ -79,14 +74,7 @@ public class DynamicObjectInstanceProperty<TValue extends DynamicObjectInstanceP
     public DynamicObjectInstanceProperty(UUID id, UUID parentId, TValue value) {
         this.id = id;
         this.parentId = parentId;
-        this.setValue(value);
-    }
-
-    public TValue getValue() {
-        return this.wrapperValue.getValue();
-    }
-    public void setValue(TValue value) {
-        this.wrapperValue = new WrapperValue<>(value);
+        this.value = value;
     }
 
     @Override
@@ -101,6 +89,7 @@ public class DynamicObjectInstanceProperty<TValue extends DynamicObjectInstanceP
 
     @Override
     public String getName() {
+        Assert.notNull(this.id, "The identifier can not be null");
         return this.id.toString();
     }
 
@@ -122,14 +111,7 @@ public class DynamicObjectInstanceProperty<TValue extends DynamicObjectInstanceP
 
     public interface Value {
         DynamicObjectPrototypeProperty.Type getType();
-    }
-
-    @RequiredArgsConstructor
-    @Getter
-    public static class WrapperValue<TValue extends DynamicObjectInstanceProperty.Value> {
-
-        @NonNull
-        TValue value;
+        Object getRawValue();
     }
 
     @RequiredArgsConstructor
@@ -143,24 +125,53 @@ public class DynamicObjectInstanceProperty<TValue extends DynamicObjectInstanceP
         public DynamicObjectPrototypeProperty.Type getType() {
             return DynamicObjectPrototypeProperty.Type.Integer;
         }
+
+        @Override
+        public Object getRawValue() {
+            return this.value;
+        }
     }
 
-    @RequiredArgsConstructor
-    @Getter
     public static class HierarchyBindingValue implements Value {
 
-        @NonNull
-        private UUID parentId;
+        private final InternalValue internalValue;
 
-        @NonNull
-        private UUID childId;
+        public HierarchyBindingValue(UUID parentId, UUID id, boolean category) {
+            this.internalValue = new InternalValue(parentId, id, category);
+        }
 
-        @NonNull
-        private boolean category;
+        public UUID getParentId() {
+            return this.internalValue.parentId;
+        }
+
+        public UUID getChildId() {
+            return this.internalValue.childId;
+        }
+
+        public boolean getCategory() {
+            return this.internalValue.category;
+        }
 
         @Override
         public DynamicObjectPrototypeProperty.Type getType() {
             return DynamicObjectPrototypeProperty.Type.HierarchyBinding;
+        }
+
+        @Override
+        public Object getRawValue() {
+            return this.internalValue;
+        }
+
+        @RequiredArgsConstructor
+        private static class InternalValue {
+            @NonNull
+            private UUID parentId;
+
+            @NonNull
+            private UUID childId;
+
+            @NonNull
+            private boolean category;
         }
     }
 }

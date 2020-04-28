@@ -19,6 +19,7 @@ package org.elipcero.carisa.administration.controller;
 import lombok.NonNull;
 import org.elipcero.carisa.administration.controller.support.DynamicObjectInstancePropertyController;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
+import org.elipcero.carisa.administration.projection.RawDynamicObjectInstanceProperty;
 import org.elipcero.carisa.administration.service.DynamicObjectInstancePropertyService;
 import org.reactivestreams.Publisher;
 import org.springframework.hateoas.EntityModel;
@@ -62,7 +63,7 @@ public class QueryInstancePropertyController extends DynamicObjectInstanceProper
      */
     @Override
     @GetMapping("/queryinstances/{instanceId}/properties/{propertyId}")
-    public Publisher<EntityModel<DynamicObjectInstanceProperty<?>>> getById(
+    public Publisher<EntityModel<RawDynamicObjectInstanceProperty<?>>> getById(
             final @PathVariable("instanceId") String instanceId,
             final @PathVariable("propertyId") String propertyId) {
 
@@ -74,7 +75,7 @@ public class QueryInstancePropertyController extends DynamicObjectInstanceProper
      */
     @Override
     @PostMapping("/queryinstanceproperties")
-    public Publisher<ResponseEntity<EntityModel<DynamicObjectInstanceProperty<?>>>> create(
+    public Publisher<ResponseEntity<EntityModel<RawDynamicObjectInstanceProperty<?>>>> create(
             final @RequestBody DynamicObjectInstanceProperty<?> property) {
 
         return super.create(property);
@@ -85,7 +86,7 @@ public class QueryInstancePropertyController extends DynamicObjectInstanceProper
      */
     @Override
     @PutMapping("/queryinstances/{instanceId}/properties/{propertyId}")
-    public Publisher<ResponseEntity<EntityModel<DynamicObjectInstanceProperty<?>>>> updateOrCreate(
+    public Publisher<ResponseEntity<EntityModel<RawDynamicObjectInstanceProperty<?>>>> updateOrCreate(
             final @PathVariable("instanceId") String instanceId,
             final @PathVariable("propertyId") String propertyId,
             final @RequestBody DynamicObjectInstanceProperty<?> property) {

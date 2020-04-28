@@ -28,10 +28,8 @@ import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 public class DataEngineIntegerValueConverter implements DataEngineValueConverter {
 
     @Override
-    public DynamicObjectInstanceProperty.WrapperValue<?> create(String value) {
-        return new DynamicObjectInstanceProperty.WrapperValue<>(
-                new DynamicObjectInstanceProperty.IntegerValue(Integer.valueOf(value))
-        );
+    public DynamicObjectInstanceProperty.Value create(String value) {
+        return new DynamicObjectInstanceProperty.IntegerValue(Integer.valueOf(value));
     }
 
     @Override

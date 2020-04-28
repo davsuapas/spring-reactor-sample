@@ -25,19 +25,19 @@ import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 import org.springframework.core.convert.converter.Converter;
 
 /**
- * Convert from cassandra type to object instance property domain entity
+ * Convert from cassandra type to object instance property value
  *
  * @author David Suárez
  */
 @RequiredArgsConstructor
 public class ObjectInstancePropertyValueReadConverter
-        implements Converter<String, DynamicObjectInstanceProperty.WrapperValue<?>> {
+        implements Converter<String, DynamicObjectInstanceProperty.Value> {
 
     @NonNull
     private ValueConverterFactory<DataEngineValueConverter> dataEngineValueConverter;
 
     @Override
-    public DynamicObjectInstanceProperty.WrapperValue<?> convert(final String value) {
+    public DynamicObjectInstanceProperty.Value convert(final String value) {
         String[] properties = value.split(";");
         return dataEngineValueConverter.get(Integer.parseInt(properties[0])).create(properties[1]);
     }

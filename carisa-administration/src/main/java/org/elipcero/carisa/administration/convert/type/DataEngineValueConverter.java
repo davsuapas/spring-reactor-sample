@@ -32,7 +32,7 @@ public interface DataEngineValueConverter {
      * @param value the value of the instance property
      * @return the wrapper value
      */
-    DynamicObjectInstanceProperty.WrapperValue<?> create(String value);
+    DynamicObjectInstanceProperty.Value create(String value);
 
     /**
      * Convert the object value to string

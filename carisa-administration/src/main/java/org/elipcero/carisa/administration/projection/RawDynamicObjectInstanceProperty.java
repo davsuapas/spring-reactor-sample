@@ -15,23 +15,22 @@
  *
  */
 
-package org.elipcero.carisa.administration.convert.web;
+package org.elipcero.carisa.administration.projection;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.UUID;
 
 /**
- * @see WebValueConverter
+ * Projection for the response of object instance property
  *
  * @author David Suárez
  */
-public class WebIntegerValueConverter implements WebValueConverter {
-
-    /**
-     * @see WebValueConverter#create(JsonNode)
-     */
-    @Override
-    public DynamicObjectInstanceProperty<?> create(JsonNode value) {
-        return new DynamicObjectInstanceProperty<>(new DynamicObjectInstanceProperty.IntegerValue(value.asInt()));
-    }
+@Builder
+@Getter
+public class RawDynamicObjectInstanceProperty<TValue> {
+    public UUID instanceId;
+    public UUID id;
+    public TValue value;
 }

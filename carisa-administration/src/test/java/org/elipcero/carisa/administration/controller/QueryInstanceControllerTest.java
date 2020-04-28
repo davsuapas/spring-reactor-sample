@@ -197,7 +197,6 @@ public class QueryInstanceControllerTest extends DataAbstractControllerTest {
     public void list_properties_from_query_should_return_ok_and_properties_entity() {
 
         String propertyId = "c6b34eb0-e15e-4e5a-a20d-7548a6967085";
-        String propertyName = "Query property name";
 
         this.testClient
                 .get()
@@ -206,7 +205,7 @@ public class QueryInstanceControllerTest extends DataAbstractControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", propertyId).isEqualTo(propertyName)
+                .jsonPath("$._embedded.childNameList[?(@.id=='%s')].name", propertyId).isEqualTo(propertyId)
                 .jsonPath("$._embedded.childNameList[?(@.id=='%s')]._links.property.href", propertyId).hasJsonPath()
                 .jsonPath("$._links.queryinstance.href").hasJsonPath()
                 .consumeWith(document("queryinstances-properties-get",

@@ -16,7 +16,9 @@
 
 package org.elipcero.carisa.administration.controller;
 
-import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
+import lombok.Builder;
+import lombok.Getter;
+import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.elipcero.carisa.administration.general.StringResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +76,7 @@ public class QueryInstancePropertyControllerTest extends DataAbstractControllerT
                 .expectBody()
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
                     .jsonPath("$.id").isEqualTo(INSTANCE_PROPERTY_ID)
+                    .jsonPath("$.value").isEqualTo(1)
                     .jsonPath("$._links.queryinstance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstancepeproperties-get",
@@ -88,12 +91,12 @@ public class QueryInstancePropertyControllerTest extends DataAbstractControllerT
                 .post()
                 .uri("/api/queryinstanceproperties").contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(createQueryInstanceIntegerProperty()), DynamicObjectInstanceProperty.class)
+                .body(Mono.just(createQueryInstanceIntegerProperty()), DynamicObjectInstancePropertyRequest.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                    //.jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
-                    //.jsonPath("$.value").isEqualTo(1)
+                    .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
+                    .jsonPath("$.value").isEqualTo(1)
                     .jsonPath("$._links.queryinstance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstancepeproperties-post",
@@ -114,11 +117,12 @@ public class QueryInstancePropertyControllerTest extends DataAbstractControllerT
                 .uri("/api//queryinstances/{instanceId}/properties/{propertyId}", INSTANCE_ID, propertyId)
                     .contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(createQueryInstanceIntegerProperty()), DynamicObjectInstanceProperty.class)
+                .body(Mono.just(createQueryInstanceIntegerProperty()), DynamicObjectInstancePropertyRequest.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
                     .jsonPath("$.instanceId").isEqualTo(INSTANCE_ID)
+                    .jsonPath("$.value").isEqualTo(1)
                     .jsonPath("$._links.queryinstance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath()
                 .consumeWith(document("queryinstancepeproperties-put",
@@ -132,15 +136,18 @@ public class QueryInstancePropertyControllerTest extends DataAbstractControllerT
 
         String propertyId = "d6b34eb0-e15e-4e5a-a20d-7548a6967085"; // Look at query-instance-property-controller.cql
 
-        DynamicObjectInstanceProperty<?> updatedProperty = DynamicObjectInstanceProperty.builder()
-                .build();
+        DynamicObjectInstancePropertyRequest<?> updatedProperty =
+                DynamicObjectInstancePropertyRequest.builder()
+                        .type(DynamicObjectPrototypeProperty.Type.Integer)
+                        .value(1)
+                    .build();
 
         this.testClient
                 .put()
                 .uri("/api//queryinstances/{instanceId}/properties/{propertyId}", INSTANCE_ID, propertyId)
                     .contentType(MediaTypes.HAL_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .body(Mono.just(updatedProperty), DynamicObjectInstanceProperty.class)
+                .body(Mono.just(updatedProperty), DynamicObjectInstancePropertyRequest.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -148,38 +155,6 @@ public class QueryInstancePropertyControllerTest extends DataAbstractControllerT
                     .jsonPath("$.id").isEqualTo(propertyId)
                     .jsonPath("$._links.queryinstance.href").hasJsonPath()
                     .jsonPath("$._links.self.href").hasJsonPath();
-    }
-
-    @Test
-    public void find_query_property_should_return_affordance() {
-
-        this.testClient
-                .get()
-                .uri("/api//queryinstances/{instanceId}/properties/{propertyId}", INSTANCE_ID, INSTANCE_PROPERTY_ID)
-                .accept(MediaTypes.HAL_FORMS_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                    .jsonPath("$._links.self.href").hasJsonPath()
-                    .jsonPath("$._templates.default.method").isEqualTo("put")
-                    .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name")
-                        .isEqualTo("instanceId");
-    }
-
-    @Test
-    public void get_metadata_should_return_ok_and_affordance() {
-
-        this.testClient
-                .get()
-                .uri("/api/queryinstanceproperties")
-                .accept(MediaTypes.HAL_FORMS_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                    .jsonPath("$.resource").isEqualTo(StringResource.METADATA_INFORMATION)
-                    .jsonPath("$._templates.default.method").isEqualTo("post")
-                    .jsonPath("$._templates.default.properties[?(@.name=='instanceId')].name")
-                        .isEqualTo("instanceId");
     }
 
     private static RequestFieldsSnippet commonRequestFields(List<FieldDescriptor> fields) {
@@ -200,16 +175,24 @@ public class QueryInstancePropertyControllerTest extends DataAbstractControllerT
         return responseFields(
                 fieldWithPath("instanceId").description("Query instance identifier (UUID) for this property"),
                 fieldWithPath("id").description("Query instance property identifier (UUID)"),
-                fieldWithPath("type").description("The type of value: (Integer, Decimal, Boolean, DateTime, HierarchyBinding) "),
                 fieldWithPath("value").description("The value depending of the type"),
                 subsectionWithPath("_links")
                         .description("Query instance property links. " + StringResource.METADATA_INFORMATION));
     }
 
-    private static DynamicObjectInstanceProperty<?> createQueryInstanceIntegerProperty() {
-        return DynamicObjectInstanceProperty.builder()
-                    .parentId(UUID.fromString(INSTANCE_ID))
-                    .value(new DynamicObjectInstanceProperty.IntegerValue(1))
+    private static DynamicObjectInstancePropertyRequest<?> createQueryInstanceIntegerProperty() {
+        return DynamicObjectInstancePropertyRequest.builder()
+                    .instanceId(UUID.fromString(INSTANCE_ID))
+                    .type(DynamicObjectPrototypeProperty.Type.Integer)
+                    .value(1)
                 .build();
     }
+
+    @Builder
+    @Getter
+    private static class DynamicObjectInstancePropertyRequest<TValue> {
+        public UUID instanceId;
+        public DynamicObjectPrototypeProperty.Type type;
+        public TValue value;
+   }
 }

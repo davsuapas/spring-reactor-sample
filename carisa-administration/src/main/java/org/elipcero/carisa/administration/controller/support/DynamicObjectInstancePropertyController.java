@@ -19,7 +19,9 @@ package org.elipcero.carisa.administration.controller.support;
 import lombok.NonNull;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 import org.elipcero.carisa.administration.general.StringResource;
+import org.elipcero.carisa.administration.projection.RawDynamicObjectInstanceProperty;
 import org.elipcero.carisa.administration.service.DynamicObjectInstancePropertyService;
+import org.elipcero.carisa.core.data.EntityDataState;
 import org.elipcero.carisa.core.hateoas.BasicReactiveRepresentationModelAssembler;
 import org.elipcero.carisa.core.reactive.web.BiKeyChildControllerHypermedia;
 import org.elipcero.carisa.core.reactive.web.CrudHypermediaController;
@@ -44,14 +46,14 @@ import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.met
  * @author David Suárez
  */
 public abstract class DynamicObjectInstancePropertyController
-        implements BiKeyChildControllerHypermedia<DynamicObjectInstanceProperty<?>> {
+        implements BiKeyChildControllerHypermedia<RawDynamicObjectInstanceProperty<?>> {
 
-    private final CrudHypermediaController<DynamicObjectInstanceProperty<?>> crudHypermediaController;
+    private final CrudHypermediaController<RawDynamicObjectInstanceProperty<?>> crudHypermediaController;
     private final DynamicObjectInstancePropertyService service;
 
     public DynamicObjectInstancePropertyController(
             @NonNull final DynamicObjectInstancePropertyService service,
-            @NonNull final BasicReactiveRepresentationModelAssembler<DynamicObjectInstanceProperty<?>> modelAssembler) {
+            @NonNull final BasicReactiveRepresentationModelAssembler<RawDynamicObjectInstanceProperty<?>> modelAssembler) {
 
         this.service = service;
         this.crudHypermediaController = new CrudHypermediaController<>(modelAssembler);
@@ -77,13 +79,15 @@ public abstract class DynamicObjectInstancePropertyController
      * @return instance property entity
      */
     @GetMapping("/instances/{instanceId}/properties/{propertyId}")
-    public Publisher<EntityModel<DynamicObjectInstanceProperty<?>>> getById(
+    public Publisher<EntityModel<RawDynamicObjectInstanceProperty<?>>> getById(
             final @PathVariable("instanceId") String instanceId,
             final @PathVariable("propertyId") String propertyId) {
 
         return this.crudHypermediaController.get(
-                this.service.getById(
-                        DynamicObjectInstanceProperty.GetMapId(UUID.fromString(instanceId), UUID.fromString(propertyId))));
+                this.service
+                        .getById(DynamicObjectInstanceProperty.GetMapId(UUID.fromString(instanceId), UUID.fromString(propertyId)))
+                        .map(DynamicObjectInstancePropertyController::convertToResponse)
+        );
     }
 
     /**
@@ -92,10 +96,13 @@ public abstract class DynamicObjectInstancePropertyController
      * @return the created property
      */
     @PostMapping("/instanceproperties")
-    public Publisher<ResponseEntity<EntityModel<DynamicObjectInstanceProperty<?>>>> create(
+    public Publisher<ResponseEntity<EntityModel<RawDynamicObjectInstanceProperty<?>>>> create(
             final @RequestBody DynamicObjectInstanceProperty<?> property) {
 
-        return this.crudHypermediaController.create(this.service.create(property));
+        return this.crudHypermediaController.create(
+                this.service
+                        .create(property)
+                        .map(DynamicObjectInstancePropertyController::convertToResponse));
     }
 
     /**
@@ -106,7 +113,7 @@ public abstract class DynamicObjectInstancePropertyController
      * @return the created or updated property
      */
     @PutMapping("/instances/{instanceId}/properties/{propertyId}")
-    public Publisher<ResponseEntity<EntityModel<DynamicObjectInstanceProperty<?>>>> updateOrCreate(
+    public Publisher<ResponseEntity<EntityModel<RawDynamicObjectInstanceProperty<?>>>> updateOrCreate(
             final @PathVariable("instanceId") String instanceId,
             final @PathVariable("propertyId") String propertyId,
             final @RequestBody DynamicObjectInstanceProperty<?> property) {
@@ -114,6 +121,21 @@ public abstract class DynamicObjectInstancePropertyController
         property.setParentId(UUID.fromString(instanceId));
         property.setId(UUID.fromString(propertyId));
 
-        return this.crudHypermediaController.updateOrCreate(this.service.updateOrCreate(property));
+        return this.crudHypermediaController.updateOrCreate(
+                this.service
+                        .updateOrCreate(property)
+                        .map(entityDataState -> EntityDataState.<RawDynamicObjectInstanceProperty<?>>builder()
+                                    .domainState(entityDataState.getDomainState())
+                                    .entity(convertToResponse(entityDataState.getEntity()))
+                                .build())
+        );
+    }
+
+    private static RawDynamicObjectInstanceProperty<?> convertToResponse(DynamicObjectInstanceProperty<?> property) {
+        return RawDynamicObjectInstanceProperty.builder()
+                    .id(property.getId())
+                    .instanceId(property.getParentId())
+                    .value(property.getValue().getRawValue())
+                .build();
     }
 }
