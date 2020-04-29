@@ -19,6 +19,7 @@ package org.elipcero.carisa.administration.convert.web;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
+import org.elipcero.carisa.administration.exception.InvalidFormatException;
 
 /**
  * @see WebValueConverter
@@ -32,6 +33,9 @@ public class WebIntegerValueConverter implements WebValueConverter {
      */
     @Override
     public DynamicObjectInstanceProperty<?> create(JsonNode value) {
-        return new DynamicObjectInstanceProperty<>(new DynamicObjectInstanceProperty.IntegerValue(value.asInt()));
+        if (value.isInt()) {
+            return new DynamicObjectInstanceProperty<>(new DynamicObjectInstanceProperty.IntegerValue(value.asInt()));
+        }
+        throw new InvalidFormatException("The value must be integer. Value: " + value.asText());
     }
 }

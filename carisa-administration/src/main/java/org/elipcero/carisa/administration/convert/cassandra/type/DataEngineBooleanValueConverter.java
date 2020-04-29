@@ -21,19 +21,19 @@ import org.elipcero.carisa.administration.convert.type.DataEngineValueConverter;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 
 /**
- * Convert from/to cassandra the integer value
+ * Convert from/to cassandra dynamic object the boolean value
  * @see DataEngineValueConverter
  *
  * @author David Suárez
  */
-public class DataEngineIntegerValueConverter implements DataEngineValueConverter {
+public class DataEngineBooleanValueConverter implements DataEngineValueConverter {
 
     /**
      * @see DataEngineValueConverter#create(String)
      */
     @Override
     public DynamicObjectInstanceProperty.Value create(String value) {
-        return new DynamicObjectInstanceProperty.IntegerValue(Integer.valueOf(value));
+        return new DynamicObjectInstanceProperty.BooleanValue(Boolean.valueOf(value));
     }
 
     /**

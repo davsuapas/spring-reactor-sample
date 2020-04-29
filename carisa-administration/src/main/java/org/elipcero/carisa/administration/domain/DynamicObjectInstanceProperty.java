@@ -132,11 +132,52 @@ public class DynamicObjectInstanceProperty<TValue extends DynamicObjectInstanceP
         }
     }
 
+    @RequiredArgsConstructor
+    @Getter
+    public static class StringValue implements Value {
+
+        @NonNull
+        private String value;
+
+        @Override
+        public DynamicObjectPrototypeProperty.Type getType() {
+            return DynamicObjectPrototypeProperty.Type.String;
+        }
+
+        @Override
+        public Object getRawValue() {
+            return this.value;
+        }
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class BooleanValue implements Value {
+
+        @NonNull
+        private Boolean value;
+
+        @Override
+        public DynamicObjectPrototypeProperty.Type getType() {
+            return DynamicObjectPrototypeProperty.Type.Boolean;
+        }
+
+        @Override
+        public Object getRawValue() {
+            return this.value;
+        }
+    }
+
     public static class HierarchyBindingValue implements Value {
+
+        public static final String PARENT_ID_COLUMN_NAME = "parentId";
+        public static final String CHILD_ID_COLUMN_NAME = "childId";
+        public static final String CATEGORY_COLUMN_NAME = "category";
 
         private final InternalValue internalValue;
 
         public HierarchyBindingValue(UUID parentId, UUID id, boolean category) {
+            Assert.notNull(id, "The id cannot be null");
             this.internalValue = new InternalValue(parentId, id, category);
         }
 
@@ -164,6 +205,7 @@ public class DynamicObjectInstanceProperty<TValue extends DynamicObjectInstanceP
 
         @RequiredArgsConstructor
         private static class InternalValue {
+
             @NonNull
             private UUID parentId;
 

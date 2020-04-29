@@ -15,32 +15,23 @@
  *
  */
 
-package org.elipcero.carisa.administration.convert.cassandra.type;
+package org.elipcero.carisa.administration.convert.web;
 
-import org.elipcero.carisa.administration.convert.type.DataEngineValueConverter;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.elipcero.carisa.administration.domain.DynamicObjectInstanceProperty;
 
 /**
- * Convert from/to cassandra the integer value
- * @see DataEngineValueConverter
+ * @see WebValueConverter
  *
  * @author David Suárez
  */
-public class DataEngineIntegerValueConverter implements DataEngineValueConverter {
+public class WebStringValueConverter implements WebValueConverter {
 
     /**
-     * @see DataEngineValueConverter#create(String)
+     * @see WebValueConverter#create(JsonNode)
      */
     @Override
-    public DynamicObjectInstanceProperty.Value create(String value) {
-        return new DynamicObjectInstanceProperty.IntegerValue(Integer.valueOf(value));
-    }
-
-    /**
-     * @see DataEngineValueConverter#writeToString(DynamicObjectInstanceProperty.Value)
-     */
-    @Override
-    public String writeToString(DynamicObjectInstanceProperty.Value value) {
-        return value.getRawValue().toString();
+    public DynamicObjectInstanceProperty<?> create(JsonNode value) {
+        return new DynamicObjectInstanceProperty<>(new DynamicObjectInstanceProperty.StringValue(value.asText()));
     }
 }

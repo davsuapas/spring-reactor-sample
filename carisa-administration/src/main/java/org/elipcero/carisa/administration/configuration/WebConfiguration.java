@@ -18,7 +18,10 @@ package org.elipcero.carisa.administration.configuration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.elipcero.carisa.administration.convert.type.ValueConverterFactory;
+import org.elipcero.carisa.administration.convert.web.WebBooleanValueConverter;
+import org.elipcero.carisa.administration.convert.web.WebHierarchyBindingValueConverter;
 import org.elipcero.carisa.administration.convert.web.WebIntegerValueConverter;
+import org.elipcero.carisa.administration.convert.web.WebStringValueConverter;
 import org.elipcero.carisa.administration.convert.web.WebValueConverter;
 import org.elipcero.carisa.administration.domain.DynamicObjectPrototypeProperty;
 import org.springframework.beans.factory.ObjectProvider;
@@ -72,6 +75,9 @@ public class WebConfiguration {
     ValueConverterFactory<WebValueConverter> webValueConverterFactory() {
         return new ValueConverterFactory<>(new HashMap<Integer, WebValueConverter>() {{
             put(DynamicObjectPrototypeProperty.Type.Integer.ordinal(), new WebIntegerValueConverter());
+            put(DynamicObjectPrototypeProperty.Type.String.ordinal(), new WebStringValueConverter());
+            put(DynamicObjectPrototypeProperty.Type.Boolean.ordinal(), new WebBooleanValueConverter());
+            put(DynamicObjectPrototypeProperty.Type.HierarchyBinding.ordinal(), new WebHierarchyBindingValueConverter());
         }});
     }
 

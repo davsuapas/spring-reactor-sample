@@ -17,7 +17,10 @@
 package org.elipcero.carisa.administration.configuration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.elipcero.carisa.administration.convert.cassandra.type.DataEngineBooleanValueConverter;
+import org.elipcero.carisa.administration.convert.cassandra.type.DataEngineHierarchyBindingValueConverter;
 import org.elipcero.carisa.administration.convert.cassandra.type.DataEngineIntegerValueConverter;
+import org.elipcero.carisa.administration.convert.cassandra.type.DataEngineStringValueConverter;
 import org.elipcero.carisa.administration.convert.cassandra.type.ObjectInstancePropertyValueReadConverter;
 import org.elipcero.carisa.administration.convert.cassandra.type.ObjectInstancePropertyValueWriteConverter;
 import org.elipcero.carisa.administration.convert.type.DataEngineValueConverter;
@@ -61,7 +64,10 @@ public class CassandraConfiguration extends AbstractReactiveCassandraConfigurati
     public CustomConversions customConversions() {
         ValueConverterFactory<DataEngineValueConverter> factory =
                 new ValueConverterFactory<>(new HashMap<Integer, DataEngineValueConverter>() {{
-                    put(DynamicObjectPrototypeProperty.Type.Integer.ordinal(), new DataEngineIntegerValueConverter());
+            put(DynamicObjectPrototypeProperty.Type.Integer.ordinal(), new DataEngineIntegerValueConverter());
+            put(DynamicObjectPrototypeProperty.Type.String.ordinal(), new DataEngineStringValueConverter());
+            put(DynamicObjectPrototypeProperty.Type.Boolean.ordinal(), new DataEngineBooleanValueConverter());
+            put(DynamicObjectPrototypeProperty.Type.HierarchyBinding.ordinal(), new DataEngineHierarchyBindingValueConverter());
         }});
 
         return new CassandraCustomConversions(
