@@ -1,2 +1,2 @@
 # incubator-carisa
-Real time analysis platform
+Moved to https://github.com/CarisaOpen
